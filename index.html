@@ -2,8 +2,22 @@
 <html lang="es" class="antialiased" data-theme="pink">
 <head>
 <meta charset="utf-8" />
-<meta name="viewport" content="width=device-width,initial-scale=1" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
 <title>Pauteo Certámenes</title>
+
+<!-- PWA META TAGS -->
+<meta name="application-name" content="Pauteo">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Pauteo">
+<meta name="theme-color" content="#ff8ec0">
+<meta name="description" content="App de estudio y pauteo.">
+
+<!-- ICONOS DINÁMICOS -->
+<link rel="icon" id="dynamic-favicon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>📝</text></svg>">
+<link rel="apple-touch-icon" id="dynamic-apple-icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><rect width=%22100%22 height=%22100%22 fill=%22%23ff8ec0%22 rx=%2220%22/><text x=%2250%22 y=%2250%22 font-family=%22Arial%22 font-size=%2250%22 fill=%22white%22 text-anchor=%22middle%22 dy=%22.35em%22>P</text></svg>">
+<link rel="manifest" id="my-manifest">
+
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <link href="https://fonts.googleapis.com/css2?family=Material+Icons" rel="stylesheet">
 <style>
@@ -34,29 +48,32 @@
 [data-theme='dark'] { --bg: #000000; --card: #1c1c1e; --text: #f5f5f7; --muted: #a1a1a6; --primary: #0A84FF; --primary-soft: #2C2C2E; --primary-hover: #409CFF; --shadow: 0 8px 30px rgba(0,0,0,0.5); --border: #38383A; --correct-bg: #052e16; --correct-text: #dcfce7; --incorrect-bg: #450a0a; --incorrect-text: #fecaca; }
 
 /* --- ESTILOS GLOBALES --- */
-html,body{height:100%;margin:0;font-family:'Inter', -apple-system, sans-serif; background:var(--bg); color:var(--text); transition: background 0.3s ease, color 0.3s ease;}
+html,body{height:100%;margin:0;font-family:'Inter', -apple-system, sans-serif; background:var(--bg); color:var(--text); transition: background 0.3s ease, color 0.3s ease; -webkit-tap-highlight-color: transparent;}
 * { box-sizing: border-box; }
 
-.app { max-width:1200px; margin:28px auto; padding:18px; display:grid; grid-template-columns: 340px 1fr; gap:24px; transition: grid-template-columns 0.4s ease; }
+.app { max-width:1200px; margin:28px auto; padding:18px; display:grid; grid-template-columns: 340px 1fr; gap:24px; transition: grid-template-columns 0.4s ease; padding-bottom: 80px; }
 body.quiz-mode .app { grid-template-columns: 1fr; }
 body.quiz-mode aside#left-panel { display: none !important; }
 body.quiz-mode #drawer-json-help, body.quiz-mode #drawer-download { display: none !important; }
 
 @media(max-width:980px){ 
-    .app{grid-template-columns:1fr; padding:12px} 
+    .app{grid-template-columns:1fr; padding:12px; margin-top: 0;} 
     aside#left-panel { display: none; } 
+    #header-bar { padding-top: 10px; }
 }
 
 /* UI Components */
 .card { background:var(--card); border-radius:var(--radius); padding:16px; box-shadow:var(--shadow); border:1px solid var(--border); transition: background 0.3s ease; }
 .btn { background:var(--primary-soft); color: var(--primary); border-radius:12px; padding:8px 14px; border:0; cursor:pointer; font-weight:600; transition:all .2s; font-size: 0.9rem; display:inline-flex; align-items:center; justify-content:center; }
 .btn:hover { transform: translateY(-1px); filter: brightness(0.95); }
+.btn:active { transform: scale(0.96); }
+
 .theme-btn-pink { background: #ff8ec0 !important; color: white !important; }
 .theme-btn-light { background: #ffffff !important; color: #1d1d1f !important; border: 1px solid #ccc !important; }
 .theme-btn-dark { background: #1f2937 !important; color: white !important; }
 .mode-active { background:var(--primary)!important; color:#fff!important; box-shadow:0 4px 12px rgba(0,0,0,0.15); }
 
-.action-btn { background: transparent; border: 0; cursor: pointer; color: var(--muted); transition: transform 0.2s, color 0.2s; padding: 4px; display: flex; align-items: center; justify-content: center; }
+.action-btn { background: transparent; border: 0; cursor: pointer; color: var(--muted); transition: transform 0.2s, color 0.2s; padding: 4px; display: flex; align-items: center; justify-content: center; min-width: 44px; min-height: 44px; }
 .action-btn:hover { transform: scale(1.1); }
 .star-btn.active { color: var(--gold); }
 .flag-btn.active { color: var(--orange); } 
@@ -72,7 +89,7 @@ body.quiz-mode #drawer-json-help, body.quiz-mode #drawer-download { display: non
 .answer-card.disabled { opacity:0.9; pointer-events:none; }
 
 .shortcut-hint { position: absolute; right: 10px; top: 50%; transform: translateY(-50%); opacity: 0.3; font-size: 0.8rem; font-weight: bold; border: 1px solid currentColor; padding: 2px 6px; border-radius: 4px; display: none; }
-body.quiz-mode .shortcut-hint { display: block; } 
+@media (min-width: 981px) { body.quiz-mode .shortcut-hint { display: block; } }
 
 .tag-pill { display:inline-block; padding:4px 10px; border-radius:999px; background:var(--primary-soft); color: var(--primary); font-size:0.75rem; margin-right:6px; font-weight: 600; }
 .small { font-size:0.85rem; color:var(--muted); }
@@ -98,6 +115,7 @@ body.quiz-mode .shortcut-hint { display: block; }
 #question-text { font-size: 1.15rem; line-height: 1.6; font-weight: 500; color: var(--text); margin-bottom: 1.5rem; text-align: left; white-space: pre-wrap; }
 .question-img { max-width: 100%; max-height: 400px; border-radius: 8px; object-fit: contain; display: block; margin: 0 auto 16px auto; border: 1px solid var(--border); }
 
+/* Drawer & Modals */
 .drawer { position:fixed; left:-380px; top:0; bottom:0; width:360px; padding:20px; z-index:80; transition:left .3s ease; box-shadow: 5px 0 25px rgba(0,0,0,0.1); border-right: 1px solid var(--border); background: var(--card); overflow-y: auto; }
 .drawer.open { left:0; }
 .overlay { position:fixed; inset:0; display:none; align-items:center; justify-content:center; background:rgba(0,0,0,0.4); backdrop-filter: blur(2px); z-index:60; }
@@ -116,66 +134,12 @@ body.quiz-mode .shortcut-hint { display: block; }
 .menu-btn:hover { background: var(--primary-soft); }
 .icon-btn { display:inline-flex; align-items:center; justify-content:center; border-radius:50%; padding:8px; border:1px solid var(--border); cursor:pointer; background: var(--card); color: var(--text); transition: all 0.2s; }
 .icon-btn:hover { background: var(--primary-soft); color: var(--primary); border-color: var(--primary); }
+
+/* iOS Specifics */
+@supports (-webkit-touch-callout: none) {
+  .app { padding-bottom: 100px; }
+}
 </style>
-<link rel="manifest" id="my-manifest">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="apple-mobile-web-app-title" content="Pauteo">
-<link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><rect width=%22100%22 height=%22100%22 fill=%22%23ff8ec0%22 rx=%2220%22/><text x=%2250%22 y=%2250%22 font-family=%22Arial%22 font-size=%2250%22 fill=%22white%22 text-anchor=%22middle%22 dy=%22.35em%22>P</text></svg>">
-<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><rect width=%22100%22 height=%22100%22 fill=%22%23ff8ec0%22 rx=%2220%22/><text x=%2250%22 y=%2250%22 font-family=%22Arial%22 font-size=%2250%22 fill=%22white%22 text-anchor=%22middle%22 dy=%22.35em%22>P</text></svg>">
-
-<script>
-  // 1. Generar Manifest dinámicamente para que sea instalable
-  const manifest = {
-    "name": "Pauteo Certámenes",
-    "short_name": "Pauteo",
-    "start_url": ".",
-    "display": "standalone",
-    "background_color": "#ffffff",
-    "theme_color": "#ff8ec0",
-    "icons": [{
-      "src": "data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><rect width=%22100%22 height=%22100%22 fill=%22%23ff8ec0%22 rx=%2220%22/><text x=%2250%22 y=%2250%22 font-family=%22Arial%22 font-size=%2250%22 fill=%22white%22 text-anchor=%22middle%22 dy=%22.35em%22>P</text></svg>",
-      "sizes": "192x192",
-      "type": "image/svg+xml"
-    }]
-  };
-  const stringManifest = JSON.stringify(manifest);
-  const blob = new Blob([stringManifest], {type: 'application/json'});
-  const manifestURL = URL.createObjectURL(blob);
-  document.querySelector('#my-manifest').setAttribute('href', manifestURL);
-
-  // 2. Registrar Service Worker para funcionamiento Offline
-  if ('serviceWorker' in navigator) {
-    window.addEventListener('load', function() {
-      // Creamos un SW en línea para no depender de archivos externos
-      const swCode = `
-        const CACHE_NAME = 'pauteo-v4';
-        self.addEventListener('install', (e) => {
-          e.waitUntil(
-            caches.open(CACHE_NAME).then((cache) => {
-              return cache.addAll(['./', location.href]);
-            })
-          );
-        });
-        self.addEventListener('fetch', (e) => {
-          e.respondWith(
-            caches.match(e.request).then((response) => {
-              return response || fetch(e.request);
-            })
-          );
-        });
-      `;
-      const swBlob = new Blob([swCode], {type: 'application/javascript'});
-      const swUrl = URL.createObjectURL(swBlob);
-      
-      navigator.serviceWorker.register(swUrl).then(function(registration) {
-        console.log('ServiceWorker registrado con éxito: ', registration.scope);
-      }, function(err) {
-        console.log('Fallo ServiceWorker: ', err);
-      });
-    });
-  }
-</script>
 </head>
 <body>
 
@@ -186,7 +150,7 @@ body.quiz-mode .shortcut-hint { display: block; }
         <h2 class="text-xl font-bold tracking-tight" style="margin:0; font-size:1.25rem;">Pauteo</h2>
         <div class="small">Para todos tus certámenes</div>
       </div>
-      <button id="download-app-btn" class="icon-btn" title="Descargar App / Instalar"><span class="material-icons">download</span></button>
+      <button id="download-app-btn" class="icon-btn" title="Descargar App / Instalar"><span class="material-icons">install_mobile</span></button>
     </div>
 
     <div style="margin-top:12px"><input id="search-bar" class="input" placeholder="Buscar pregunta..." /></div>
@@ -226,8 +190,9 @@ body.quiz-mode .shortcut-hint { display: block; }
           <button id="clean-duplicates-btn" class="btn small" style="width:100%; margin-top:8px; background:#f0fdf4; color:#15803d; border:1px solid #bbf7d0;">
               <span class="material-icons" style="font-size:16px; margin-right:6px;">cleaning_services</span> Limpiar Duplicados
           </button>
-          <button id="open-editor-btn" class="btn" style="width:100%;  margin-top:8px; background:#d6e4ff; color:#004085;">
-            <span class="material-icons" style="font-size:18px; margin-right:6px;">edit_note</span>Editor Avanzado
+          <!-- BOTON EDITOR CORREGIDO AL ESTILO 'SMALL' -->
+          <button id="open-editor-btn" class="btn small" style="width:100%;  margin-top:8px; background:var(--card); color:var(--text); border:1px solid var(--border);">
+            <span class="material-icons" style="font-size:16px; margin-right:6px;">edit_note</span>Editor Avanzado
          </button>
           <button id="export-bank-json-btn" class="btn small" style="width:100%; margin-top:8px; background:var(--card); color:var(--text); border:1px solid var(--border);">
               <span class="material-icons" style="font-size:16px; margin-right:6px;">file_download</span> Descargar Banco (.json)
@@ -259,7 +224,9 @@ body.quiz-mode .shortcut-hint { display: block; }
   <main style="position:relative; min-height:80vh;">
     <div class="card mb-4" id="main-panel" style="height:100%; display:flex; flex-direction:column;">
       <div class="header-bar" id="header-bar" style="display:flex;justify-content:space-between;align-items:center;">
-        <div class="header-left" id="header-left"></div>
+        <div class="header-left" id="header-left">
+            <button id="mobile-menu-btn" class="menu-btn icon-btn" style="display:none;"><span class="material-icons">menu</span></button>
+        </div>
       </div>
 
       <div id="starter-area" style="margin-top:40px; text-align:center; flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center;">
@@ -268,6 +235,8 @@ body.quiz-mode .shortcut-hint { display: block; }
         <p class="small mb-6">Selecciona un banco o carga tu JSON.</p>
         <button id="open-pauteo-btn" class="btn" style="font-size:1.1rem; padding:16px 32px; background:var(--primary); color:white; box-shadow: 0 4px 14px rgba(0,0,0,0.2);">Comenzar Pauteo</button>
       </div>
+      
+      <!-- EDITOR SCREEN -->
       <div id="bank-editor-screen" class="card" style="display:none; padding:20px;">
         <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
             <h2 class="text-xl font-bold">🛠️ Editor de Banco Activo</h2>
@@ -296,6 +265,7 @@ body.quiz-mode .shortcut-hint { display: block; }
                 </div>
         </div>
       </div>
+      
       <div id="quiz-shell" style="display:none; padding:10px; flex:1;" class="quiz-shell">
         <div class="quiz-progress-container" id="quiz-progress-wrap">
             <div style="display:flex; justify-content:space-between; margin-bottom:6px;">
@@ -355,6 +325,11 @@ body.quiz-mode .shortcut-hint { display: block; }
     <button id="close-drawer" class="icon-btn"><span class="material-icons">close</span></button>
   </div>
   <div style="display:flex; flex-direction:column; gap:12px;">
+    <!-- Contenido duplicado del sidebar para movil -->
+    <div id="mobile-sidebar-content"></div>
+
+    <input id="drawer-search" class="input" placeholder="Buscar..." />
+
     <div class="card" style="background:var(--bg); border:1px solid var(--border);">
             <details open> <summary style="cursor:pointer; font-weight:700; list-style:none; display:flex; align-items:center; justify-content:space-between; font-size:0.9rem;">
                     <div style="display:flex; align-items:center;">
@@ -368,7 +343,7 @@ body.quiz-mode .shortcut-hint { display: block; }
                 </div>
             </details>
         </div>
-    <input id="drawer-search" class="input mt-2" placeholder="Buscar..." />
+    
     <div id="marked-container" class="card mt-2" style="background:var(--bg); display:none;">
         <div class="small mb-2 font-bold" style="color:var(--gold); display:flex; align-items:center;"><span class="material-icons" style="font-size:16px; margin-right:4px;">star</span> Marcadas</div>
         <div id="marked-list" style="display:flex; flex-wrap:wrap; gap:8px;"></div>
@@ -422,26 +397,63 @@ body.quiz-mode .shortcut-hint { display: block; }
   </div>
 </div>
 
+<!-- NUEVO OVERLAY DE INSTALACION -->
 <div id="download-overlay" class="overlay" role="dialog" aria-modal="true">
   <div class="card modal" style="max-width:500px;">
     <div style="display:flex;justify-content:space-between;align-items:center; margin-bottom:16px;">
-      <h3 class="font-bold text-lg">Instalar Aplicación</h3>
+      <h3 class="font-bold text-lg" id="install-title">Instalar Aplicación</h3>
       <button id="download-overlay-close" class="icon-btn"><span class="material-icons">close</span></button>
     </div>
-    <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px;">
-      <div class="card" style="text-align:center; border:1px solid var(--border);">
-        <span class="material-icons" style="font-size:40px; color:var(--primary); margin-bottom:8px;">smartphone</span>
-        <h4 class="font-semibold">Móvil / iPad</h4>
-      </div>
-      <div class="card" style="text-align:center; border:1px solid var(--border);">
-         <span class="material-icons" style="font-size:40px; color:var(--muted); margin-bottom:8px;">computer</span>
-        <h4 class="font-semibold">Escritorio</h4>
-      </div>
+    <div id="install-content">
+        <!-- Contenido dinámico -->
     </div>
   </div>
 </div>
 
 <script>
+// --- PWA INIT ---
+let deferredPrompt;
+window.addEventListener('beforeinstallprompt', (e) => {
+  e.preventDefault();
+  deferredPrompt = e;
+});
+
+const manifest = {
+  "name": "Pauteo Certámenes",
+  "short_name": "Pauteo",
+  "start_url": ".",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#ff8ec0",
+  "orientation": "portrait",
+  "icons": [
+    {
+      "src": document.getElementById('dynamic-apple-icon').href,
+      "sizes": "192x192",
+      "type": "image/svg+xml"
+    }
+  ]
+};
+const stringManifest = JSON.stringify(manifest);
+const blob = new Blob([stringManifest], {type: 'application/json'});
+document.querySelector('#my-manifest').setAttribute('href', URL.createObjectURL(blob));
+
+if ('serviceWorker' in navigator && window.location.protocol.includes('http')) {
+  window.addEventListener('load', function() {
+    const swCode = `
+      const CACHE_NAME = 'pauteo-v6-offline';
+      self.addEventListener('install', (e) => {
+        e.waitUntil(caches.open(CACHE_NAME).then((cache) => cache.addAll(['./', location.href])));
+      });
+      self.addEventListener('fetch', (e) => {
+        e.respondWith(caches.match(e.request).then((res) => res || fetch(e.request)));
+      });
+    `;
+    const swBlob = new Blob([swCode], {type: 'application/javascript'});
+    navigator.serviceWorker.register(URL.createObjectURL(swBlob)).catch(console.error);
+  });
+}
+
 window.addEventListener('DOMContentLoaded', () => {
 
 function safeAddListener(id, event, handler) {
@@ -502,8 +514,8 @@ function detectTags(text) {
 const app = {
   questions: [], currentIndex: 0, answersGiven: {}, marked: {}, flagged: {},
   mode: 'study', savedBanks: {}, activeBankName: null, lastPreviewArr: null, quizActive: false, backupQuestions: null,
-  currentEditorFilter: { tag: null }, // Filtro activo en el editor
-  editorQuestions: [] // Preguntas mostradas actualmente en el editor
+  currentEditorFilter: { tag: null }, 
+  editorQuestions: [] 
 };
 
 function saveProgress(){
@@ -518,8 +530,6 @@ function saveProgress(){
   updateHeaderButtons();
 }
 
-// --- FUNCIONES DE GESTIÓN AVANZADA (EDITOR SCREEN) ---
-
 function openBankEditor() {
     document.getElementById('starter-area').style.display = 'none';
     document.getElementById('quiz-shell').style.display = 'none';
@@ -528,7 +538,6 @@ function openBankEditor() {
 
     if (app.questions.length === 0) return alert("Carga un banco primero.");
 
-    // Inicializar estado y renderizar
     app.currentEditorFilter = { tag: null };
     app.editorQuestions = [...app.questions];
     renderEditorScreen();
@@ -536,7 +545,7 @@ function openBankEditor() {
 
 function closeBankEditor() {
     document.getElementById('bank-editor-screen').style.display = 'none';
-    document.getElementById('starter-area').style.display = 'flex'; // Volver al inicio
+    document.getElementById('starter-area').style.display = 'flex'; 
 }
 
 function getAllUniqueTags() {
@@ -546,9 +555,7 @@ function getAllUniqueTags() {
 }
 
 function applyEditorFilter(tag = app.currentEditorFilter.tag) {
-    // Si el usuario hace clic en el mismo tag, lo deselecciona
     app.currentEditorFilter.tag = (app.currentEditorFilter.tag === tag) ? null : tag;
-    
     let filtered = app.questions;
     if (app.currentEditorFilter.tag) {
         filtered = app.questions.filter(q => (q.tags || []).includes(app.currentEditorFilter.tag));
@@ -561,11 +568,9 @@ function renderEditorScreen() {
     const filterContainer = document.getElementById('editor-tag-filter');
     const listContainer = document.getElementById('editor-question-list');
     
-    // --- Render Filters ---
     filterContainer.innerHTML = '';
     const uniqueTags = getAllUniqueTags();
     
-    // Botón para borrar filtro
     const clearBtn = document.createElement('button');
     clearBtn.className = 'btn tag-pill';
     clearBtn.textContent = 'Mostrar Todo';
@@ -574,7 +579,6 @@ function renderEditorScreen() {
     clearBtn.style.background = app.currentEditorFilter.tag ? 'var(--primary-soft)' : '#ccc';
     filterContainer.appendChild(clearBtn);
 
-    // Tags
     uniqueTags.forEach(tag => {
         const btn = document.createElement('button');
         btn.className = 'btn tag-pill';
@@ -588,7 +592,6 @@ function renderEditorScreen() {
         filterContainer.appendChild(btn);
     });
 
-    // --- Render Question List ---
     listContainer.innerHTML = '';
     const count = app.editorQuestions.length;
     document.getElementById('editor-count').textContent = `Mostrando ${count} de ${app.questions.length} preguntas`;
@@ -607,11 +610,9 @@ function renderEditorScreen() {
 }
 
 function createBankFromFilter() {
-    if (app.editorQuestions.length === 0) return alert("No hay preguntas filtradas para crear un nuevo banco.");
-    
-    const name = prompt("Nombre para el nuevo banco (con estas preguntas filtradas):", "Banco Filtrado"); 
+    if (app.editorQuestions.length === 0) return alert("No hay preguntas filtradas.");
+    const name = prompt("Nombre para el nuevo banco:", "Banco Filtrado"); 
     if (name) {
-        // Clonamos las preguntas filtradas para evitar referencias
         app.savedBanks[name] = [...app.editorQuestions]; 
         saveBanks();
         alert(`Banco "${name}" (${app.editorQuestions.length}) guardado.`);
@@ -622,24 +623,16 @@ function createBankFromFilter() {
 
 function deleteFilteredQuestions() {
     if (app.editorQuestions.length === 0) return alert("No hay preguntas filtradas para eliminar.");
-
     if (confirm(`Advertencia: ¿Estás seguro de eliminar las ${app.editorQuestions.length} preguntas filtradas del banco activo? Esta acción es irreversible.`)) {
-        
         const filteredIds = new Set(app.editorQuestions.map(q => q.id));
-        
-        // Filtra el array principal, manteniendo solo las que NO están en el set de IDs a eliminar
         app.questions = app.questions.filter(q => !filteredIds.has(q.id));
-        
-        // Reset state, guarda el progreso y el banco (si estaba activo)
         app.currentIndex = 0;
         app.answersGiven = {}; 
         saveProgress();
         if (app.activeBankName) {
-            // Guardar el banco actual con las preguntas eliminadas
             app.savedBanks[app.activeBankName] = app.questions;
             saveBanks();
         }
-        
         alert(`✅ ${filteredIds.size} preguntas eliminadas del banco activo.`);
         closeBankEditor();
     }
@@ -651,14 +644,12 @@ function saveBanks(){
 
 function updateHeaderButtons() {
     const btn = document.getElementById('update-bank-btn');
-    // Solo mostrar "Guardar Cambios" si hay un banco activo y no estamos en filtro
     if(app.activeBankName && !app.backupQuestions) {
         btn.style.display = 'block';
         btn.textContent = `Guardar Cambios en "${app.activeBankName}"`;
     } else {
         btn.style.display = 'none';
     }
-    
     const activeLabel = document.getElementById('active-bank');
     if(app.activeBankName) activeLabel.textContent = app.activeBankName;
     else activeLabel.textContent = '(ninguno)';
@@ -750,13 +741,11 @@ function normalizeQuestions(raw){
   }); 
   return out; 
 }
-// --- ALGORITMO DE SIMILITUD (IA LIGERA) ---
+
 function getJaccardSimilarity(s1, s2) {
-    // Normalizar: minúsculas, quitar puntuación, separar palabras
     const clean = (text) => text.toLowerCase().replace(/[^\w\s]|_/g, "").split(/\s+/).filter(w => w.length > 2);
     const w1 = new Set(clean(s1));
     const w2 = new Set(clean(s2));
-    // Calcular intersección (palabras compartidas) sobre unión (total de palabras únicas)
     const intersection = new Set([...w1].filter(x => w2.has(x)));
     const union = new Set([...w1, ...w2]);
     return intersection.size / union.size;
@@ -764,40 +753,31 @@ function getJaccardSimilarity(s1, s2) {
 
 function removeDuplicates() {
     if(!app.questions || app.questions.length < 2) return alert("Necesitas más preguntas para buscar duplicados.");
-    
-    // UMBRAL: 0.85 significa que si comparten el 85% de las palabras, se considera igual.
     const THRESHOLD = 0.85; 
     const uniqueQuestions = [];
     let duplicatesCount = 0;
-
-    // Recorremos las preguntas comparando
     for(let i=0; i<app.questions.length; i++) {
         let isDuplicate = false;
         const currentQ = app.questions[i];
-        
         for(let j=0; j<uniqueQuestions.length; j++) {
             const existingQ = uniqueQuestions[j];
-            // Comparamos el texto de la pregunta
             const similarity = getJaccardSimilarity(currentQ.question, existingQ.question);
-            
             if(similarity > THRESHOLD) {
                 isDuplicate = true;
                 duplicatesCount++;
-                break; // Ya encontramos su gemelo, pasamos a la siguiente
+                break; 
             }
         }
-        
         if(!isDuplicate) {
             uniqueQuestions.push(currentQ);
         }
     }
-
     if(duplicatesCount > 0) {
         if(confirm(`🤖 Smart Scan:\nSe encontraron ${duplicatesCount} preguntas repetidas o muy similares.\n\n¿Deseas eliminarlas y dejar solo las versiones únicas?`)) {
             app.questions = uniqueQuestions;
             app.currentIndex = 0;
             renderQuestion(0);
-            renderQuestionGrid(); // Actualizar mapa del menú
+            renderQuestionGrid(); 
             saveProgress();
             alert(`✅ Limpieza completada. Ahora tienes ${app.questions.length} preguntas únicas.`);
         }
@@ -912,14 +892,12 @@ function showResults(){
   panel.style.display = 'block'; closeQuizView(true); 
 }
 
-// --- FUNCIONES NUEVAS V3.4 (Modificar y Filtrar) ---
-
 function deleteBank(name) {
     if(confirm(`¿Estás seguro de eliminar el banco "${name}"? No se puede deshacer.`)) {
         delete app.savedBanks[name];
         if(app.activeBankName === name) {
             app.activeBankName = null;
-            app.questions = []; // Opcional: limpiar preguntas
+            app.questions = [];
         }
         saveBanks();
         saveProgress();
@@ -1031,7 +1009,6 @@ safeAddListener('retry-incorrect-btn', 'click', () => {
     if(confirm(`¿Iniciar nuevo repaso con las ${wrongs.length} preguntas incorrectas?`)) { app.questions = shuffleArray(wrongs); app.currentIndex = 0; app.answersGiven = {}; app.flagged = {}; document.getElementById('results-panel').style.display = 'none'; app.activeBankName = null; openQuizView(); }
 });
 
-safeAddListener('validate-bank-btn', 'click', ()=>{ if(!app.questions || !app.questions.length) return alert('No hay preguntas.'); alert(`✅ Banco válido. ${app.questions.length} preguntas.`); });
 const modes = ['study','exam','practice'];
 modes.forEach(m => safeAddListener('mode-'+m, 'click', ()=> { app.mode=m; app.answersGiven={}; app.flagged={}; app.currentIndex=0; updateModeButtons(); renderQuestion(0); }));
 function updateModeButtons(){ modes.forEach(m => { const el = document.getElementById('mode-'+m); if(app.mode===m) el.classList.add('mode-active'); else el.classList.remove('mode-active'); }); }
@@ -1049,15 +1026,38 @@ safeAddListener('open-pauteo-btn', 'click', () => { shuffleArray(app.questions);
 function openQuizView(){ 
   app.quizActive = true; document.body.classList.add('quiz-mode'); 
   document.getElementById('starter-area').style.display = 'none'; document.getElementById('results-panel').style.display = 'none'; document.getElementById('quiz-shell').style.display = 'block'; 
-  const left = document.getElementById('header-left'); left.innerHTML = '';
-  const menuBtn = document.createElement('button'); menuBtn.className = 'menu-btn icon-btn'; menuBtn.innerHTML = '<span class="material-icons">menu</span>';
-  menuBtn.onclick = ()=>{ document.getElementById('drawer').classList.add('open'); renderBanksList('drawer-banks-list'); updateMarkedUI(); renderQuestionGrid(); };
-  left.appendChild(menuBtn); renderQuestion(app.currentIndex);
+  checkMobileView();
+  renderQuestion(app.currentIndex);
 }
 
+function checkMobileView() {
+    const isMobile = window.innerWidth <= 980;
+    const menuBtn = document.getElementById('mobile-menu-btn');
+    if(isMobile || app.quizActive) {
+        menuBtn.style.display = 'inline-flex';
+        const left = document.getElementById('header-left');
+        if(left.innerHTML === '') left.appendChild(menuBtn);
+    } else {
+        menuBtn.style.display = 'none';
+    }
+}
+window.addEventListener('resize', checkMobileView);
+checkMobileView();
+
+safeAddListener('mobile-menu-btn', 'click', () => { 
+    renderBanksList('drawer-banks-list');
+    document.getElementById('drawer').classList.add('open'); 
+});
+
 function closeQuizView(showingResults = false){ 
-  app.quizActive = false; if(!showingResults) { document.body.classList.remove('quiz-mode'); document.getElementById('starter-area').style.display = 'flex'; document.getElementById('header-left').innerHTML = ''; } else { document.getElementById('header-left').innerHTML = `<button onclick="location.reload()" class="btn">Inicio</button>`; }
-  document.getElementById('quiz-shell').style.display = 'none'; document.getElementById('drawer').classList.remove('open');
+  app.quizActive = false; 
+  if(!showingResults) { 
+      document.body.classList.remove('quiz-mode'); 
+      document.getElementById('starter-area').style.display = 'flex'; 
+  } 
+  document.getElementById('quiz-shell').style.display = 'none'; 
+  document.getElementById('drawer').classList.remove('open');
+  checkMobileView();
 }
 
 safeAddListener('close-drawer', 'click', ()=> document.getElementById('drawer').classList.remove('open'));
@@ -1066,8 +1066,29 @@ safeAddListener('btn-json-help-details', 'click', openJsonHelp);
 safeAddListener('drawer-json-help', 'click', ()=>{ openJsonHelp(); document.getElementById('drawer').classList.remove('open'); });
 safeAddListener('json-guide-close', 'click', ()=> document.getElementById('json-guide-overlay').classList.remove('open'));
 safeAddListener('copy-template-btn', 'click', ()=>{ navigator.clipboard.writeText(document.getElementById('json-template-code').textContent).then(()=> alert('Plantilla copiada!')); });
-safeAddListener('download-app-btn', 'click', ()=> document.getElementById('download-overlay').classList.add('open'));
-safeAddListener('drawer-download', 'click', ()=> document.getElementById('download-overlay').classList.add('open'));
+
+// --- INSTALACION AUTOMATICA ---
+async function handleInstallTrigger() {
+    if (deferredPrompt) {
+        deferredPrompt.prompt();
+        const { outcome } = await deferredPrompt.userChoice;
+        if (outcome === 'accepted') deferredPrompt = null;
+        return;
+    }
+    const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+    const content = document.getElementById('install-content');
+    
+    if (isIOS) {
+        content.innerHTML = `<div style="text-align:center;"><span class="material-icons" style="font-size:48px; color:var(--muted);">ios_share</span><h3 class="font-semibold mb-2">Instalar en iOS</h3><ol style="text-align:left; font-size:0.9rem; line-height:1.6; margin:0 auto; display:inline-block;"><li>Toca el botón <strong>Compartir</strong> <span class="material-icons" style="font-size:14px">ios_share</span></li><li>Baja y selecciona <strong>"Agregar al inicio"</strong></li><li>Dale a <strong>Agregar</strong></li></ol></div>`;
+        document.getElementById('download-overlay').classList.add('open');
+    } else {
+        content.innerHTML = `<div style="text-align:center;"><span class="material-icons" style="font-size:48px; color:var(--primary);">android</span><h3 class="font-semibold mb-2">Instalar Manualmente</h3><p class="small">Si no apareció la ventana automática:</p><ol style="text-align:left; font-size:0.9rem; line-height:1.6; margin:0 auto; display:inline-block;"><li>Toca los <strong>3 puntos</strong> del menú (arriba)</li><li>Selecciona <strong>"Instalar aplicación"</strong> o "Agregar a pantalla de inicio"</li></ol></div>`;
+        document.getElementById('download-overlay').classList.add('open');
+    }
+}
+
+safeAddListener('download-app-btn', 'click', handleInstallTrigger);
+safeAddListener('drawer-download', 'click', handleInstallTrigger);
 safeAddListener('download-overlay-close', 'click', ()=> document.getElementById('download-overlay').classList.remove('open'));
 
 const dropZone = document.getElementById('drop-zone'); const fileInput = document.getElementById('file-input');
