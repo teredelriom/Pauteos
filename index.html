@@ -13,9 +13,9 @@
 <meta name="theme-color" content="#ff8ec0">
 <meta name="description" content="App de estudio y pauteo.">
 
-<!-- ICONOS DINÁMICOS -->
-<link rel="icon" id="dynamic-favicon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>📝</text></svg>">
-<link rel="apple-touch-icon" id="dynamic-apple-icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><rect width=%22100%22 height=%22100%22 fill=%22%23ff8ec0%22 rx=%2220%22/><text x=%2250%22 y=%2250%22 font-family=%22Arial%22 font-size=%2250%22 fill=%22white%22 text-anchor=%22middle%22 dy=%22.35em%22>P</text></svg>">
+<!-- ICONOS DINÁMICOS (Nuevo Logo Integrado) -->
+<link rel="icon" id="dynamic-favicon" href='data:image/svg+xml,<svg width="512" height="512" viewBox="0 0 512 512" fill="none" xmlns="http://www.w3.org/2000/svg"><defs><linearGradient id="g" x1="0" y1="0" x2="512" y2="512" gradientUnits="userSpaceOnUse"><stop offset="0%" stop-color="%23FF9A9E"/><stop offset="100%" stop-color="%23FECFEF"/></linearGradient></defs><rect x="0" y="0" width="512" height="512" rx="120" fill="url(%23g)"/><rect x="106" y="106" width="300" height="300" rx="40" fill="white"/><path d="M160 256 L210 306 L240 210 L270 280 L352 180" stroke="%23FF758C" stroke-width="32" stroke-linecap="round" stroke-linejoin="round" fill="none"/></svg>'>
+<link rel="apple-touch-icon" id="dynamic-apple-icon" href='data:image/svg+xml,<svg width="512" height="512" viewBox="0 0 512 512" fill="none" xmlns="http://www.w3.org/2000/svg"><defs><linearGradient id="g" x1="0" y1="0" x2="512" y2="512" gradientUnits="userSpaceOnUse"><stop offset="0%" stop-color="%23FF9A9E"/><stop offset="100%" stop-color="%23FECFEF"/></linearGradient></defs><rect x="0" y="0" width="512" height="512" rx="120" fill="url(%23g)"/><rect x="106" y="106" width="300" height="300" rx="40" fill="white"/><path d="M160 256 L210 306 L240 210 L270 280 L352 180" stroke="%23FF758C" stroke-width="32" stroke-linecap="round" stroke-linejoin="round" fill="none"/></svg>'>
 <link rel="manifest" id="my-manifest">
 
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -230,7 +230,6 @@ body.quiz-mode #drawer-json-help, body.quiz-mode #drawer-download { display: non
       </div>
 
       <div id="starter-area" style="margin-top:40px; text-align:center; flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center;">
-        <img src="logo.png" alt="Logo Pauteo" onerror="this.style.display='none'" style="width:140px; height:auto; margin-bottom:24px; border-radius:20px; box-shadow: 0 10px 25px rgba(255, 142, 192, 0.2);">
         <h2 class="text-2xl font-bold mb-2" style="font-size:1.5rem;">Listo para practicar</h2>
         <p class="small mb-6">Selecciona un banco o carga tu JSON.</p>
         <button id="open-pauteo-btn" class="btn" style="font-size:1.1rem; padding:16px 32px; background:var(--primary); color:white; box-shadow: 0 4px 14px rgba(0,0,0,0.2);">Comenzar Pauteo</button>
