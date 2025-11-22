@@ -150,7 +150,8 @@ body.quiz-mode #drawer-json-help, body.quiz-mode #drawer-download { display: non
         <h2 class="text-xl font-bold tracking-tight" style="margin:0; font-size:1.25rem;">Pauteo</h2>
         <div class="small">Para todos tus certámenes</div>
       </div>
-      <button id="download-app-btn" class="icon-btn" title="Descargar App / Instalar"><span class="material-icons">install_mobile</span></button>
+      <!-- ICONO CAMBIADO A DOWNLOAD (FLECHA) -->
+      <button id="download-app-btn" class="icon-btn" title="Descargar App / Instalar"><span class="material-icons">download</span></button>
     </div>
 
     <div style="margin-top:12px"><input id="search-bar" class="input" placeholder="Buscar pregunta..." /></div>
@@ -190,7 +191,6 @@ body.quiz-mode #drawer-json-help, body.quiz-mode #drawer-download { display: non
           <button id="clean-duplicates-btn" class="btn small" style="width:100%; margin-top:8px; background:#f0fdf4; color:#15803d; border:1px solid #bbf7d0;">
               <span class="material-icons" style="font-size:16px; margin-right:6px;">cleaning_services</span> Limpiar Duplicados
           </button>
-          <!-- BOTON EDITOR ESTILO SMALL -->
           <button id="open-editor-btn" class="btn small" style="width:100%;  margin-top:8px; background:var(--card); color:var(--text); border:1px solid var(--border);">
             <span class="material-icons" style="font-size:16px; margin-right:6px;">edit_note</span>Editor Avanzado
          </button>
@@ -858,7 +858,7 @@ function renderQuestion(index){
       justBox.style.display = 'block'; justBox.innerHTML = `<strong>Justificación:</strong><br>${q.justification || 'Sin justificación disponible.'}`; 
   } else { justBox.style.display = 'none'; }
   
-  updateProgressUI(); updateMarkedUI(); saveProgress(); 
+  updateProgressUI(); updateMarkedUI(); saveProgress(); renderQuestionGrid();
 }
 
 function updateProgressUI(){ 
@@ -898,7 +898,7 @@ function selectAnswer(qid, chosenIdx){
           if(app.currentIndex < app.questions.length - 1){ app.currentIndex++; renderQuestion(app.currentIndex); } else { showResults(); }
       }, 600); 
   }
-  saveProgress(); 
+  saveProgress(); renderQuestionGrid();
 }
 
 document.addEventListener('keydown', (e) => {
