@@ -186,9 +186,10 @@ body.quiz-mode #drawer-json-help, body.quiz-mode #drawer-download { display: non
         <div id="banks-list" style="margin-top:10px; max-height: 150px; overflow-y: auto;"></div>
         <div style="margin-top:10px;display:flex;gap:8px; flex-wrap:wrap;">
           <button id="save-bank-btn" class="btn small" style="flex:1;">Guardar Como...</button>
-          <button id="update-bank-btn" class="btn small" style="flex:1; background:var(--card); color:var(--text); border:1px solid var(--border); display:none;">Guardar Cambios</button>
+          <button id="update-bank-btn" class="btn small" style="flex:1; background:#e0f2fe; color:#0284c7; display:none;">Guardar Cambios</button>
         </div>
-          <button id="clean-duplicates-btn" class="btn small" style="width:100%; margin-top:8px; background:var(--card); color:var(--text); border:1px solid var(--border);;">
+          <!-- ESTILOS UNIFICADOS PARA BOTONES DE ACCIÓN -->
+          <button id="clean-duplicates-btn" class="btn small" style="width:100%; margin-top:8px; background:var(--card); color:var(--text); border:1px solid var(--border);">
               <span class="material-icons" style="font-size:16px; margin-right:6px;">cleaning_services</span> Limpiar Duplicados
           </button>
           <button id="open-editor-btn" class="btn small" style="width:100%;  margin-top:8px; background:var(--card); color:var(--text); border:1px solid var(--border);">
@@ -228,11 +229,9 @@ body.quiz-mode #drawer-json-help, body.quiz-mode #drawer-download { display: non
             <button id="mobile-menu-btn" class="menu-btn icon-btn" style="display:none;"><span class="material-icons">menu</span></button>
         </div>
       </div>
-
-      <div id="starter-area" style="margin-top:40px; text-align:center; flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center;">
         <h2 class="text-2xl font-bold mb-2" style="font-size:1.5rem;">Listo para practicar</h2>
         <p class="small mb-6">Selecciona un banco o carga tu JSON.</p>
-        <button id="open-pauteo-btn" class="btn" style="font-size:1.1rem; padding:16px 32px; background:var(--primary); color:white; box-shadow: 0 4px 14px rgba(0,0,0,0.2);">Comenzar Pauteo</button>
+        <button id="open-pauteo-btn" class="btn" style="font-size:1.1rem; padding:16px 32px; background:var(--primary); color:white; box-shadow: 0 4px 14px rgba(0,0,0,0.2);">Iniciar Pauteo</button>
       </div>
       
       <!-- EDITOR SCREEN -->
@@ -318,6 +317,7 @@ body.quiz-mode #drawer-json-help, body.quiz-mode #drawer-download { display: non
   </main>
 </div>
 
+<!-- DRAWER CON BUSCADOR ARRIBA -->
 <div id="drawer" class="drawer card" aria-hidden="true">
   <div style="display:flex;justify-content:space-between;align-items:center; margin-bottom:20px;">
     <h2 class="font-bold text-lg">Menú</h2>
@@ -1162,5 +1162,3 @@ renderQuestion(app.currentIndex);
 </script>
 </body>
 </html>
-
-
