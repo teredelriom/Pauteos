@@ -1,0 +1,1145 @@
+<!DOCTYPE html>
+<html lang="es" class="antialiased" data-theme="pink">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Pauteo Certámenes</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Icons" rel="stylesheet">
+<style>
+/* --- VARIABLES DE TEMAS --- */
+:root {
+  --bg: #fbfbfd;
+  --card: #ffffff;
+  --text: #0f172a;
+  --muted: #6b7280;
+  --primary: #ff8ec0;
+  --primary-soft: #ffe6f0;
+  --primary-hover: #ff7eb6;
+  --radius: 14px;
+  --shadow: 0 8px 30px rgba(16,24,40,0.06);
+  --border: rgba(15,23,42,0.04);
+  --gold: #fbbf24;
+  --orange: #f97316;
+  --correct-bg: #d4f8d4;
+  --correct-border: #46c26f;
+  --correct-text: #0f5132;
+  --incorrect-bg: #ffd6d6;
+  --incorrect-border: #ff6b6b;
+  --incorrect-text: #842029;
+}
+
+[data-theme='pink'] { --bg: #fff0f5; --card: #ffffff; --text: #333; --primary: #ff8ec0; --primary-soft: #ffe6f0; --primary-hover: #ff76b0; --border: rgba(255, 142, 192, 0.15); }
+[data-theme='light'] { --bg: #F5F5F7; --card: #FFFFFF; --text: #1D1D1F; --muted: #86868B; --primary: #0071E3; --primary-soft: #E8F2FF; --primary-hover: #0077ED; --shadow: 0 4px 12px rgba(0,0,0,0.08); --border: #D2D2D7; }
+[data-theme='dark'] { --bg: #000000; --card: #1c1c1e; --text: #f5f5f7; --muted: #a1a1a6; --primary: #0A84FF; --primary-soft: #2C2C2E; --primary-hover: #409CFF; --shadow: 0 8px 30px rgba(0,0,0,0.5); --border: #38383A; --correct-bg: #052e16; --correct-text: #dcfce7; --incorrect-bg: #450a0a; --incorrect-text: #fecaca; }
+
+/* --- ESTILOS GLOBALES --- */
+html,body{height:100%;margin:0;font-family:'Inter', -apple-system, sans-serif; background:var(--bg); color:var(--text); transition: background 0.3s ease, color 0.3s ease;}
+* { box-sizing: border-box; }
+
+.app { max-width:1200px; margin:28px auto; padding:18px; display:grid; grid-template-columns: 340px 1fr; gap:24px; transition: grid-template-columns 0.4s ease; }
+body.quiz-mode .app { grid-template-columns: 1fr; }
+body.quiz-mode aside#left-panel { display: none !important; }
+body.quiz-mode #drawer-json-help, body.quiz-mode #drawer-download { display: none !important; }
+
+@media(max-width:980px){ 
+    .app{grid-template-columns:1fr; padding:12px} 
+    aside#left-panel { display: none; } 
+}
+
+/* UI Components */
+.card { background:var(--card); border-radius:var(--radius); padding:16px; box-shadow:var(--shadow); border:1px solid var(--border); transition: background 0.3s ease; }
+.btn { background:var(--primary-soft); color: var(--primary); border-radius:12px; padding:8px 14px; border:0; cursor:pointer; font-weight:600; transition:all .2s; font-size: 0.9rem; display:inline-flex; align-items:center; justify-content:center; }
+.btn:hover { transform: translateY(-1px); filter: brightness(0.95); }
+.theme-btn-pink { background: #ff8ec0 !important; color: white !important; }
+.theme-btn-light { background: #ffffff !important; color: #1d1d1f !important; border: 1px solid #ccc !important; }
+.theme-btn-dark { background: #1f2937 !important; color: white !important; }
+.mode-active { background:var(--primary)!important; color:#fff!important; box-shadow:0 4px 12px rgba(0,0,0,0.15); }
+
+.action-btn { background: transparent; border: 0; cursor: pointer; color: var(--muted); transition: transform 0.2s, color 0.2s; padding: 4px; display: flex; align-items: center; justify-content: center; }
+.action-btn:hover { transform: scale(1.1); }
+.star-btn.active { color: var(--gold); }
+.flag-btn.active { color: var(--orange); } 
+.action-btn .material-icons { font-size: 28px; }
+
+.bank-item { transition: background 0.2s; }
+.bank-item:hover { background: var(--primary-soft); }
+
+.answer-card { padding:16px; border-radius:12px; border:1px solid var(--border); background:var(--card); cursor:pointer; transition:transform .12s, background .2s; margin-bottom: 10px; position: relative; }
+.answer-card:hover { transform:translateY(-2px); border-color: var(--primary); }
+.answer-card.correct { background:var(--correct-bg)!important; border-color:var(--correct-border)!important; color: var(--correct-text); }
+.answer-card.incorrect { background:var(--incorrect-bg)!important; border-color:var(--incorrect-border)!important; color: var(--incorrect-text); }
+.answer-card.disabled { opacity:0.9; pointer-events:none; }
+
+.shortcut-hint { position: absolute; right: 10px; top: 50%; transform: translateY(-50%); opacity: 0.3; font-size: 0.8rem; font-weight: bold; border: 1px solid currentColor; padding: 2px 6px; border-radius: 4px; display: none; }
+body.quiz-mode .shortcut-hint { display: block; } 
+
+.tag-pill { display:inline-block; padding:4px 10px; border-radius:999px; background:var(--primary-soft); color: var(--primary); font-size:0.75rem; margin-right:6px; font-weight: 600; }
+.small { font-size:0.85rem; color:var(--muted); }
+.input { width:100%; padding:10px 12px; border-radius:10px; border:1px solid var(--border); background: var(--bg); color: var(--text); outline: none; transition: border 0.2s; }
+.input:focus { border-color: var(--primary); }
+
+.quiz-progress-container { width: 100%; max-width: 800px; margin: 0 auto 24px auto; }
+.progress-bg { background:var(--border); border-radius:999px; height:10px; overflow:hidden; }
+.progress-bar { height:10px; background:var(--primary); width:0%; transition:width .3s ease; }
+
+.nav-grid-scrollable { display: flex; flex-wrap: wrap; gap: 6px; max-height: 250px; overflow-y: auto; padding: 4px; align-content: flex-start; }
+.nav-dot { 
+    width: 32px; height: 32px; border-radius: 50%; font-size: 0.75rem; font-weight: 600; 
+    display: flex; align-items: center; justify-content: center; cursor: pointer; 
+    background: var(--bg); border: 1px solid var(--border); color: var(--muted); transition: all 0.2s;
+}
+.nav-dot:hover { border-color: var(--primary); }
+.nav-dot.current { border-color: var(--primary); border-width: 2px; transform: scale(1.1); font-weight:800; }
+.nav-dot.answered { background: var(--primary-soft); color: var(--primary); border-color: transparent; }
+.nav-dot.flagged { background: #fff7ed; color: var(--orange); border-color: var(--orange); }
+.nav-dot.wrong { background: #fee2e2; color: #ef4444; } 
+
+#question-text { font-size: 1.15rem; line-height: 1.6; font-weight: 500; color: var(--text); margin-bottom: 1.5rem; text-align: left; white-space: pre-wrap; }
+.question-img { max-width: 100%; max-height: 400px; border-radius: 8px; object-fit: contain; display: block; margin: 0 auto 16px auto; border: 1px solid var(--border); }
+
+.drawer { position:fixed; left:-380px; top:0; bottom:0; width:360px; padding:20px; z-index:80; transition:left .3s ease; box-shadow: 5px 0 25px rgba(0,0,0,0.1); border-right: 1px solid var(--border); background: var(--card); overflow-y: auto; }
+.drawer.open { left:0; }
+.overlay { position:fixed; inset:0; display:none; align-items:center; justify-content:center; background:rgba(0,0,0,0.4); backdrop-filter: blur(2px); z-index:60; }
+.overlay.open { display:flex; }
+.modal { width:min(920px,96vw); max-height:90vh; overflow:auto; animation: popIn 0.2s ease-out; }
+@keyframes popIn { from{transform:scale(0.95);opacity:0} to{transform:scale(1);opacity:1} }
+
+#drop-zone { border:2px dashed var(--primary); padding:20px; border-radius:12px; text-align:center; color:var(--muted); background: var(--primary-soft); opacity: 0.7; transition: opacity 0.2s; cursor: pointer; }
+#drop-zone:hover { opacity: 1; }
+.code-block { background: #f4f4f5; padding: 12px; border-radius: 8px; font-family: monospace; font-size: 0.8rem; overflow-x: auto; white-space: pre-wrap; }
+[data-theme='dark'] .code-block { background: #2c2c2e; color: #e5e5e5; }
+
+.mark-btn { width:32px; height:32px; display:flex; align-items:center; justify-content:center; border-radius:8px; background:var(--primary-soft); color:var(--primary); font-weight:bold; font-size:0.8rem; border:none; cursor:pointer; transition:0.2s; }
+.mark-btn:hover { background:var(--primary); color:white; }
+.menu-btn { background:transparent; border:0; cursor:pointer; color: var(--text); display: flex; padding: 8px; border-radius: 8px; }
+.menu-btn:hover { background: var(--primary-soft); }
+.icon-btn { display:inline-flex; align-items:center; justify-content:center; border-radius:50%; padding:8px; border:1px solid var(--border); cursor:pointer; background: var(--card); color: var(--text); transition: all 0.2s; }
+.icon-btn:hover { background: var(--primary-soft); color: var(--primary); border-color: var(--primary); }
+</style>
+<link rel="manifest" id="my-manifest">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Pauteo">
+<link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><rect width=%22100%22 height=%22100%22 fill=%22%23ff8ec0%22 rx=%2220%22/><text x=%2250%22 y=%2250%22 font-family=%22Arial%22 font-size=%2250%22 fill=%22white%22 text-anchor=%22middle%22 dy=%22.35em%22>P</text></svg>">
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><rect width=%22100%22 height=%22100%22 fill=%22%23ff8ec0%22 rx=%2220%22/><text x=%2250%22 y=%2250%22 font-family=%22Arial%22 font-size=%2250%22 fill=%22white%22 text-anchor=%22middle%22 dy=%22.35em%22>P</text></svg>">
+
+<script>
+  // 1. Generar Manifest dinámicamente para que sea instalable
+  const manifest = {
+    "name": "Pauteo Certámenes",
+    "short_name": "Pauteo",
+    "start_url": ".",
+    "display": "standalone",
+    "background_color": "#ffffff",
+    "theme_color": "#ff8ec0",
+    "icons": [{
+      "src": "data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><rect width=%22100%22 height=%22100%22 fill=%22%23ff8ec0%22 rx=%2220%22/><text x=%2250%22 y=%2250%22 font-family=%22Arial%22 font-size=%2250%22 fill=%22white%22 text-anchor=%22middle%22 dy=%22.35em%22>P</text></svg>",
+      "sizes": "192x192",
+      "type": "image/svg+xml"
+    }]
+  };
+  const stringManifest = JSON.stringify(manifest);
+  const blob = new Blob([stringManifest], {type: 'application/json'});
+  const manifestURL = URL.createObjectURL(blob);
+  document.querySelector('#my-manifest').setAttribute('href', manifestURL);
+
+  // 2. Registrar Service Worker para funcionamiento Offline
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', function() {
+      // Creamos un SW en línea para no depender de archivos externos
+      const swCode = `
+        const CACHE_NAME = 'pauteo-v4';
+        self.addEventListener('install', (e) => {
+          e.waitUntil(
+            caches.open(CACHE_NAME).then((cache) => {
+              return cache.addAll(['./', location.href]);
+            })
+          );
+        });
+        self.addEventListener('fetch', (e) => {
+          e.respondWith(
+            caches.match(e.request).then((response) => {
+              return response || fetch(e.request);
+            })
+          );
+        });
+      `;
+      const swBlob = new Blob([swCode], {type: 'application/javascript'});
+      const swUrl = URL.createObjectURL(swBlob);
+      
+      navigator.serviceWorker.register(swUrl).then(function(registration) {
+        console.log('ServiceWorker registrado con éxito: ', registration.scope);
+      }, function(err) {
+        console.log('Fallo ServiceWorker: ', err);
+      });
+    });
+  }
+</script>
+</head>
+<body>
+
+<div class="app" id="app-root">
+  <aside id="left-panel" class="card" style="position:relative; height: fit-content; min-height: 80vh; display:flex; flex-direction:column;">
+    <div style="display:flex;justify-content:space-between;align-items:center; margin-bottom: 16px;">
+      <div>
+        <h2 class="text-xl font-bold tracking-tight" style="margin:0; font-size:1.25rem;">Pauteo</h2>
+        <div class="small">Para todos tus certámenes</div>
+      </div>
+      <button id="download-app-btn" class="icon-btn" title="Descargar App / Instalar"><span class="material-icons">download</span></button>
+    </div>
+
+    <div style="margin-top:12px"><input id="search-bar" class="input" placeholder="Buscar pregunta..." /></div>
+
+    <div style="margin-top:16px">
+      <div class="small font-semibold mb-2">Modo</div>
+      <div style="display:flex;gap:8px;">
+        <button id="mode-study" class="btn" style="flex:1">Estudio</button>
+        <button id="mode-exam" class="btn" style="flex:1">Examen</button>
+        <button id="mode-practice" class="btn" style="flex:1">Práctica</button>
+      </div>
+      <div style="margin-top:16px; display:flex; align-items:center; justify-content:space-between;">
+        <div class="small">Timer (min)</div>
+        <div style="display:flex;gap:8px;">
+          <input id="timer-input" class="input" type="number" min="1" value="30" style="width:60px; text-align:center;" />
+          <button id="start-exam" class="btn">Iniciar</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="card mt-4" style="background:rgba(0,0,0,0.02); border:0;">
+      <h3 class="font-semibold mb-2" style="font-size:0.9rem;">Temas</h3>
+      <div style="display:flex; gap:8px; flex-wrap:wrap;">
+        <button class="btn theme-btn theme-btn-pink" data-theme="pink">Pink</button>
+        <button class="btn theme-btn theme-btn-light" data-theme="light">Claro</button>
+        <button class="btn theme-btn theme-btn-dark" data-theme="dark">Oscuro</button>
+      </div>
+    </div>
+
+    <div class="mt-4 pt-4 border-t border-[var(--border)]">
+        <h3 class="font-bold text-lg mb-2" style="font-size:1rem;">Bancos guardados</h3>
+        <div id="banks-list" style="margin-top:10px; max-height: 150px; overflow-y: auto;"></div>
+        <div style="margin-top:10px;display:flex;gap:8px; flex-wrap:wrap;">
+          <button id="save-bank-btn" class="btn small" style="flex:1;">Guardar Como...</button>
+          <button id="update-bank-btn" class="btn small" style="flex:1; background:#e0f2fe; color:#0284c7; display:none;">Guardar Cambios</button>
+        </div>
+          <button id="clean-duplicates-btn" class="btn small" style="width:100%; margin-top:8px; background:#f0fdf4; color:#15803d; border:1px solid #bbf7d0;">
+              <span class="material-icons" style="font-size:16px; margin-right:6px;">cleaning_services</span> Limpiar Duplicados
+          </button>
+          <button id="open-editor-btn" class="btn" style="width:100%;  margin-top:8px; background:#d6e4ff; color:#004085;">
+            <span class="material-icons" style="font-size:18px; margin-right:6px;">edit_note</span>Editor Avanzado
+         </button>
+          <button id="export-bank-json-btn" class="btn small" style="width:100%; margin-top:8px; background:var(--card); color:var(--text); border:1px solid var(--border);">
+              <span class="material-icons" style="font-size:16px; margin-right:6px;">file_download</span> Descargar Banco (.json)
+          </button>
+      <div style="margin-top:8px" class="small">Activo: <span id="active-bank" class="font-medium">(ninguno)</span></div>
+    </div>
+
+    <div class="mt-4 pt-4 border-t border-[var(--border)]">
+       <details>
+         <summary style="cursor:pointer; font-weight:700; list-style:none; display:flex; align-items:center; font-size:0.9rem;margin-top:10px;">
+           <span class="material-icons" style="font-size:18px; margin-right:6px; color:var(--primary);">code</span> Formato JSON
+         </summary>
+         <div style="margin-top:12px;" class="small">
+           <button id="btn-json-help-details" class="btn small" style="width:100%">Ver plantilla</button>
+         </div>
+       </details>
+    </div>
+
+    <div class="mt-4 pt-4 border-t border-[var(--border)]">
+      <h3 class="font-bold text-base mb-2" style="font-size:0.9rem;">Importar</h3>
+      <div style="margin-top:8px;display:flex;gap:8px; flex-wrap:wrap;">
+        <input id="file-input" type="file" accept=".json,.txt" multiple style="display:none" />
+        <button id="btn-select-files" class="btn" style="width:100%">Seleccionar archivos</button>
+      </div>
+      <div style="margin-top:10px"><div id="drop-zone">Arrastra JSON o TXT aquí</div></div>
+    </div>
+  </aside>
+
+  <main style="position:relative; min-height:80vh;">
+    <div class="card mb-4" id="main-panel" style="height:100%; display:flex; flex-direction:column;">
+      <div class="header-bar" id="header-bar" style="display:flex;justify-content:space-between;align-items:center;">
+        <div class="header-left" id="header-left"></div>
+      </div>
+
+      <div id="starter-area" style="margin-top:40px; text-align:center; flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center;">
+        <img src="logo.png" alt="Logo Pauteo" onerror="this.style.display='none'" style="width:140px; height:auto; margin-bottom:24px; border-radius:20px; box-shadow: 0 10px 25px rgba(255, 142, 192, 0.2);">
+        <h2 class="text-2xl font-bold mb-2" style="font-size:1.5rem;">Listo para practicar</h2>
+        <p class="small mb-6">Selecciona un banco o carga tu JSON.</p>
+        <button id="open-pauteo-btn" class="btn" style="font-size:1.1rem; padding:16px 32px; background:var(--primary); color:white; box-shadow: 0 4px 14px rgba(0,0,0,0.2);">Comenzar Pauteo</button>
+      </div>
+      <div id="bank-editor-screen" class="card" style="display:none; padding:20px;">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
+            <h2 class="text-xl font-bold">🛠️ Editor de Banco Activo</h2>
+            <button id="close-editor-btn" class="btn small" style="background:var(--incorrect-bg); color:var(--incorrect-text);">Volver al Inicio</button>
+        </div>
+
+        <p class="small mb-4">Filtrando el banco activo (<span id="editor-count">0 preguntas</span>)</p>
+
+        <div class="card" style="padding:10px; margin-bottom:15px;">
+            <div class="small font-semibold mb-2">Filtrar por Tema (Click para seleccionar)</div>
+            <div id="editor-tag-filter" style="display:flex; flex-wrap:wrap; gap:6px;">
+                </div>
+        </div>
+
+        <div style="display:flex; gap:12px; margin-bottom:20px;">
+            <button id="create-filtered-bank-btn" class="btn" style="flex:1; background:#bbf7d0; color:#15803d;">
+                Crear Nuevo Banco con Filtro
+            </button>
+            <button id="delete-filtered-btn" class="btn" style="flex:1; background:#ffd6d6; color:#ef4444;">
+                Eliminar Preguntas Filtradas
+            </button>
+        </div>
+
+        <div style="max-height: 50vh; overflow-y: auto;">
+            <div id="editor-question-list">
+                </div>
+        </div>
+      </div>
+      <div id="quiz-shell" style="display:none; padding:10px; flex:1;" class="quiz-shell">
+        <div class="quiz-progress-container" id="quiz-progress-wrap">
+            <div style="display:flex; justify-content:space-between; margin-bottom:6px;">
+              <span id="progress-text" class="small font-bold">Pregunta 0 / 0</span>
+              <span id="timer-display" class="small font-mono font-bold text-red-500">00:00</span>
+            </div>
+            <div class="progress-bg"><div id="progress-bar" class="progress-bar"></div></div>
+        </div>
+
+        <div id="question-card" style="max-width: 800px; margin: 0 auto;">
+          <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:12px;">
+              <div id="question-tags"></div>
+              <div style="display:flex; gap:8px;">
+                  <button id="delete-q-btn" class="action-btn" title="Eliminar esta pregunta del banco" style="color:#ef4444;"><span class="material-icons">delete_outline</span></button>
+                  <button id="flag-btn" class="action-btn flag-btn" title="Marcar duda"><span class="material-icons">flag</span></button>
+                  <button id="star-btn" class="action-btn star-btn" title="Favorito"><span class="material-icons">star_border</span></button>
+              </div>
+          </div>
+
+          <div id="question-image-container"></div>
+          <div id="question-text">Cargando pregunta...</div>
+          <div id="answers" style="display:grid; grid-template-columns:1fr; gap:12px;"></div>
+          <div id="justification-box" class="small card" style="margin-top:20px; display:none; background:var(--bg); border-left: 4px solid var(--primary);"></div>
+
+          <div style="margin-top:32px; display:flex; justify-content:space-between; align-items:center; padding-top:20px; border-top:1px solid var(--border);">
+            <div><button id="prev-btn" class="btn" style="background:transparent; border:1px solid var(--border); color:var(--muted);" title="Flecha Izq">Anterior</button></div>
+            <div style="display:flex; gap:12px;">
+              <button id="restart-btn" class="btn" style="background:transparent; color:var(--muted);">Reiniciar</button>
+              <button id="next-btn" class="btn" style="padding:10px 24px; background:var(--primary); color:white;" title="Flecha Der">Siguiente</button>
+            </div>
+          </div>
+          <div style="text-align:center; margin-top:12px;">
+             <button id="show-results-btn" class="small" style="background:none; border:none; text-decoration:underline; cursor:pointer;">Terminar y ver resultados</button>
+          </div>
+        </div>
+      </div>
+
+      <div id="results-panel" style="display:none; padding:20px; max-width:800px; margin:0 auto;">
+        <div style="text-align:center; margin-bottom:24px;">
+           <h2 class="text-2xl font-bold" style="font-size:1.5rem;">Resultados</h2>
+           <div id="score-text" class="text-lg" style="margin-top:8px; color:var(--primary); font-weight:600;"></div>
+           <button id="retry-incorrect-btn" class="btn mt-4" style="display:none; margin: 12px auto; background:#fee2e2; color:#ef4444;"><span class="material-icons" style="vertical-align:middle; font-size:18px; margin-right:4px;">refresh</span> Reintentar Incorrectas</button>
+        </div>
+        <div id="results-list" style="margin-top:12px"></div>
+        <div style="margin-top:24px; text-align:center;">
+          <button id="export-results-btn" class="btn">Exportar JSON</button>
+          <button onclick="location.reload()" class="btn" style="margin-left:12px; background:transparent; border:1px solid var(--border);">Volver al inicio</button>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>
+
+<div id="drawer" class="drawer card" aria-hidden="true">
+  <div style="display:flex;justify-content:space-between;align-items:center; margin-bottom:20px;">
+    <h2 class="font-bold text-lg">Menú</h2>
+    <button id="close-drawer" class="icon-btn"><span class="material-icons">close</span></button>
+  </div>
+  <div style="display:flex; flex-direction:column; gap:12px;">
+    <div class="card" style="background:var(--bg); border:1px solid var(--border);">
+            <details open> <summary style="cursor:pointer; font-weight:700; list-style:none; display:flex; align-items:center; justify-content:space-between; font-size:0.9rem;">
+                    <div style="display:flex; align-items:center;">
+                        <span class="material-icons" style="font-size:16px; margin-right:4px;">grid_view</span> Mapa de Preguntas
+                    </div>
+                    <span class="material-icons" style="font-size:16px; opacity:0.5;">expand_more</span>
+                </summary>
+                
+                <div id="nav-grid-drawer" class="nav-grid-scrollable" style="max-height:300px; margin-top:12px; border-top:1px solid var(--border); padding-top:8px;">
+                    <div class="small text-muted">Inicia un pauteo para ver el mapa.</div>
+                </div>
+            </details>
+        </div>
+    <input id="drawer-search" class="input mt-2" placeholder="Buscar..." />
+    <div id="marked-container" class="card mt-2" style="background:var(--bg); display:none;">
+        <div class="small mb-2 font-bold" style="color:var(--gold); display:flex; align-items:center;"><span class="material-icons" style="font-size:16px; margin-right:4px;">star</span> Marcadas</div>
+        <div id="marked-list" style="display:flex; flex-wrap:wrap; gap:8px;"></div>
+    </div>
+    <div class="card mt-2" style="background:var(--bg);">
+        <div class="small mb-2">Bancos</div>
+        <div id="drawer-banks-list" style="max-height:150px; overflow:auto;"></div>
+    </div>
+    <div style="margin-top: auto; padding-top: 10px; display: flex; flex-direction: column; gap: 8px;">
+        <button id="drawer-json-help" class="btn small" style="width:100%; border:1px solid var(--border); background:var(--bg); color:var(--text);">Ayuda JSON</button>
+        <button id="drawer-download" class="btn small" style="width:100%; border:1px solid var(--border); background:var(--bg); color:var(--text);">Instalar App</button>
+        <button onclick="location.reload()" class="btn mt-2" style="background:#fee2e2; color:#ef4444;">Salir del Pauteo</button>
+    </div>
+  </div>
+</div>
+
+<div id="json-guide-overlay" class="overlay" role="dialog" aria-modal="true">
+  <div class="card modal" style="max-width:600px;">
+    <div style="display:flex;justify-content:space-between;align-items:center; border-bottom:1px solid var(--border); padding-bottom:12px;">
+      <h3 class="font-bold text-lg">Formato JSON</h3>
+      <button id="json-guide-close" class="icon-btn"><span class="material-icons">close</span></button>
+    </div>
+    <div style="padding-top:12px;">
+        <div class="code-block" id="json-template-code">
+          [{
+          "question": "Paciente de 65 años...",
+          "image": "https://ejemplo.com/ecg.jpg",
+          "answers": ["IAM","Pericarditis","Disección","TEP"],
+          "correct": 0,
+          "justification": "Elevación del ST sugiere IAM.",
+          "tags": []
+          }]
+        </div>
+        <div class="margin-top:16px; display:flex; justify-content:flex-end;">
+            <button id="copy-template-btn" class="btn" style="background:var(--primary); color:white;">Copiar Plantilla</button>
+        </div>
+    </div>
+  </div>
+</div>
+
+<div id="preview-overlay" class="overlay" role="dialog" aria-modal="true">
+  <div class="card modal">
+    <div style="display:flex;justify-content:space-between;align-items:center; border-bottom:1px solid var(--border); padding-bottom:12px;">
+      <h3 class="font-bold">Vista previa</h3>
+      <div style="display:flex;gap:8px">
+        <button id="preview-merge-save" class="btn" style="background:var(--primary); color:white;">Guardar Banco</button>
+        <button id="preview-close" class="btn">Cancelar</button>
+      </div>
+    </div>
+    <div id="preview-list" style="margin-top:12px; max-height:60vh; overflow:auto;"></div>
+  </div>
+</div>
+
+<div id="download-overlay" class="overlay" role="dialog" aria-modal="true">
+  <div class="card modal" style="max-width:500px;">
+    <div style="display:flex;justify-content:space-between;align-items:center; margin-bottom:16px;">
+      <h3 class="font-bold text-lg">Instalar Aplicación</h3>
+      <button id="download-overlay-close" class="icon-btn"><span class="material-icons">close</span></button>
+    </div>
+    <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px;">
+      <div class="card" style="text-align:center; border:1px solid var(--border);">
+        <span class="material-icons" style="font-size:40px; color:var(--primary); margin-bottom:8px;">smartphone</span>
+        <h4 class="font-semibold">Móvil / iPad</h4>
+      </div>
+      <div class="card" style="text-align:center; border:1px solid var(--border);">
+         <span class="material-icons" style="font-size:40px; color:var(--muted); margin-bottom:8px;">computer</span>
+        <h4 class="font-semibold">Escritorio</h4>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+window.addEventListener('DOMContentLoaded', () => {
+
+function safeAddListener(id, event, handler) {
+    const el = document.getElementById(id);
+    if (el) el.addEventListener(event, handler);
+}
+
+const STORAGE_KEY = 'pauteo_state_v3';
+const BANKS_KEY = 'pauteo_banks_v3';
+
+const AUTO_TAGGER = {
+    'Ped. Respiratorio': ['sbo', 'bronquiolitis', 'crup', 'laringitis', 'vrs', 'sibilancias', 'estridor', 'bronquitis obstructiva', 'score de tal', 'b-agonistas'],
+    'Ped. Sano y PNI': ['pni', 'vacuna', 'inmunización', 'control sano', 'desarrollo psicomotor', 'edp', 'tanner', 'lactancia', 'curvas de crecimiento', 'desnutrición'],
+    'Ped. Exantemáticas': ['varicela', 'rubeola', 'sarampión', 'exantema', 'kawasaki', 'escarlatina', 'mano pie boca', 'eritema infeccioso'],
+    'Neonatología': ['neonato', 'recién nacido', 'rn', 'apgar', 'ictericia', 'hiperbilirrubinemia', 'meconio', 'sepsis neonatal', 'test de coombs', 'phototerapia'],
+    'Ped. Gastro/Uro': ['deshidratación', 'shus', 'invaginación', 'estenosis pilórica', 'reflujo', 'itu pediátrica', 'fimosis', 'criptorquidia'],
+    'Fracturas': ['fractura', 'rasgo de fractura', 'conminuta', 'expuesta', 'osteosíntesis', 'yeso', 'consolidación', 'gustilo'],
+    'Lesión de Partes Blandas': ['esguince', 'ligamento', 'menisco', 'cruzado anterior', 'manguito rotador', 'tendinitis', 'bursitis', 'luxación'],
+    'Ortopedia Infantil': ['displasia de caderas', 'barlow', 'ortolani', 'pie bot', 'escoliosis', 'genu valgo', 'epifisiolisis'],
+    'Columna': ['lumbago', 'hnp', 'hernia núcleo pulposo', 'lumbociática', 'espondilolistesis', 'cauda equina'],
+    'Ca. Ginecológico': ['mama', 'nódulo mamario', 'birads', 'brca', 'ovario', 'ca 125', 'vph', 'papanicolaou', 'nie', 'cuello uterino', 'conización'],
+    'Patología Benigna Gin': ['mioma', 'pólipo', 'endometriosis', 'sop', 'ovario poliquístico', 'prolapso', 'incontinencia urinaria'],
+    'Algia/Infección Pelviana': ['dolor pélvico', 'epi', 'enfermedad inflamatoria pélvica', 'dispareunia', 'dismenorrea', 'vaginosis', 'candidiasis'],
+    'Embarazo Patológico': ['preeclampsia', 'she', 'hellp', 'diabetes gestacional', 'colestasia', 'parto prematuro', 'rotura de membranas', 'corioamnionitis'],
+    'Parto y Puerperio': ['parto', 'fórceps', 'cesárea', 'alumbramiento', 'hemorragia posparto', 'atonía', 'mastitis puerperal', 'loquios'],
+    'Monitorización Fetal': ['rbne', 'registro basal', 'doppler fetal', 'perfil biofísico', 'sufrimiento fetal', 'desaceleraciones'],
+    'Sdr. Coronario': ['iam', 'infarto', 'supra st', 'troponina', 'angina', 'coronariografía'],
+    'Insuf. Cardíaca': ['insuficiencia cardíaca', 'bnp', 'fracción de eyección', 'edema pulmonar', 'crepitantes'],
+    'Arritmias': ['fibrilación auricular', 'fa', 'flutter', 'bloqueo av', 'marcapasos', 'qt largo', 'taquicardia paroxística'],
+    'HTA': ['hipertensión', 'crisis hipertensiva', 'encefalopatía hipertensiva', 'mapa'],
+    'Neumonía/EPOC': ['neumonía', 'nac', 'curb-65', 'epoc', 'asma', 'espirometría', 'inhalador', 'corticoides'],
+    'Tromboembolismo': ['tep', 'tvp', 'dímero d', 'wells', 'anticoagulación', 'inr'],
+    'Patología Biliar': ['colecistitis', 'colangitis', 'coledocolitiasis', 'litiasis biliar', 'cpr'],
+    'Hemorragia Digestiva': ['hda', 'hdb', 'melena', 'hematemesis', 'varices esofágicas', 'ulcera péptica', 'helicobacter'],
+    'Hígado/Páncreas': ['cirrosis', 'hepatitis', 'insuficiencia hepática', 'pancreatitis', 'ascitis', 'encefalopatía hepática'],
+    'Diabetes': ['diabetes', 'cetoacidosis', 'hhs', 'insulina', 'metformina', 'hba1c', 'pie diabético'],
+    'Tiroides': ['hipotiroidismo', 'hipertiroidismo', 'tsh', 't4', 'bocio', 'cáncer de tiroides'],
+    'Suprarrenal/Hipófisis': ['cushing', 'addison', 'feocromocitoma', 'prolactinoma', 'siadh', 'diabetes insípida'],
+    'ACV y Vascular': ['acv', 'stroke', 'tiaz', 'trombolisis', 'nihss', 'hemorragia subaracnoidea'],
+    'Epilepsia/Cefalea': ['epilepsia', 'convulsión', 'migraña', 'cefalea tensional', 'aura'],
+    'Tr. Ánimo/Ansiedad': ['depresión', 'bipolar', 'suicidio', 'pánico', 'ansiedad generalizada', 'tept', 'isrs', 'litio'],
+    'Psicosis': ['esquizofrenia', 'alucinaciones', 'delirio', 'catatonia', 'antipsicóticos'],
+    'Nefrología': ['insuficiencia renal', 'vfg', 'dialisis', 'creatinina', 'síndrome nefrótico', 'síndrome nefrítico', 'hiperkalemia'],
+    'Infectología': ['sepsis', 'shock séptico', 'vih', 'sida', 'tuberculosis', 'meningitis', 'cultivo', 'antibiótico'],
+    'Dermatología': ['melanoma', 'carcinoma basocelular', 'psoriasis', 'acné', 'dermatitis', 'quemadura'],
+    'Urgencias/Legal': ['atls', 'glasgow', 'paro cardiorrespiratorio', 'intoxicación', 'ley de derechos', 'consentimiento']
+};
+
+function detectTags(text) {
+    const found = new Set();
+    const lower = text.toLowerCase();
+    for (const [tag, keywords] of Object.entries(AUTO_TAGGER)) {
+        if (keywords.some(k => lower.includes(k))) found.add(tag);
+    }
+    return Array.from(found);
+}
+
+const app = {
+  questions: [], currentIndex: 0, answersGiven: {}, marked: {}, flagged: {},
+  mode: 'study', savedBanks: {}, activeBankName: null, lastPreviewArr: null, quizActive: false, backupQuestions: null,
+  currentEditorFilter: { tag: null }, // Filtro activo en el editor
+  editorQuestions: [] // Preguntas mostradas actualmente en el editor
+};
+
+function saveProgress(){
+  const state = {
+      currentIndex: app.currentIndex, answersGiven: app.answersGiven,
+      marked: app.marked, flagged: app.flagged, mode: app.mode, activeBankName: app.activeBankName
+  };
+  if(!app.activeBankName && app.questions && app.questions.length > 0) {
+      state.tempQuestions = app.questions;
+  }
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+  updateHeaderButtons();
+}
+
+// --- FUNCIONES DE GESTIÓN AVANZADA (EDITOR SCREEN) ---
+
+function openBankEditor() {
+    document.getElementById('starter-area').style.display = 'none';
+    document.getElementById('quiz-shell').style.display = 'none';
+    document.getElementById('results-panel').style.display = 'none';
+    document.getElementById('bank-editor-screen').style.display = 'block';
+
+    if (app.questions.length === 0) return alert("Carga un banco primero.");
+
+    // Inicializar estado y renderizar
+    app.currentEditorFilter = { tag: null };
+    app.editorQuestions = [...app.questions];
+    renderEditorScreen();
+}
+
+function closeBankEditor() {
+    document.getElementById('bank-editor-screen').style.display = 'none';
+    document.getElementById('starter-area').style.display = 'flex'; // Volver al inicio
+}
+
+function getAllUniqueTags() {
+    const allTags = new Set();
+    app.questions.forEach(q => (q.tags || []).forEach(tag => allTags.add(tag)));
+    return Array.from(allTags).sort();
+}
+
+function applyEditorFilter(tag = app.currentEditorFilter.tag) {
+    // Si el usuario hace clic en el mismo tag, lo deselecciona
+    app.currentEditorFilter.tag = (app.currentEditorFilter.tag === tag) ? null : tag;
+    
+    let filtered = app.questions;
+    if (app.currentEditorFilter.tag) {
+        filtered = app.questions.filter(q => (q.tags || []).includes(app.currentEditorFilter.tag));
+    }
+    app.editorQuestions = filtered;
+    renderEditorScreen();
+}
+
+function renderEditorScreen() {
+    const filterContainer = document.getElementById('editor-tag-filter');
+    const listContainer = document.getElementById('editor-question-list');
+    
+    // --- Render Filters ---
+    filterContainer.innerHTML = '';
+    const uniqueTags = getAllUniqueTags();
+    
+    // Botón para borrar filtro
+    const clearBtn = document.createElement('button');
+    clearBtn.className = 'btn tag-pill';
+    clearBtn.textContent = 'Mostrar Todo';
+    clearBtn.onclick = () => { app.currentEditorFilter.tag = null; applyEditorFilter(null); };
+    clearBtn.style.marginRight = '12px';
+    clearBtn.style.background = app.currentEditorFilter.tag ? 'var(--primary-soft)' : '#ccc';
+    filterContainer.appendChild(clearBtn);
+
+    // Tags
+    uniqueTags.forEach(tag => {
+        const btn = document.createElement('button');
+        btn.className = 'btn tag-pill';
+        btn.textContent = `${tag} (${app.questions.filter(q => (q.tags || []).includes(tag)).length})`;
+        btn.onclick = () => applyEditorFilter(tag);
+        
+        if (app.currentEditorFilter.tag === tag) {
+            btn.style.background = 'var(--primary)';
+            btn.style.color = 'white';
+        }
+        filterContainer.appendChild(btn);
+    });
+
+    // --- Render Question List ---
+    listContainer.innerHTML = '';
+    const count = app.editorQuestions.length;
+    document.getElementById('editor-count').textContent = `Mostrando ${count} de ${app.questions.length} preguntas`;
+    
+    app.editorQuestions.forEach((q, index) => {
+        const div = document.createElement('div');
+        div.className = 'card small';
+        div.style.marginBottom = '8px';
+        div.style.padding = '10px';
+        div.innerHTML = `
+            <div style="font-weight:600;">${index + 1}. ${q.question.substring(0, 150)}...</div>
+            <div style="margin-top:4px;">${(q.tags || []).map(t => `<span class="tag-pill">${t}</span>`).join('')}</div>
+        `;
+        listContainer.appendChild(div);
+    });
+}
+
+function createBankFromFilter() {
+    if (app.editorQuestions.length === 0) return alert("No hay preguntas filtradas para crear un nuevo banco.");
+    
+    const name = prompt("Nombre para el nuevo banco (con estas preguntas filtradas):", "Banco Filtrado"); 
+    if (name) {
+        // Clonamos las preguntas filtradas para evitar referencias
+        app.savedBanks[name] = [...app.editorQuestions]; 
+        saveBanks();
+        alert(`Banco "${name}" (${app.editorQuestions.length}) guardado.`);
+        renderBanksList(); renderBanksList('drawer-banks-list');
+        closeBankEditor();
+    }
+}
+
+function deleteFilteredQuestions() {
+    if (app.editorQuestions.length === 0) return alert("No hay preguntas filtradas para eliminar.");
+
+    if (confirm(`Advertencia: ¿Estás seguro de eliminar las ${app.editorQuestions.length} preguntas filtradas del banco activo? Esta acción es irreversible.`)) {
+        
+        const filteredIds = new Set(app.editorQuestions.map(q => q.id));
+        
+        // Filtra el array principal, manteniendo solo las que NO están en el set de IDs a eliminar
+        app.questions = app.questions.filter(q => !filteredIds.has(q.id));
+        
+        // Reset state, guarda el progreso y el banco (si estaba activo)
+        app.currentIndex = 0;
+        app.answersGiven = {}; 
+        saveProgress();
+        if (app.activeBankName) {
+            // Guardar el banco actual con las preguntas eliminadas
+            app.savedBanks[app.activeBankName] = app.questions;
+            saveBanks();
+        }
+        
+        alert(`✅ ${filteredIds.size} preguntas eliminadas del banco activo.`);
+        closeBankEditor();
+    }
+}
+
+function saveBanks(){
+  localStorage.setItem(BANKS_KEY, JSON.stringify(app.savedBanks));
+}
+
+function updateHeaderButtons() {
+    const btn = document.getElementById('update-bank-btn');
+    // Solo mostrar "Guardar Cambios" si hay un banco activo y no estamos en filtro
+    if(app.activeBankName && !app.backupQuestions) {
+        btn.style.display = 'block';
+        btn.textContent = `Guardar Cambios en "${app.activeBankName}"`;
+    } else {
+        btn.style.display = 'none';
+    }
+    
+    const activeLabel = document.getElementById('active-bank');
+    if(app.activeBankName) activeLabel.textContent = app.activeBankName;
+    else activeLabel.textContent = '(ninguno)';
+}
+
+function loadAll(){
+  try{ 
+      const raw = JSON.parse(localStorage.getItem(STORAGE_KEY)); 
+      if(raw){ 
+        app.currentIndex = raw.currentIndex || 0; 
+        app.answersGiven = raw.answersGiven || {}; 
+        app.marked = raw.marked || {}; app.flagged = raw.flagged || {};
+        app.mode = raw.mode || 'study'; app.activeBankName = raw.activeBankName || null;
+        if(raw.tempQuestions && Array.isArray(raw.tempQuestions)) app.questions = raw.tempQuestions;
+      }
+  }catch(e){ localStorage.removeItem(STORAGE_KEY); }
+  try{ app.savedBanks = JSON.parse(localStorage.getItem(BANKS_KEY)) || {}; }catch(e){ app.savedBanks = {}; }
+  if(app.activeBankName && app.savedBanks[app.activeBankName]){
+      app.questions = app.savedBanks[app.activeBankName];
+  }
+  const savedTheme = localStorage.getItem('pauteo_theme') || 'pink';
+  document.documentElement.setAttribute('data-theme', savedTheme);
+  updateHeaderButtons();
+}
+loadAll();
+
+if(!app.questions || !app.questions.length){
+  app.questions = [{ id:0, question:"Bienvenida. \n¿Cuál es el primer paso en el manejo de un paciente inconsciente?", answers:["Tomar ECG","Asegurar vía aérea","Llamar a la familia","Administrar adrenalina"], correct:1, justification:"ABCDE.", tags:["Urgencias"] }];
+  app.currentIndex = 0; saveProgress();
+}
+
+function shuffleArray(array) {
+    for (let i = array.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [array[i], array[j]] = [array[j], array[i]];
+    }
+    return array;
+}
+
+function parseTxtToQuestions(text) {
+    const questions = [];
+    const blocks = text.split(/\n\s*\n/); 
+    blocks.forEach((block, i) => {
+        const lines = block.trim().split('\n');
+        if (lines.length < 2) return; 
+        let qText = ""; let options = []; let correctIndex = -1; let justification = ""; let parsingOptions = false;
+        const regexOption = /^([a-eA-E])[\)\.-]\s+(.*)/; 
+        const regexCorrect = /^(?:R|Rpta|Respuesta|Sol|Correcta|Clave)[\s:.-]*([a-eA-E])/i; 
+        const regexJustif = /^(?:Justifi|Comentario|Explicación)/i;
+
+        for (let line of lines) {
+            line = line.trim(); if (!line) continue;
+            const matchCorrect = line.match(regexCorrect);
+            if (matchCorrect) { correctIndex = matchCorrect[1].toLowerCase().charCodeAt(0) - 97; continue; }
+            if (regexJustif.test(line)) { justification = line.replace(regexJustif, '').replace(/^[:\s]+/, ''); continue; }
+            const matchOpt = line.match(regexOption);
+            if (matchOpt) { parsingOptions = true; options.push(matchOpt[2].trim()); continue; }
+            if (!parsingOptions) { qText += (qText ? "\n" : "") + line; } else { if(options.length > 0) options[options.length - 1] += " " + line; }
+        }
+        if (qText && options.length >= 2) {
+            const detectedTags = detectTags(qText); if(detectedTags.length === 0) detectedTags.push("General");
+            questions.push({
+                id: Date.now() + Math.floor(Math.random()*100000) + i,
+                question: qText.replace(/^\d+[\.\)\-]\s*/, ''),
+                answers: options, correct: correctIndex >= 0 ? correctIndex : 0, justification: justification, tags: detectedTags
+            });
+        }
+    });
+    return questions;
+}
+
+function normalizeQuestions(raw){ 
+  const out=[]; 
+  (raw||[]).forEach((r, i)=>{ 
+    const qText = r.question || r.text || r.pregunta || ''; 
+    const answers = Array.isArray(r.answers)? r.answers.slice(0,8) : (Array.isArray(r.options)? r.options.slice(0,8):[]); 
+    if(!qText || answers.length < 2) return; 
+    let tags = Array.isArray(r.tags) ? r.tags : [];
+    const detected = detectTags(qText); 
+    const mergedTags = Array.from(new Set([...tags, ...detected]));
+    if(mergedTags.length === 0) mergedTags.push("General");
+    out.push({ 
+      id: Date.now() + Math.floor(Math.random()*100000) + i, 
+      question: qText.trim(), 
+      image: r.image || null, 
+      answers, correct: typeof r.correct === 'number' ? r.correct : 0, 
+      justification: r.justification || r.justifica || '', tags: mergedTags
+    }); 
+  }); 
+  return out; 
+}
+// --- ALGORITMO DE SIMILITUD (IA LIGERA) ---
+function getJaccardSimilarity(s1, s2) {
+    // Normalizar: minúsculas, quitar puntuación, separar palabras
+    const clean = (text) => text.toLowerCase().replace(/[^\w\s]|_/g, "").split(/\s+/).filter(w => w.length > 2);
+    const w1 = new Set(clean(s1));
+    const w2 = new Set(clean(s2));
+    // Calcular intersección (palabras compartidas) sobre unión (total de palabras únicas)
+    const intersection = new Set([...w1].filter(x => w2.has(x)));
+    const union = new Set([...w1, ...w2]);
+    return intersection.size / union.size;
+}
+
+function removeDuplicates() {
+    if(!app.questions || app.questions.length < 2) return alert("Necesitas más preguntas para buscar duplicados.");
+    
+    // UMBRAL: 0.85 significa que si comparten el 85% de las palabras, se considera igual.
+    const THRESHOLD = 0.85; 
+    const uniqueQuestions = [];
+    let duplicatesCount = 0;
+
+    // Recorremos las preguntas comparando
+    for(let i=0; i<app.questions.length; i++) {
+        let isDuplicate = false;
+        const currentQ = app.questions[i];
+        
+        for(let j=0; j<uniqueQuestions.length; j++) {
+            const existingQ = uniqueQuestions[j];
+            // Comparamos el texto de la pregunta
+            const similarity = getJaccardSimilarity(currentQ.question, existingQ.question);
+            
+            if(similarity > THRESHOLD) {
+                isDuplicate = true;
+                duplicatesCount++;
+                break; // Ya encontramos su gemelo, pasamos a la siguiente
+            }
+        }
+        
+        if(!isDuplicate) {
+            uniqueQuestions.push(currentQ);
+        }
+    }
+
+    if(duplicatesCount > 0) {
+        if(confirm(`🤖 Smart Scan:\nSe encontraron ${duplicatesCount} preguntas repetidas o muy similares.\n\n¿Deseas eliminarlas y dejar solo las versiones únicas?`)) {
+            app.questions = uniqueQuestions;
+            app.currentIndex = 0;
+            renderQuestion(0);
+            renderQuestionGrid(); // Actualizar mapa del menú
+            saveProgress();
+            alert(`✅ Limpieza completada. Ahora tienes ${app.questions.length} preguntas únicas.`);
+        }
+    } else {
+        alert("✅ No se encontraron duplicados evidentes.");
+    }
+}
+
+function renderQuestion(index){ 
+  if(!app.questions || !app.questions.length){ document.getElementById('question-text').textContent = 'No hay preguntas cargadas.'; return; } 
+  if(index < 0) index = 0; if(index >= app.questions.length) index = app.questions.length - 1; 
+  app.currentIndex = index; const q = app.questions[index]; 
+  document.getElementById('question-text').textContent = q.question; 
+  
+  const imgCont = document.getElementById('question-image-container'); imgCont.innerHTML = '';
+  if(q.image) { const img = document.createElement('img'); img.src = q.image; img.className = 'question-img'; img.onclick = () => window.open(q.image, '_blank'); imgCont.appendChild(img); }
+
+  const tagsEl = document.getElementById('question-tags'); tagsEl.innerHTML = ''; 
+  (q.tags||[]).forEach(t=>{ 
+      const s = document.createElement('span'); s.className = 'tag-pill'; s.textContent = t; 
+      s.style.cursor = 'pointer'; s.title = 'Filtrar solo preguntas de ' + t;
+      s.onmouseover = () => s.style.opacity = '0.8'; s.onmouseout = () => s.style.opacity = '1';
+      s.onclick = (e) => { e.stopPropagation(); filtrarPorEtiqueta(t); };
+      tagsEl.appendChild(s); 
+  }); 
+  
+  const starBtn = document.getElementById('star-btn');
+  if(app.marked[q.id]) { starBtn.classList.add('active'); starBtn.innerHTML='<span class="material-icons">star</span>'; } else { starBtn.classList.remove('active'); starBtn.innerHTML='<span class="material-icons">star_border</span>'; }
+  const flagBtn = document.getElementById('flag-btn');
+  if(app.flagged[q.id]) { flagBtn.classList.add('active'); flagBtn.innerHTML='<span class="material-icons">flag</span>'; } else { flagBtn.classList.remove('active'); flagBtn.innerHTML='<span class="material-icons">outlined_flag</span>'; }
+
+  const answersCont = document.getElementById('answers'); answersCont.innerHTML = ''; 
+  q.answers.forEach((ans,i)=>{ 
+    const div = document.createElement('div'); div.className = 'answer-card'; 
+    const hint = `<span class="shortcut-hint">${i+1}</span>`;
+    div.innerHTML = `${hint} <div style="display:flex; gap:10px;"><div style="font-weight:700; opacity:0.5;">${String.fromCharCode(65+i)}</div><div style="line-height:1.4">${ans}</div></div>`; 
+    div.onclick = () => selectAnswer(q.id, i); 
+    if(app.answersGiven[q.id] !== undefined){ 
+        div.classList.add('disabled'); 
+        if(i === q.correct) div.classList.add('correct'); 
+        else if(i === app.answersGiven[q.id]) div.classList.add('incorrect'); 
+    }
+    answersCont.appendChild(div); 
+  }); 
+  
+  const justBox = document.getElementById('justification-box');
+  if(app.answersGiven[q.id] !== undefined && (app.mode === 'study' || app.mode === 'practice')){ 
+      justBox.style.display = 'block'; justBox.innerHTML = `<strong>Justificación:</strong><br>${q.justification || 'Sin justificación disponible.'}`; 
+  } else { justBox.style.display = 'none'; }
+  
+  updateProgressUI(); updateMarkedUI(); saveProgress(); 
+}
+
+function updateProgressUI(){ 
+    const total = app.questions.length; const idx = app.currentIndex; 
+    document.getElementById('progress-text').textContent = total ? `Pregunta ${idx+1} / ${total}` : '0 / 0'; 
+    const pct = total ? Math.round(((idx+1)/total)*100) : 0; 
+    document.getElementById('progress-bar').style.width = pct + '%'; 
+    updateModeButtons(); 
+}
+
+function updateMarkedUI() {
+    const container = document.getElementById('marked-container'); const list = document.getElementById('marked-list'); list.innerHTML = '';
+    let hasMarked = false; let count = 0;
+    for(const q of app.questions) {
+        if(app.marked[q.id]) {
+            hasMarked = true; const btn = document.createElement('button'); btn.className = 'mark-btn'; btn.textContent = app.questions.indexOf(q) + 1;
+            btn.onclick = () => { app.currentIndex = app.questions.indexOf(q); renderQuestion(app.currentIndex); document.getElementById('drawer').classList.remove('open'); };
+            list.appendChild(btn); count++; if(count > 50) break;
+        }
+    }
+    container.style.display = hasMarked ? 'block' : 'none';
+}
+
+function selectAnswer(qid, chosenIdx){ 
+  if(app.answersGiven[qid] !== undefined) return; 
+  const qIndex = app.questions.findIndex(x=>x.id===qid); const q = app.questions[qIndex];
+  if (chosenIdx < 0 || chosenIdx >= q.answers.length) return;
+  app.answersGiven[qid] = chosenIdx; 
+  
+  const cards = document.querySelectorAll('#answers .answer-card');
+  cards.forEach((card,i)=>{ card.classList.add('disabled'); if(i===q.correct) card.classList.add('correct'); if(i===chosenIdx && i!==q.correct) card.classList.add('incorrect'); }); 
+
+  if(app.mode === 'study' || app.mode === 'practice'){ 
+      const just = document.getElementById('justification-box'); just.style.display = 'block'; just.innerHTML = `<strong>Justificación:</strong><br>${q.justification || '...'}`; 
+  } else { 
+      setTimeout(()=>{ 
+          if(app.currentIndex < app.questions.length - 1){ app.currentIndex++; renderQuestion(app.currentIndex); } else { showResults(); }
+      }, 600); 
+  }
+  saveProgress(); 
+}
+
+document.addEventListener('keydown', (e) => {
+    if (!app.quizActive) return;
+    if (document.activeElement.tagName === 'INPUT' || document.activeElement.tagName === 'TEXTAREA') return;
+    const key = parseInt(e.key);
+    if (key >= 1 && key <= 9) { const q = app.questions[app.currentIndex]; if(q) selectAnswer(q.id, key - 1); }
+    if (e.key === 'ArrowRight') document.getElementById('next-btn').click();
+    if (e.key === 'ArrowLeft') document.getElementById('prev-btn').click();
+});
+
+function showResults(){ 
+  const panel = document.getElementById('results-panel'); const list = document.getElementById('results-list'); list.innerHTML = ''; let correct = 0; let hasIncorrect = false;
+  app.questions.forEach((q,i)=>{ 
+    const chosen = app.answersGiven[q.id]; const ok = chosen === q.correct; if(ok) correct++; else hasIncorrect = true;
+    const d = document.createElement('div'); d.className = 'card'; d.style.marginBottom='10px'; d.style.boxShadow='none'; d.style.background='var(--bg)';
+    d.innerHTML = `<div style="font-weight:700; color:${ok?'green':'red'}">${i+1}. ${ok?'Correcta':'Incorrecta'}</div><div class="small mt-1">${q.question}</div>`; list.appendChild(d); 
+  }); 
+  document.getElementById('score-text').textContent = `Puntaje: ${correct} / ${app.questions.length} (${Math.round((correct/app.questions.length)*100)}%)`; 
+  document.getElementById('retry-incorrect-btn').style.display = hasIncorrect ? 'block' : 'none';
+  panel.style.display = 'block'; closeQuizView(true); 
+}
+
+// --- FUNCIONES NUEVAS V3.4 (Modificar y Filtrar) ---
+
+function deleteBank(name) {
+    if(confirm(`¿Estás seguro de eliminar el banco "${name}"? No se puede deshacer.`)) {
+        delete app.savedBanks[name];
+        if(app.activeBankName === name) {
+            app.activeBankName = null;
+            app.questions = []; // Opcional: limpiar preguntas
+        }
+        saveBanks();
+        saveProgress();
+        renderBanksList();
+        renderBanksList('drawer-banks-list');
+    }
+}
+
+function renameBank(oldName) {
+    const newName = prompt("Nuevo nombre para el banco:", oldName);
+    if(newName && newName !== oldName) {
+        if(app.savedBanks[newName]) return alert("Ya existe un banco con ese nombre.");
+        app.savedBanks[newName] = app.savedBanks[oldName];
+        delete app.savedBanks[oldName];
+        if(app.activeBankName === oldName) app.activeBankName = newName;
+        saveBanks();
+        saveProgress();
+        renderBanksList();
+        renderBanksList('drawer-banks-list');
+    }
+}
+
+function deleteCurrentQuestion() {
+    if(!app.questions || app.questions.length === 0) return;
+    if(confirm("¿Borrar esta pregunta de la sesión actual?")) {
+        app.questions.splice(app.currentIndex, 1);
+        if(app.questions.length === 0) {
+            alert("Has borrado todas las preguntas.");
+            closeQuizView();
+        } else {
+            if(app.currentIndex >= app.questions.length) app.currentIndex = app.questions.length - 1;
+            renderQuestion(app.currentIndex);
+            renderQuestionGrid();
+        }
+        saveProgress();
+    }
+}
+
+function filtrarPorEtiqueta(tag) {
+    const coincidentes = app.questions.filter(q => q.tags && q.tags.includes(tag));
+    if(coincidentes.length === 0) return alert("Error: No se encontraron preguntas.");
+    if(confirm(`¿Filtrar y estudiar solo las ${coincidentes.length} preguntas de "${tag}"?`)) {
+        if(!app.backupQuestions) app.backupQuestions = [...app.questions]; 
+        app.questions = coincidentes; app.currentIndex = 0;
+        renderQuestion(0); renderQuestionGrid(); mostrarAvisoFiltro(tag); updateHeaderButtons();
+    }
+}
+
+function restaurarFiltro() {
+    if(app.backupQuestions) {
+        app.questions = app.backupQuestions; app.backupQuestions = null; app.currentIndex = 0;
+        renderQuestion(0); renderQuestionGrid();
+        const headerLeft = document.getElementById('header-left'); headerLeft.innerHTML = '';
+        const menuBtn = document.createElement('button'); menuBtn.className = 'menu-btn icon-btn'; menuBtn.innerHTML = '<span class="material-icons">menu</span>';
+        menuBtn.onclick = ()=>{ document.getElementById('drawer').classList.add('open'); renderBanksList('drawer-banks-list'); updateMarkedUI(); renderQuestionGrid(); };
+        headerLeft.appendChild(menuBtn); updateHeaderButtons();
+    }
+}
+
+function mostrarAvisoFiltro(tag) {
+    const headerLeft = document.getElementById('header-left'); headerLeft.innerHTML = ''; 
+    const badge = document.createElement('div'); badge.style.display = 'flex'; badge.style.alignItems = 'center'; badge.style.gap = '8px';
+    badge.innerHTML = `<span class="tag-pill" style="background:var(--primary); color:white; margin:0;">Filtro: ${tag}</span><button id="btn-clear-filter" class="small" style="border:1px solid var(--border); background:var(--card); border-radius:8px; padding:4px 8px; cursor:pointer;"><span class="material-icons" style="font-size:14px; vertical-align:middle;">close</span> Quitar</button>`;
+    headerLeft.appendChild(badge); document.getElementById('btn-clear-filter').onclick = restaurarFiltro;
+}
+
+safeAddListener('prev-btn', 'click', ()=>{ if(app.questions.length > 0 && app.currentIndex > 0){ app.currentIndex--; renderQuestion(app.currentIndex); } });
+safeAddListener('next-btn', 'click', ()=>{ if(app.questions.length > 0 && app.currentIndex < app.questions.length - 1){ app.currentIndex++; renderQuestion(app.currentIndex); } });
+safeAddListener('restart-btn', 'click', () => { if(confirm('¿Reiniciar este pauteo desde cero?')) { app.answersGiven = {}; app.flagged = {}; app.currentIndex = 0; renderQuestion(0); saveProgress(); } });
+safeAddListener('show-results-btn', 'click', showResults);
+safeAddListener('star-btn', 'click', ()=>{ const q = app.questions[app.currentIndex]; if(!q) return; app.marked[q.id] = !app.marked[q.id]; renderQuestion(app.currentIndex); });
+safeAddListener('flag-btn', 'click', ()=>{ const q = app.questions[app.currentIndex]; if(!q) return; app.flagged[q.id] = !app.flagged[q.id]; renderQuestion(app.currentIndex); });
+safeAddListener('delete-q-btn', 'click', deleteCurrentQuestion);
+safeAddListener('clean-duplicates-btn', 'click', removeDuplicates);
+safeAddListener('open-editor-btn', 'click', openBankEditor);
+safeAddListener('close-editor-btn', 'click', closeBankEditor);
+safeAddListener('create-filtered-bank-btn', 'click', createBankFromFilter);
+safeAddListener('delete-filtered-btn', 'click', deleteFilteredQuestions);
+safeAddListener('export-bank-json-btn', 'click', () => {
+    if(!app.questions || app.questions.length === 0) return alert("No hay preguntas para exportar.");
+        const fileName = (app.activeBankName || "Banco_Editado") + ".json";
+        const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(app.questions, null, 2));
+        const dlNode = document.createElement('a');
+    dlNode.setAttribute("href", dataStr);
+    dlNode.setAttribute("download", fileName);
+    document.body.appendChild(dlNode);
+    dlNode.click();
+    dlNode.remove();
+});
+safeAddListener('update-bank-btn', 'click', () => {
+    if(app.activeBankName && app.savedBanks[app.activeBankName]) {
+        if(confirm(`¿Sobreescribir el banco "${app.activeBankName}" con las ${app.questions.length} preguntas actuales?`)) {
+            app.savedBanks[app.activeBankName] = app.questions;
+            saveBanks();
+            alert("Banco actualizado correctamente.");
+            renderBanksList(); renderBanksList('drawer-banks-list');
+        }
+    }
+});
+safeAddListener('export-results-btn', 'click', () => {
+    const results = { fecha: new Date().toLocaleString(), puntaje: document.getElementById('score-text').textContent, detalle: app.questions.map((q, i) => { const given = app.answersGiven[q.id]; return { numero: i+1, pregunta: q.question, estado: given === q.correct ? "Correcta" : "Incorrecta", tu_respuesta: q.answers[given] || "No respondida", correcta: q.answers[q.correct] }; }) };
+    const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(results, null, 2));
+    const dlNode = document.createElement('a'); dlNode.setAttribute("href", dataStr); dlNode.setAttribute("download", "resultados_pauteo.json"); document.body.appendChild(dlNode); dlNode.click(); dlNode.remove();
+});
+
+safeAddListener('retry-incorrect-btn', 'click', () => {
+    const wrongs = app.questions.filter(q => app.answersGiven[q.id] !== undefined && app.answersGiven[q.id] !== q.correct);
+    if(wrongs.length === 0) return;
+    if(confirm(`¿Iniciar nuevo repaso con las ${wrongs.length} preguntas incorrectas?`)) { app.questions = shuffleArray(wrongs); app.currentIndex = 0; app.answersGiven = {}; app.flagged = {}; document.getElementById('results-panel').style.display = 'none'; app.activeBankName = null; openQuizView(); }
+});
+
+safeAddListener('validate-bank-btn', 'click', ()=>{ if(!app.questions || !app.questions.length) return alert('No hay preguntas.'); alert(`✅ Banco válido. ${app.questions.length} preguntas.`); });
+const modes = ['study','exam','practice'];
+modes.forEach(m => safeAddListener('mode-'+m, 'click', ()=> { app.mode=m; app.answersGiven={}; app.flagged={}; app.currentIndex=0; updateModeButtons(); renderQuestion(0); }));
+function updateModeButtons(){ modes.forEach(m => { const el = document.getElementById('mode-'+m); if(app.mode===m) el.classList.add('mode-active'); else el.classList.remove('mode-active'); }); }
+
+let timerInterval = null; 
+safeAddListener('start-exam', 'click', ()=>{ 
+  const mins = parseInt(document.getElementById('timer-input').value)||30; let remaining = mins*60; 
+  shuffleArray(app.questions); app.answersGiven = {}; app.flagged = {}; app.currentIndex = 0; openQuizView(); 
+  if(timerInterval) clearInterval(timerInterval); const display = document.getElementById('timer-display');
+  timerInterval = setInterval(()=>{ remaining--; const mm = String(Math.floor(remaining/60)).padStart(2,'0'); const ss = String(remaining%60).padStart(2,'0'); display.textContent = `${mm}:${ss}`; if(remaining <= 0){ clearInterval(timerInterval); alert('Tiempo terminado'); showResults(); } },1000); 
+});
+
+safeAddListener('open-pauteo-btn', 'click', () => { shuffleArray(app.questions); app.answersGiven = {}; app.flagged={}; app.currentIndex = 0; openQuizView(); });
+
+function openQuizView(){ 
+  app.quizActive = true; document.body.classList.add('quiz-mode'); 
+  document.getElementById('starter-area').style.display = 'none'; document.getElementById('results-panel').style.display = 'none'; document.getElementById('quiz-shell').style.display = 'block'; 
+  const left = document.getElementById('header-left'); left.innerHTML = '';
+  const menuBtn = document.createElement('button'); menuBtn.className = 'menu-btn icon-btn'; menuBtn.innerHTML = '<span class="material-icons">menu</span>';
+  menuBtn.onclick = ()=>{ document.getElementById('drawer').classList.add('open'); renderBanksList('drawer-banks-list'); updateMarkedUI(); renderQuestionGrid(); };
+  left.appendChild(menuBtn); renderQuestion(app.currentIndex);
+}
+
+function closeQuizView(showingResults = false){ 
+  app.quizActive = false; if(!showingResults) { document.body.classList.remove('quiz-mode'); document.getElementById('starter-area').style.display = 'flex'; document.getElementById('header-left').innerHTML = ''; } else { document.getElementById('header-left').innerHTML = `<button onclick="location.reload()" class="btn">Inicio</button>`; }
+  document.getElementById('quiz-shell').style.display = 'none'; document.getElementById('drawer').classList.remove('open');
+}
+
+safeAddListener('close-drawer', 'click', ()=> document.getElementById('drawer').classList.remove('open'));
+function openJsonHelp(){ document.getElementById('json-guide-overlay').classList.add('open'); }
+safeAddListener('btn-json-help-details', 'click', openJsonHelp);
+safeAddListener('drawer-json-help', 'click', ()=>{ openJsonHelp(); document.getElementById('drawer').classList.remove('open'); });
+safeAddListener('json-guide-close', 'click', ()=> document.getElementById('json-guide-overlay').classList.remove('open'));
+safeAddListener('copy-template-btn', 'click', ()=>{ navigator.clipboard.writeText(document.getElementById('json-template-code').textContent).then(()=> alert('Plantilla copiada!')); });
+safeAddListener('download-app-btn', 'click', ()=> document.getElementById('download-overlay').classList.add('open'));
+safeAddListener('drawer-download', 'click', ()=> document.getElementById('download-overlay').classList.add('open'));
+safeAddListener('download-overlay-close', 'click', ()=> document.getElementById('download-overlay').classList.remove('open'));
+
+const dropZone = document.getElementById('drop-zone'); const fileInput = document.getElementById('file-input');
+dropZone.addEventListener('click', ()=> fileInput.click()); dropZone.addEventListener('dragover', e=>{ e.preventDefault(); });
+dropZone.addEventListener('drop', async e=>{ e.preventDefault(); const files = Array.from(e.dataTransfer.files); if(files.length) handleFiles(files); });
+safeAddListener('btn-select-files', 'click', ()=> fileInput.click()); fileInput.addEventListener('change', e=> handleFiles(Array.from(e.target.files)));
+
+async function handleFiles(files){
+  const parsed = []; 
+  for(const f of files){ 
+      try { 
+          const txt = await f.text(); let extractedQuestions = null;
+          try { const json = JSON.parse(txt); extractedQuestions = normalizeQuestions(json); } catch (e) { }
+          if (!extractedQuestions || extractedQuestions.length === 0) extractedQuestions = parseTxtToQuestions(txt);
+          if(extractedQuestions && extractedQuestions.length > 0) { parsed.push(extractedQuestions); } else { alert(`No se pudieron encontrar preguntas en: ${f.name}.`); }
+      } catch(e){ alert("Error al leer archivo: " + f.name); } 
+  }
+  if(parsed.length) {
+    let merged = parsed[0]; for(let i=1; i<parsed.length; i++) merged = merged.concat(parsed[i]); 
+    app.lastPreviewArr = merged; 
+    const list = document.getElementById('preview-list'); list.innerHTML = '';
+    merged.forEach((q,i)=>{ 
+        const tagsHTML = q.tags.map(t=>`<span class="tag-pill" style="font-size:0.65rem; padding:2px 6px;">${t}</span>`).join('');
+        const correctChar = String.fromCharCode(65 + q.correct);
+        const d = document.createElement('div'); d.style.padding='8px'; d.style.borderBottom='1px solid #eee'; 
+        d.innerHTML=`<div style="display:flex; justify-content:space-between;"><strong>${i+1}. ${q.question.substring(0, 80)}...</strong><span class="small" style="color:green; font-weight:bold;">R: ${correctChar}</span></div><div style="margin-top:4px">${tagsHTML}</div>`; 
+        list.appendChild(d); 
+    });
+    document.getElementById('preview-overlay').classList.add('open');
+  }
+}
+safeAddListener('preview-close', 'click', ()=> document.getElementById('preview-overlay').classList.remove('open'));
+safeAddListener('preview-merge-save', 'click', ()=>{ 
+    const name = prompt("Nombre del banco:", "Nuevo Banco"); 
+    if(name){ 
+        app.savedBanks[name] = app.lastPreviewArr; app.activeBankName = name; app.questions = app.lastPreviewArr; app.currentIndex = 0; app.answersGiven={}; app.flagged={};
+        saveBanks(); saveProgress(); renderBanksList(); document.getElementById('preview-overlay').classList.remove('open'); alert('Cargado: '+name); renderQuestion(0); 
+    } 
+});
+
+function renderBanksList(targetId = 'banks-list'){
+  const cont = document.getElementById(targetId); if(!cont) return; cont.innerHTML = '';
+  const names = Object.keys(app.savedBanks);
+  if(names.length === 0) { cont.innerHTML = '<div class="small" style="padding:8px; color:var(--muted);">No hay bancos guardados.</div>'; return; }
+  names.forEach(n=>{
+    const item = document.createElement('div'); item.className = 'bank-item'; 
+    item.style.cssText = 'display:flex; justify-content:space-between; align-items:center; padding:8px; border-bottom:1px solid var(--border); cursor:pointer;';
+    const nameSpan = document.createElement('div'); nameSpan.style.flex = '1'; nameSpan.innerHTML = `<strong>${n}</strong> <span class="small">(${app.savedBanks[n].length})</span>`;
+    nameSpan.onclick = () => { app.activeBankName=n; app.questions=app.savedBanks[n]; app.currentIndex=0; app.answersGiven={}; app.flagged={}; saveProgress(); renderQuestion(0); document.getElementById('drawer').classList.remove('open'); };
+    const actionsDiv = document.createElement('div'); actionsDiv.style.display = 'flex'; actionsDiv.style.gap = '4px';
+    const renameBtn = document.createElement('button'); renameBtn.className = 'action-btn small'; renameBtn.innerHTML = '<span class="material-icons" style="font-size:16px">edit</span>'; renameBtn.onclick = (e) => { e.stopPropagation(); renameBank(n); };
+    const delBtn = document.createElement('button'); delBtn.className = 'action-btn small'; delBtn.style.color = '#ef4444'; delBtn.innerHTML = '<span class="material-icons" style="font-size:16px">delete</span>'; delBtn.onclick = (e) => { e.stopPropagation(); deleteBank(n); };
+    actionsDiv.appendChild(renameBtn); actionsDiv.appendChild(delBtn); item.appendChild(nameSpan); item.appendChild(actionsDiv); cont.appendChild(item);
+  });
+}
+renderBanksList();
+safeAddListener('save-bank-btn', 'click', ()=>{ const name = prompt("Guardar estado actual como:", "Banco "+(Object.keys(app.savedBanks).length+1)); if(name){ app.savedBanks[name] = app.questions; saveBanks(); renderBanksList(); } });
+document.querySelectorAll('.theme-btn').forEach(b => b.addEventListener('click', ()=>{ const t = b.dataset.theme; document.documentElement.setAttribute('data-theme', t); localStorage.setItem('pauteo_theme', t); }));
+function renderQuestionGrid() {
+    const grid = document.getElementById('nav-grid-drawer'); if(!grid) return; grid.innerHTML = '';
+    const maxDots = 2000; const renderLimit = Math.min(app.questions.length, maxDots);
+    for(let i=0; i<renderLimit; i++) {
+        const q = app.questions[i]; const dot = document.createElement('div'); dot.className = 'nav-dot'; dot.textContent = i + 1;
+        if (i === app.currentIndex) dot.classList.add('current');
+        if (app.answersGiven[q.id] !== undefined) { dot.classList.add('answered'); if (app.mode === 'study' && app.answersGiven[q.id] !== q.correct) dot.classList.add('wrong'); }
+        if (app.flagged[q.id]) dot.classList.add('flagged');
+        dot.onclick = () => { app.currentIndex = i; renderQuestion(i); document.getElementById('drawer').classList.remove('open'); };
+        grid.appendChild(dot);
+    }
+}
+renderQuestion(app.currentIndex);
+});
+</script>
+</body>
+</html>
