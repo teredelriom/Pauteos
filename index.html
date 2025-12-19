@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-<title>Pauteo Pro v2.10</title>
+<title>Pauteo Pro v3.2</title>
 
 <meta name="application-name" content="Pauteo">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -11,6 +11,7 @@
 <meta name="apple-mobile-web-app-title" content="Pauteo">
 <meta name="theme-color" content="#ff8ec0">
 <meta name="description" content="App de estudio médico modular.">
+<meta name="screen-orientation" content="any"> 
 
 <link rel="icon" id="dynamic-favicon" href='data:image/svg+xml,<svg width="512" height="512" viewBox="0 0 512 512" fill="none" xmlns="http://www.w3.org/2000/svg"><defs><linearGradient id="g" x1="0" y1="0" x2="512" y2="512" gradientUnits="userSpaceOnUse"><stop offset="0%" stop-color="%23FF9A9E"/><stop offset="100%" stop-color="%23FECFEF"/></linearGradient></defs><rect x="0" y="0" width="512" height="512" rx="120" fill="url(%23g)"/><rect x="106" y="106" width="300" height="300" rx="40" fill="white"/><path d="M160 256 L210 306 L240 210 L270 280 L352 180" stroke="%23FF758C" stroke-width="32" stroke-linecap="round" stroke-linejoin="round" fill="none"/></svg>'>
 <link rel="apple-touch-icon" id="dynamic-apple-icon" href='data:image/svg+xml,<svg width="512" height="512" viewBox="0 0 512 512" fill="none" xmlns="http://www.w3.org/2000/svg"><defs><linearGradient id="g" x1="0" y1="0" x2="512" y2="512" gradientUnits="userSpaceOnUse"><stop offset="0%" stop-color="%23FF9A9E"/><stop offset="100%" stop-color="%23FECFEF"/></linearGradient></defs><rect x="0" y="0" width="512" height="512" rx="120" fill="url(%23g)"/><rect x="106" y="106" width="300" height="300" rx="40" fill="white"/><path d="M160 256 L210 306 L240 210 L270 280 L352 180" stroke="%23FF758C" stroke-width="32" stroke-linecap="round" stroke-linejoin="round" fill="none"/></svg>'>
@@ -28,7 +29,7 @@
   --primary: #ff8ec0;
   --primary-soft: #ffe6f0;
   --primary-hover: #ff7eb6;
-  --radius: 16px; /* Radio más suave para los bloques */
+  --radius: 16px; 
   --shadow: 0 4px 20px rgba(0,0,0,0.03);
   --border: rgba(0,0,0,0.06);
   --gold: #fbbf24;
@@ -49,22 +50,21 @@
 [data-theme='dark'] { --bg: #000000; --card: #1c1c1e; --text: #f5f5f7; --muted: #a1a1a6; --primary: #0A84FF; --primary-soft: #2C2C2E; --primary-hover: #409CFF; --shadow: 0 8px 30px rgba(0,0,0,0.5); --border: #38383A; --correct-bg: #052e16; --correct-text: #dcfce7; --incorrect-bg: #450a0a; --incorrect-text: #fecaca; --selected-bg: #172a46; --selected-border: #38bdf8; --selected-text: #bae6fd;}
 
 /* --- ESTILOS GLOBALES --- */
-html,body{height:100%;margin:0;font-family:'Inter', -apple-system, sans-serif; background:var(--bg); color:var(--text); transition: background 0.3s ease, color 0.3s ease; -webkit-tap-highlight-color: transparent;}
+html,body{height:100%; min-height: 100dvh; margin:0;font-family:'Inter', -apple-system, sans-serif; background:var(--bg); color:var(--text); transition: background 0.3s ease, color 0.3s ease; -webkit-tap-highlight-color: transparent;}
 * { box-sizing: border-box; }
 
 /* LAYOUT GRID PRINCIPAL */
 .app { max-width:1200px; margin:28px auto; padding:18px; display:grid; grid-template-columns: 340px 1fr; gap:24px; transition: grid-template-columns 0.4s ease; padding-bottom: 80px; }
 
+/* MODO ZEN / QUIZ FOCUS */
+body.quiz-mode .app { grid-template-columns: 1fr; margin-top: 10px; }
+body.quiz-mode aside#left-panel { display: none !important; }
+body.quiz-mode #quiz-menu-btn { display: inline-flex !important; }
+
 @media(max-width:980px){ 
     .app { grid-template-columns:1fr; padding:12px; margin-top: 0; } 
     aside#left-panel { display: none; } 
     #header-bar { padding-top: 10px; }
-}
-
-@media (max-height: 500px) and (orientation: landscape) {
-    .app { padding-bottom: 20px; }
-    .modal { max-height: 80vh; }
-    #question-image-container img { max-height: 200px; }
 }
 
 /* UI Components */
@@ -84,8 +84,9 @@ html,body{height:100%;margin:0;font-family:'Inter', -apple-system, sans-serif; b
 .flag-btn.active { color: var(--orange); } 
 .action-btn .material-icons { font-size: 28px; }
 
-.bank-item { transition: background 0.2s; }
+.bank-item { transition: background 0.2s; display: flex; justify-content: space-between; align-items: center; }
 .bank-item:hover { background: var(--primary-soft); }
+.bank-name { flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 
 .answer-card { padding:16px; border-radius:12px; border:1px solid var(--border); background:var(--card); cursor:pointer; transition:transform .12s, background .2s; margin-bottom: 10px; position: relative; }
 .answer-card:hover { transform:translateY(-2px); border-color: var(--primary); }
@@ -103,6 +104,7 @@ html,body{height:100%;margin:0;font-family:'Inter', -apple-system, sans-serif; b
 .small { font-size:0.85rem; color:var(--muted); }
 .input { width:100%; padding:10px 12px; border-radius:10px; border:1px solid var(--border); background: var(--bg); color: var(--text); outline: none; transition: border 0.2s; font-size: 16px; }
 .input:focus { border-color: var(--primary); }
+.input-edit { margin-bottom: 8px; font-size: 0.9rem; }
 
 .quiz-progress-container { width: 100%; max-width: 800px; margin: 0 auto 24px auto; }
 .progress-bg { background:var(--border); border-radius:999px; height:10px; overflow:hidden; }
@@ -142,8 +144,8 @@ details.justification-details[open] summary { border-bottom: 1px solid var(--bor
 .modal { width:min(920px,96vw); max-height:90vh; overflow:auto; animation: popIn 0.2s ease-out; }
 @keyframes popIn { from{transform:scale(0.95);opacity:0} to{transform:scale(1);opacity:1} }
 
-#drop-zone { border:2px dashed var(--primary); padding:20px; border-radius:12px; text-align:center; color:var(--muted); background: var(--primary-soft); opacity: 0.7; transition: opacity 0.2s; cursor: pointer; }
-#drop-zone:hover { opacity: 1; }
+#drop-zone { border:2px dashed var(--primary); padding:24px; border-radius:12px; text-align:center; color:var(--text); background: var(--card); transition: all 0.2s; cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 8px; }
+#drop-zone:hover { border-color: var(--primary-hover); background: var(--primary-soft); }
 .code-block { background: #f4f4f5; padding: 12px; border-radius: 8px; font-family: monospace; font-size: 0.8rem; overflow-x: auto; white-space: pre-wrap; }
 [data-theme='dark'] .code-block { background: #2c2c2e; color: #e5e5e5; }
 
@@ -163,6 +165,11 @@ details.justification-details[open] summary { border-bottom: 1px solid var(--bor
 /* Block Headers Styling */
 .block-header { font-weight: 700; font-size: 0.95rem; margin-bottom: 16px; display: flex; align-items: center; gap: 8px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.5px; }
 
+/* Edit Form */
+#edit-form-container { background: var(--bg); padding: 16px; border-radius: 8px; margin-bottom: 20px; border: 1px solid var(--primary); display: none; }
+#edit-form-container label { font-size: 0.8rem; font-weight: bold; margin-bottom: 4px; display: block; }
+.edit-answers-grid { display: grid; grid-template-columns: 1fr; gap: 8px; margin-bottom: 12px; }
+
 @supports (-webkit-touch-callout: none) { .app { padding-bottom: 100px; } }
 </style>
 </head>
@@ -172,10 +179,13 @@ details.justification-details[open] summary { border-bottom: 1px solid var(--bor
   <aside id="left-panel" class="card" style="position:relative; height: fit-content; min-height: 80vh; display:flex; flex-direction:column;">
     <div style="display:flex;justify-content:space-between;align-items:center; margin-bottom: 16px;">
       <div>
-        <h2 class="text-xl font-bold tracking-tight" style="margin:0; font-size:1.25rem;">Pauteo</h2>
-        <div class="small">v2.10 · Pro</div>
+        <h2 class="text-xl font-bold tracking-tight" style="margin:0; font-size:1.25rem;">Pauteo Pro</h2>
+        <div class="small">v3.2 · <span style="color:var(--primary)">Modo Estudio</span></div>
       </div>
-      <button id="download-app-btn" class="icon-btn" title="Descargar App / Instalar"><span class="material-icons">file_download</span></button>
+      <div style="display:flex; gap:6px;">
+          <button id="tutorial-btn" class="icon-btn" title="Tutorial / Instrucciones"><span class="material-icons">info</span></button>
+          <button id="download-app-btn" class="icon-btn" title="Descargar App / Instalar"><span class="material-icons">install_mobile</span></button>
+      </div>
     </div>
 
     <div style="margin-top:12px; position:relative;">
@@ -209,17 +219,18 @@ details.justification-details[open] summary { border-bottom: 1px solid var(--bor
     </div>
 
     <div class="mt-4 pt-4 border-t border-[var(--border)]">
-        <h3 class="font-bold text-lg mb-2" style="font-size:1rem;">Bancos guardados</h3>
+        <h3 class="font-bold text-lg mb-2" style="font-size:1rem; display:flex; justify-content:space-between;">
+            Bancos 
+            <button id="btn-merge-ui" class="small" style="background:transparent; border:none; color:var(--primary); cursor:pointer;">Fusionar</button>
+        </h3>
         <div id="banks-list" style="margin-top:10px; max-height: 150px; overflow-y: auto;"></div>
+        
         <div style="margin-top:10px;display:flex;gap:8px; flex-wrap:wrap;">
           <button id="save-bank-btn" class="btn small" style="flex:1;">Guardar Como...</button>
-          <button id="update-bank-btn" class="btn small" style="width:100%; margin-top:8px; background:var(--card); color:var(--text); border:1px solid var(--primary-soft);">Guardar Cambios</button>
+          <button id="update-bank-btn" class="btn small" style="width:100%; margin-top:8px; background:var(--card); color:var(--text); border:1px solid var(--primary-soft);">Guardar Cambios Actual</button>
         </div>
         <button id="clean-duplicates-btn" class="btn small" style="width:100%; margin-top:8px; background:var(--card); color:var(--text); border:1px solid var(--primary-soft);">
               <span class="material-icons" style="font-size:16px; margin-right:6px;">cleaning_services</span> Limpiar Duplicados
-        </button>
-        <button id="open-editor-btn" class="btn small" style="width:100%; margin-top:8px; background:var(--card); color:var(--text); border:1px solid var(--primary-soft);">
-            <span class="material-icons" style="font-size:16px; margin-right:6px;">tune</span>Editor Avanzado
         </button>
         <button id="export-bank-json-btn" class="btn small" style="width:100%; margin-top:8px; background:var(--card); color:var(--text); border:1px solid var(--primary-soft);">
               <span class="material-icons" style="font-size:16px; margin-right:6px;">file_download</span> Descargar Banco (.json)
@@ -228,12 +239,23 @@ details.justification-details[open] summary { border-bottom: 1px solid var(--bor
     </div>
 
     <div class="mt-4 pt-4 border-t border-[var(--border)]">
-      <h3 class="font-bold text-base mb-2" style="font-size:0.9rem;">Importar</h3>
-      <div style="margin-top:8px;display:flex;gap:8px; flex-wrap:wrap;">
-        <input id="file-input" type="file" accept=".json,.txt" multiple style="display:none" />
-        <button id="btn-select-files" class="btn" style="width:100%">Seleccionar archivos</button>
+      <h3 class="font-bold text-base mb-2" style="font-size:0.9rem;">Importar / Crear</h3>
+      
+      <div id="drop-zone">
+         <span class="material-icons" style="font-size:32px; color:var(--primary)">cloud_upload</span>
+         <div style="font-size:0.9rem; font-weight:600;">Subir archivos JSON o TXT</div>
+         <div class="small">Click o arrastra aquí</div>
       </div>
-      <div style="margin-top:10px"><div id="drop-zone">Arrastra JSON o TXT aquí</div></div>
+      <input id="file-input" type="file" accept=".json,.txt" multiple style="display:none" />
+
+      <div style="margin-top:12px; display:flex; gap:8px;">
+          <button id="btn-json-help-details" class="btn small" style="flex:1; background:var(--bg); border:1px solid var(--border);">
+             <span class="material-icons" style="font-size:16px; margin-right:6px;">help_outline</span> Ayuda JSON
+          </button>
+          <button id="download-template-btn" class="btn small" style="flex:1; background:var(--bg); border:1px solid var(--border);">
+             <span class="material-icons" style="font-size:16px; margin-right:6px;">download</span> Planilla
+          </button>
+      </div>
     </div>
   </aside>
 
@@ -250,8 +272,8 @@ details.justification-details[open] summary { border-bottom: 1px solid var(--bor
                 <h2 class="text-2xl font-bold mb-2" style="font-size:1.5rem;">Listo para practicar</h2>
                 <p class="small mb-6">Selecciona un banco, usa el modo inteligente o carga tu JSON.</p>
                 <div style="display:flex; gap:12px; flex-wrap:wrap; justify-content:center;">
-                     <button id="open-pauteo-btn" class="btn" style="font-size:1.1rem; padding:16px 32px; background:var(--primary); color:white; box-shadow: 0 4px 14px rgba(0,0,0,0.2);">Iniciar</button>
-                     <button id="open-smart-btn" class="btn" style="font-size:1.1rem; padding:16px 32px; background:#8b5cf6; color:white; box-shadow: 0 4px 14px rgba(0,0,0,0.2);"> Repaso </button>
+                      <button id="open-pauteo-btn" class="btn" style="font-size:1.1rem; padding:16px 32px; background:var(--primary); color:white; box-shadow: 0 4px 14px rgba(0,0,0,0.2);">Iniciar</button>
+                      <button id="open-smart-btn" class="btn" style="font-size:1.1rem; padding:16px 32px; background:var(--card); color:var(--primary); border:2px solid var(--primary); box-shadow: 0 4px 14px rgba(0,0,0,0.1);"> Repaso </button>
                 </div>
             </div>
         </div>
@@ -271,7 +293,7 @@ details.justification-details[open] summary { border-bottom: 1px solid var(--bor
             </div>
             
             <button id="open-editor-hero-btn" class="btn" style="width:100%; margin-bottom:20px; background:var(--bg); color:var(--text); border:1px solid var(--border); display:flex; align-items:center; justify-content:center; padding:16px;">
-                Editor Avanzado
+                Filtro Avanzado / Selección Manual
             </button>
 
             <div id="start-tags-container" style="display: none; text-align: left; border-top: 1px solid var(--border); padding-top: 16px;">
@@ -280,9 +302,14 @@ details.justification-details[open] summary { border-bottom: 1px solid var(--bor
             </div>
         </div>
 
+        <div id="dashboard-marked-card" class="card" style="display:none; border-left: 6px solid var(--gold);">
+           <div class="block-header"><span class="material-icons" style="color:var(--gold)">star</span> Marcadas (Sesión Actual)</div>
+           <div id="dashboard-marked-list" style="display:flex; flex-direction:column; gap:8px;"></div>
+        </div>
+
     </div>
 
-    <div id="quiz-view" class="card" style="display:none; height:100%; flex-direction:column;">
+    <div id="quiz-view" class="card" style="display:none; height:100%; flex-direction:column; background:transparent; border:none; box-shadow:none; padding:0;">
       
       <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
          <button id="quiz-menu-btn" class="menu-btn icon-btn" style="display:none;"><span class="material-icons">menu</span></button>
@@ -290,24 +317,26 @@ details.justification-details[open] summary { border-bottom: 1px solid var(--bor
       </div>
 
       <div id="bank-editor-screen" style="display:none;">
-        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
-            <h2 class="text-xl font-bold">Editor Avanzado</h2>
-            <button id="close-editor-btn" class="btn small" style="background:var(--incorrect-bg); color:var(--incorrect-text);">Volver</button>
-        </div>
-        <p class="small mb-4">Preguntas visibles: <span id="editor-count" style="font-weight:bold;">0</span></p>
-        <div class="card" style="padding:10px; margin-bottom:15px; border:2px solid var(--primary-soft);">
-            <div class="small font-semibold mb-2 text-center" style="color:var(--primary);">Selecciona temas:</div>
-            <div id="editor-tag-filter" style="display:flex; flex-wrap:wrap; gap:6px; justify-content:center;"></div>
-        </div>
-        <div style="display:grid; grid-template-columns: 1fr 1fr; gap:12px; margin-bottom:12px;">
-             <button id="start-filtered-quiz-btn" class="btn" style="background:var(--primary); color:white; grid-column: span 2; padding:12px; font-size:1rem;">
-                <span class="material-icons" style="margin-right:6px;">play_arrow</span> Practicar Selección
-            </button>
-            <button id="create-filtered-bank-btn" class="btn" style="background:#bbf7d0; color:#15803d;">Guardar Banco</button>
-            <button id="delete-filtered-btn" class="btn" style="background:#ffd6d6; color:#ef4444;">Eliminar Visibles</button>
-        </div>
-        <div style="max-height: 50vh; overflow-y: auto;">
-            <div id="editor-question-list"></div>
+        <div class="card">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
+                <h2 class="text-xl font-bold">Editor Avanzado</h2>
+                <button id="close-editor-btn" class="btn small" style="background:var(--incorrect-bg); color:var(--incorrect-text);">Volver</button>
+            </div>
+            <p class="small mb-4">Preguntas visibles: <span id="editor-count" style="font-weight:bold;">0</span></p>
+            <div class="card" style="padding:10px; margin-bottom:15px; border:2px solid var(--primary-soft);">
+                <div class="small font-semibold mb-2 text-center" style="color:var(--primary);">Selecciona temas:</div>
+                <div id="editor-tag-filter" style="display:flex; flex-wrap:wrap; gap:6px; justify-content:center;"></div>
+            </div>
+            <div style="display:grid; grid-template-columns: 1fr 1fr; gap:12px; margin-bottom:12px;">
+                 <button id="start-filtered-quiz-btn" class="btn" style="background:var(--primary); color:white; grid-column: span 2; padding:12px; font-size:1rem;">
+                    <span class="material-icons" style="margin-right:6px;">play_arrow</span> Practicar Selección
+                </button>
+                <button id="create-filtered-bank-btn" class="btn" style="background:#bbf7d0; color:#15803d;">Guardar Banco</button>
+                <button id="delete-filtered-btn" class="btn" style="background:#ffd6d6; color:#ef4444;">Eliminar Visibles</button>
+            </div>
+            <div style="max-height: 50vh; overflow-y: auto;">
+                <div id="editor-question-list"></div>
+            </div>
         </div>
       </div>
       
@@ -320,13 +349,27 @@ details.justification-details[open] summary { border-bottom: 1px solid var(--bor
             <div class="progress-bg"><div id="progress-bar" class="progress-bar"></div></div>
         </div>
 
-        <div id="question-card" style="max-width: 800px; margin: 0 auto; width: 100%;">
+        <div id="question-card" class="card" style="max-width: 800px; margin: 0 auto; width: 100%;">
           <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:12px;">
               <div id="question-tags"></div>
               <div style="display:flex; gap:8px;">
+                  <button id="edit-q-btn" class="action-btn" title="Editar pregunta"><span class="material-icons">edit</span></button>
                   <button id="delete-q-btn" class="action-btn" title="Eliminar"><span class="material-icons">delete_outline</span></button>
                   <button id="flag-btn" class="action-btn flag-btn" title="Duda"><span class="material-icons">flag</span></button>
                   <button id="star-btn" class="action-btn star-btn" title="Favorito"><span class="material-icons">star_border</span></button>
+              </div>
+          </div>
+
+          <div id="edit-form-container">
+              <label>Pregunta:</label>
+              <textarea id="edit-q-text" class="input" rows="3" style="margin-bottom:12px;"></textarea>
+              <label>Alternativas:</label>
+              <div id="edit-answers-list" class="edit-answers-grid"></div>
+              <label>Índice Correcta (0=A, 1=B...):</label>
+              <input type="number" id="edit-correct-idx" class="input" style="width:80px; margin-bottom:12px;">
+              <div style="display:flex; gap:8px; justify-content:flex-end;">
+                  <button id="cancel-edit-btn" class="btn" style="background:var(--muted); color:white;">Cancelar</button>
+                  <button id="save-edit-btn" class="btn" style="background:var(--primary); color:white;">Guardar Cambios</button>
               </div>
           </div>
 
@@ -352,7 +395,7 @@ details.justification-details[open] summary { border-bottom: 1px solid var(--bor
         </div>
       </div>
 
-      <div id="results-panel" style="display:none; padding:20px; max-width:800px; margin:0 auto; width:100%;">
+      <div id="results-panel" class="card" style="display:none; padding:20px; max-width:800px; margin:0 auto; width:100%;">
         <div style="text-align:center; margin-bottom:24px;">
            <h2 class="text-2xl font-bold" style="font-size:1.5rem;">Resultados</h2>
            <div id="score-text" class="text-lg" style="margin-top:8px; color:var(--primary); font-weight:600;"></div>
@@ -368,7 +411,7 @@ details.justification-details[open] summary { border-bottom: 1px solid var(--bor
   </main>
 </div>
 
-<div id="drawer" class="drawer card" aria-hidden="true">
+<div id="drawer" class="drawer" aria-hidden="true">
   <div style="display:flex;justify-content:space-between;align-items:center; margin-bottom:20px;">
     <h2 class="font-bold text-lg">Menú</h2>
     <button id="close-drawer" class="icon-btn"><span class="material-icons">close</span></button>
@@ -380,7 +423,7 @@ details.justification-details[open] summary { border-bottom: 1px solid var(--bor
         <div id="drawer-search-results" class="search-results-container"></div>
     </div>
     <div class="card" style="background:var(--bg); border:1px solid var(--border);">
-            <details open> <summary style="cursor:pointer; font-weight:700; list-style:none; display:flex; align-items:center; justify-content:space-between; font-size:0.9rem;">
+            <details> <summary style="cursor:pointer; font-weight:700; list-style:none; display:flex; align-items:center; justify-content:space-between; font-size:0.9rem;">
                     <div style="display:flex; align-items:center;">
                         <span class="material-icons" style="font-size:16px; margin-right:4px;">grid_view</span> Mapa
                     </div>
@@ -400,9 +443,40 @@ details.justification-details[open] summary { border-bottom: 1px solid var(--bor
         <div id="drawer-banks-list" style="max-height:150px; overflow:auto;"></div>
     </div>
     <div style="margin-top: auto; padding-top: 10px; display: flex; flex-direction: column; gap: 8px;">
-        <button id="drawer-json-help" class="btn small" style="width:100%; border:1px solid var(--border); background:var(--bg); color:var(--text);">Ayuda JSON</button>
-        <button id="drawer-download" class="btn small" style="width:100%; border:1px solid var(--border); background:var(--bg); color:var(--text);">Instalar App</button>
         <button onclick="location.reload()" class="btn mt-2" style="background:#fee2e2; color:#ef4444;">Salir del Pauteo</button>
+    </div>
+  </div>
+</div>
+
+<div id="tutorial-overlay" class="overlay" role="dialog" aria-modal="true">
+  <div class="card modal" style="max-width:700px;">
+    <div style="display:flex;justify-content:space-between;align-items:center; border-bottom:1px solid var(--border); padding-bottom:12px;">
+      <h3 class="font-bold text-lg">Guía de Uso Pauteo Pro</h3>
+      <button id="tutorial-close" class="icon-btn"><span class="material-icons">close</span></button>
+    </div>
+    <div style="padding-top:16px; overflow-y:auto; max-height:70vh;">
+        <div style="margin-bottom:20px;">
+            <h4 style="color:var(--primary); font-size:1rem; margin-bottom:8px;">1. Modos de Estudio</h4>
+            <ul style="padding-left:20px; font-size:0.9rem; line-height:1.6;">
+                <li><strong>Estudio:</strong> Feedback inmediato. Te muestra si acertaste o no al instante y la justificación.</li>
+                <li><strong>Examen:</strong> Simulación. No verás las respuestas correctas hasta terminar el tiempo o finalizar manualmente.</li>
+                <li><strong>Práctica:</strong> Similar a estudio pero enfocado en repetición rápida.</li>
+            </ul>
+        </div>
+        <div style="margin-bottom:20px;">
+            <h4 style="color:var(--primary); font-size:1rem; margin-bottom:8px;">2. Cargar Preguntas</h4>
+            <p style="font-size:0.9rem;">Arrastra archivos <strong>JSON</strong> o <strong>TXT</strong> al área punteada en la barra lateral. La app intentará detectar preguntas automáticamente. También puedes <strong>Fusionar</strong> varios bancos en uno solo.</p>
+        </div>
+        <div style="margin-bottom:20px;">
+            <h4 style="color:var(--primary); font-size:1rem; margin-bottom:8px;">3. Herramientas</h4>
+            <ul style="padding-left:20px; font-size:0.9rem; line-height:1.6;">
+                <li><span class="material-icons" style="font-size:16px; vertical-align:middle; color:var(--gold);">star</span> <strong>Favorito:</strong> Marca preguntas difíciles para revisarlas luego en el Dashboard.</li>
+                <li><span class="material-icons" style="font-size:16px; vertical-align:middle; color:var(--orange);">flag</span> <strong>Duda:</strong> Marca preguntas que creas que están mal planteadas.</li>
+                <li><span class="material-icons" style="font-size:16px; vertical-align:middle;">edit</span> <strong>Editar:</strong> Corrige errores tipográficos o de contenido en tiempo real (se guardan localmente).</li>
+                <li><span class="material-icons" style="font-size:16px; vertical-align:middle;">tune</span> <strong>Filtro:</strong> Crea un mini-examen solo con ciertos temas (tags).</li>
+            </ul>
+        </div>
+        <p class="small text-muted" style="text-align:center;">Tus datos se guardan en el navegador. Si borras caché, perderás el progreso.</p>
     </div>
   </div>
 </div>
@@ -414,11 +488,27 @@ details.justification-details[open] summary { border-bottom: 1px solid var(--bor
       <button id="json-guide-close" class="icon-btn"><span class="material-icons">close</span></button>
     </div>
     <div style="padding-top:12px;">
-        <div class="code-block" id="json-template-code">[{ "question": "...", "answers": ["..."], "correct": 0, "justification": "...", "tags": [] }]</div>
-        <div class="margin-top:16px; display:flex; justify-content:flex-end;"><button id="copy-template-btn" class="btn" style="background:var(--primary); color:white;">Copiar Plantilla</button></div>
+        <p class="small" style="margin-bottom:8px;">Usa este formato para subir tus propias preguntas. También aceptamos TXT simple.</p>
+        <div class="code-block" id="json-template-code">[{ "question": "Texto de pregunta...", "answers": ["Alternativa A", "Alternativa B"], "correct": 0, "justification": "Explicación opcional", "tags": ["Tema1"] }]</div>
+        <div style="margin-top:16px; display:flex; justify-content:flex-end;"><button id="copy-template-btn" class="btn" style="background:var(--primary); color:white;">Copiar Plantilla</button></div>
     </div>
   </div>
 </div>
+
+<div id="merge-overlay" class="overlay" role="dialog" aria-modal="true">
+    <div class="card modal" style="max-width:500px;">
+      <div style="display:flex;justify-content:space-between;align-items:center; border-bottom:1px solid var(--border); padding-bottom:12px;">
+        <h3 class="font-bold text-lg">Fusionar Bancos</h3>
+        <button id="merge-close" class="icon-btn"><span class="material-icons">close</span></button>
+      </div>
+      <div style="padding-top:12px;">
+          <p class="small mb-4">Selecciona los bancos para unir:</p>
+          <div id="merge-list-container" style="max-height:200px; overflow-y:auto; margin-bottom:12px;"></div>
+          <button id="confirm-merge-btn" class="btn" style="width:100%; background:var(--primary); color:white;">Crear Banco Fusionado</button>
+      </div>
+    </div>
+</div>
+
 <div id="preview-overlay" class="overlay" role="dialog" aria-modal="true">
   <div class="card modal">
     <div style="display:flex;justify-content:space-between;align-items:center; border-bottom:1px solid var(--border); padding-bottom:12px;">
@@ -428,13 +518,14 @@ details.justification-details[open] summary { border-bottom: 1px solid var(--bor
     <div id="preview-list" style="margin-top:12px; max-height:60vh; overflow:auto;"></div>
   </div>
 </div>
+
 <div id="download-overlay" class="overlay" role="dialog" aria-modal="true">
   <div class="card modal" style="max-width:500px;">
     <div style="display:flex;justify-content:space-between;align-items:center; margin-bottom:16px;">
-      <h3 class="font-bold text-lg" id="install-title">Instalar Aplicación</h3>
+      <h3 class="font-bold text-lg" id="install-title">Instalar Pauteo</h3>
       <button id="download-overlay-close" class="icon-btn"><span class="material-icons">close</span></button>
     </div>
-    <div id="install-content"></div>
+    <div id="install-content" style="line-height:1.6"></div>
   </div>
 </div>
 
@@ -443,13 +534,13 @@ details.justification-details[open] summary { border-bottom: 1px solid var(--bor
 let deferredPrompt;
 window.addEventListener('beforeinstallprompt', (e) => { e.preventDefault(); deferredPrompt = e; });
 
-const manifest = { "name": "Pauteo Pro v2.10", "short_name": "Pauteo", "start_url": ".", "display": "standalone", "background_color": "#ffffff", "theme_color": "#ff8ec0", "orientation": "any", "icons": [{ "src": document.getElementById('dynamic-apple-icon').href, "sizes": "192x192", "type": "image/svg+xml" }] };
+const manifest = { "name": "Pauteo Pro v3.0", "short_name": "Pauteo", "start_url": ".", "display": "standalone", "background_color": "#ffffff", "theme_color": "#ff8ec0", "orientation": "any", "icons": [{ "src": document.getElementById('dynamic-apple-icon').href, "sizes": "192x192", "type": "image/svg+xml" }] };
 document.querySelector('#my-manifest').setAttribute('href', URL.createObjectURL(new Blob([JSON.stringify(manifest)], {type: 'application/json'})));
 
 if ('serviceWorker' in navigator && window.location.protocol.includes('http')) {
   window.addEventListener('load', function() {
     navigator.serviceWorker.register(URL.createObjectURL(new Blob([`
-      const CACHE_NAME = 'pauteo-v17-offline';
+      const CACHE_NAME = 'pauteo-v3-offline';
       self.addEventListener('install', (e) => { e.waitUntil(caches.open(CACHE_NAME).then((cache) => cache.addAll(['./', location.href]))); self.skipWaiting(); });
       self.addEventListener('fetch', (e) => { e.respondWith(fetch(e.request).catch(() => caches.match(e.request).then(res => res || caches.match('./')))); });
     `], {type: 'application/javascript'}))).catch(console.error);
@@ -501,7 +592,6 @@ const app = {
   currentEditorFilter: { tags: new Set() }, editorQuestions: [] 
 };
 
-/* --- ALGORITMOS INTELIGENTES Y ESTADISTICAS --- */
 function getQuestionStats() { return JSON.parse(localStorage.getItem(STATS_KEY) || '{}'); }
 function updateQuestionStat(qid, isCorrect) {
     const stats = getQuestionStats();
@@ -581,6 +671,7 @@ function loadAll(){
   document.documentElement.setAttribute('data-theme', savedTheme);
   updateHeaderButtons();
   renderHistoryChart();
+  renderDashboardMarked();
 }
 loadAll();
 if(!app.questions || !app.questions.length){
@@ -590,10 +681,17 @@ if(!app.questions || !app.questions.length){
 
 function shuffleArray(array) { for (let i = array.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [array[i], array[j]] = [array[j], array[i]]; } return array; }
 
+/* RENDERIZADO DE PREGUNTA */
 function renderQuestion(index){ 
   if(!app.questions || !app.questions.length){ document.getElementById('question-text').textContent = 'No hay preguntas.'; return; } 
   if(index < 0) index = 0; if(index >= app.questions.length) index = app.questions.length - 1; 
   app.currentIndex = index; const q = app.questions[index]; 
+
+  // Reset Edit Form
+  document.getElementById('edit-form-container').style.display = 'none';
+  document.getElementById('question-text').style.display = 'block';
+  document.getElementById('answers').style.display = 'grid';
+  
   document.getElementById('question-text').textContent = q.question; 
   
   const imgCont = document.getElementById('question-image-container'); imgCont.innerHTML = '';
@@ -604,6 +702,9 @@ function renderQuestion(index){
   
   const starBtn = document.getElementById('star-btn'); starBtn.innerHTML=app.marked[q.id]?'<span class="material-icons">star</span>':'<span class="material-icons">star_border</span>'; if(app.marked[q.id]) starBtn.classList.add('active'); else starBtn.classList.remove('active');
   const flagBtn = document.getElementById('flag-btn'); flagBtn.innerHTML=app.flagged[q.id]?'<span class="material-icons">flag</span>':'<span class="material-icons">outlined_flag</span>'; if(app.flagged[q.id]) flagBtn.classList.add('active'); else flagBtn.classList.remove('active');
+
+  // Botón editar visible solo si NO es examen
+  document.getElementById('edit-q-btn').style.display = app.mode === 'exam' ? 'none' : 'flex';
 
   const answersCont = document.getElementById('answers'); answersCont.innerHTML = ''; 
   q.answers.forEach((ans,i)=>{ 
@@ -687,17 +788,65 @@ function showResults(){
     const d = document.createElement('div'); d.className = 'card'; d.style.marginBottom='10px'; d.style.boxShadow='none'; d.style.background='var(--bg)';
     d.innerHTML = `<div style="font-weight:700; margin-bottom:4px;">${i+1}. ${statusHtml}</div><div class="small">${q.question}</div>`; 
     list.appendChild(d); 
-  });
+  }); 
   
   saveHistory(correct, app.questions.length); 
   document.getElementById('score-text').textContent = `Puntaje: ${correct} / ${app.questions.length} (${Math.round((correct/app.questions.length)*100)}%)`; 
   
-  // Mostrar botón de reintentar si hay errores u omitidas
   const hasRetry = incorrect > 0 || omitted > 0;
   document.getElementById('retry-incorrect-btn').style.display = hasRetry ? 'block' : 'none';
   
   panel.style.display = 'block'; 
   closeQuizView(true);
+}
+
+/* --- LOGICA EDITAR PREGUNTA --- */
+function toggleEditMode() {
+    const q = app.questions[app.currentIndex];
+    const form = document.getElementById('edit-form-container');
+    const qText = document.getElementById('question-text');
+    const answersDiv = document.getElementById('answers');
+    
+    if (form.style.display === 'none') {
+        // Entrar a edición
+        form.style.display = 'block';
+        qText.style.display = 'none';
+        answersDiv.style.display = 'none';
+        
+        document.getElementById('edit-q-text').value = q.question;
+        document.getElementById('edit-correct-idx').value = q.correct;
+        const list = document.getElementById('edit-answers-list');
+        list.innerHTML = '';
+        q.answers.forEach((ans, i) => {
+            const inp = document.createElement('input');
+            inp.className = 'input input-edit';
+            inp.value = ans;
+            inp.dataset.idx = i;
+            list.appendChild(inp);
+        });
+    } else {
+        // Cancelar
+        renderQuestion(app.currentIndex);
+    }
+}
+
+function saveEdit() {
+    const q = app.questions[app.currentIndex];
+    q.question = document.getElementById('edit-q-text').value;
+    q.correct = parseInt(document.getElementById('edit-correct-idx').value) || 0;
+    
+    const inputs = document.querySelectorAll('#edit-answers-list input');
+    const newAns = [];
+    inputs.forEach(inp => newAns.push(inp.value));
+    q.answers = newAns;
+    
+    // Guardar cambio persistente
+    saveProgress();
+    if(app.activeBankName) { app.savedBanks[app.activeBankName] = app.questions; saveBanks(); }
+    
+    // Reset UI
+    app.answersGiven[q.id] = undefined; // Resetear respuesta al editar
+    renderQuestion(app.currentIndex);
 }
 
 /* --- LOGICA MULTI-FILTRO --- */
@@ -707,7 +856,6 @@ function renderEditorScreen() {
     const filterContainer = document.getElementById('editor-tag-filter'); const listContainer = document.getElementById('editor-question-list');
     filterContainer.innerHTML = ''; const uniqueTags = new Set(); app.questions.forEach(q=>(q.tags||[]).forEach(t=>uniqueTags.add(t)));
     
-    // Boton Mostrar Todo / Limpiar
     const clearBtn = document.createElement('button'); clearBtn.className = 'btn tag-pill'; 
     clearBtn.textContent = app.currentEditorFilter.tags.size > 0 ? 'Limpiar Filtro' : 'Mostrar Todo'; 
     clearBtn.style.background = app.currentEditorFilter.tags.size > 0 ? '#ef4444' : '#ccc';
@@ -743,7 +891,6 @@ function startFilteredQuiz() {
     if(!app.backupQuestions) app.backupQuestions = [...app.questions];
     app.questions = shuffleArray([...app.editorQuestions]); app.currentIndex = 0; app.mode = 'practice';
     app.answersGiven = {}; app.flagged = {};
-    // Ocultar editor y mostrar quiz
     document.getElementById('bank-editor-screen').style.display = 'none';
     document.getElementById('quiz-shell').style.display = 'block';
     app.quizActive = true;
@@ -772,7 +919,7 @@ function removeDuplicates() {
 function normalizeQuestions(raw){ return (raw||[]).map((r,i)=>({ id: Date.now()+Math.floor(Math.random()*100000)+i, question: (r.question||r.text||'').trim(), image: r.image||null, answers: r.answers||r.options||[], correct: r.correct||0, justification: r.justification||'', tags: detectTags(r.question||'') })).filter(q=>q.question && q.answers.length>1); }
 function parseTxtToQuestions(text) { const qs=[]; text.split(/\n\s*\n/).forEach((b,i)=>{ const l=b.trim().split('\n'); if(l.length<2)return; let qT="",ops=[],cor=0,jus=""; l.forEach(line=>{ if(line.match(/^[a-eA-E][\)\.]/)) ops.push(line.replace(/^[a-eA-E][\)\.]\s*/,'')); else if(line.match(/^R:/)) cor=line.toLowerCase().charCodeAt(2)-97; else qT+=line+"\n"; }); if(ops.length>1) qs.push({id:Date.now()+i, question:qT.trim(), answers:ops, correct:cor, tags:detectTags(qT)}); }); return qs; }
 
-/* EVENTOS */
+/* EVENTOS DE UI */
 safeAddListener('prev-btn', 'click', ()=>{ if(app.questions.length && app.currentIndex > 0){ app.currentIndex--; renderQuestion(app.currentIndex); } });
 safeAddListener('next-btn', 'click', ()=>{ if(app.questions.length && app.currentIndex < app.questions.length - 1){ app.currentIndex++; renderQuestion(app.currentIndex); } });
 safeAddListener('restart-btn', 'click', () => { if(confirm('¿Reiniciar?')) { app.answersGiven = {}; app.flagged = {}; app.currentIndex = 0; renderQuestion(0); saveProgress(); } });
@@ -792,8 +939,22 @@ safeAddListener('export-bank-json-btn', 'click', () => {
     const dlNode = document.createElement('a'); dlNode.setAttribute("href", dataStr); dlNode.setAttribute("download", (app.activeBankName||"banco")+".json"); document.body.appendChild(dlNode); dlNode.click(); dlNode.remove();
 });
 safeAddListener('update-bank-btn', 'click', () => { if(app.activeBankName && confirm("¿Sobreescribir?")) { app.savedBanks[app.activeBankName]=app.questions; saveBanks(); renderBanksList(); }});
+safeAddListener('save-bank-btn', 'click', () => {
+     if(!app.questions.length) return alert("No hay preguntas para guardar.");
+     const name = prompt("Nombre del nuevo banco:");
+     if(name){
+         if(app.savedBanks[name] && !confirm("Ya existe. ¿Sobreescribir?")) return;
+         app.savedBanks[name] = app.questions;
+         app.activeBankName = name;
+         saveBanks();
+         saveProgress();
+         renderBanksList();
+         updateHeaderButtons();
+     }
+});
+
 safeAddListener('retry-incorrect-btn', 'click', () => {
-    const wrongs = app.questions.filter(q => app.answersGiven[q.id] !== q.correct); // Esto incluye incorrectas Y omitidas (undefined !== correct)
+    const wrongs = app.questions.filter(q => app.answersGiven[q.id] !== q.correct); 
     if(wrongs.length && confirm(`¿Repasar ${wrongs.length} preguntas (incorrectas y omitidas)?`)) { 
         app.questions = shuffleArray(wrongs); 
         app.currentIndex = 0; 
@@ -803,7 +964,6 @@ safeAddListener('retry-incorrect-btn', 'click', () => {
         app.activeBankName = null; 
         updateModeButtons();
         document.getElementById('results-panel').style.display = 'none'; 
-        // Reabrir quiz shell manualmente
         document.getElementById('quiz-shell').style.display = 'block';
         app.quizActive = true;
         renderQuestion(0); 
@@ -817,8 +977,16 @@ safeAddListener('open-smart-btn', 'click', () => {
     if(app.questions.length === 0) return alert("Carga un banco primero.");
     app.questions = smartShuffleArray(app.questions); 
     app.answersGiven={}; app.flagged={}; app.currentIndex=0; 
-    alert("🤖 Modo Inteligente activado: Se han priorizado las preguntas que te cuestan más.");
+    alert("✨ Modo Inteligente activado: Se han priorizado las preguntas que te cuestan más.");
     openQuizView(); 
+});
+safeAddListener('edit-q-btn', 'click', toggleEditMode);
+safeAddListener('save-edit-btn', 'click', saveEdit);
+safeAddListener('cancel-edit-btn', 'click', toggleEditMode);
+safeAddListener('download-template-btn', 'click', () => {
+    const template = [{ "question": "Ejemplo...", "answers": ["A", "B", "C"], "correct": 0, "tags": ["Tema"] }];
+    const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(template, null, 2));
+    const dlNode = document.createElement('a'); dlNode.setAttribute("href", dataStr); dlNode.setAttribute("download", "plantilla_pauteo.json"); document.body.appendChild(dlNode); dlNode.click(); dlNode.remove();
 });
 
 const modes = ['study','exam','practice'];
@@ -836,7 +1004,7 @@ safeAddListener('start-exam', 'click', ()=>{
 
 function openQuizView(){ 
     app.quizActive=true; 
-    document.body.classList.add('quiz-mode'); 
+    document.body.classList.add('quiz-mode'); // Activa el Modo Zen / Focus
     document.getElementById('dashboard-view').style.display='none'; 
     document.getElementById('quiz-view').style.display='flex'; 
     document.getElementById('quiz-shell').style.display='block'; 
@@ -848,13 +1016,13 @@ function closeQuizView(showingResults=false){
     app.quizActive=false; 
     if(timerInterval) clearInterval(timerInterval); 
     if(!showingResults) { 
-        document.body.classList.remove('quiz-mode'); 
+        document.body.classList.remove('quiz-mode'); // Desactiva el Modo Zen
         document.getElementById('dashboard-view').style.display='flex'; 
         document.getElementById('quiz-view').style.display='none'; 
         renderStartScreenTags(); 
         renderHistoryChart(); 
+        renderDashboardMarked();
     } else {
-        // Si muestra resultados, ocultamos el shell de preguntas pero mantenemos quiz-view
         document.getElementById('quiz-shell').style.display='none';
     }
     document.getElementById('drawer').classList.remove('open'); 
@@ -863,14 +1031,18 @@ function closeQuizView(showingResults=false){
 function checkMobileView() { 
     const isMobile = window.innerWidth <= 980; 
     const menuBtn = document.getElementById('mobile-menu-btn'); 
-    const quizMenuBtn = document.getElementById('quiz-menu-btn');
+    const quizMenuBtn = document.getElementById('quiz-menu-btn'); 
     
-    if(isMobile || app.quizActive) { 
-        menuBtn.style.display = 'inline-flex'; 
-        quizMenuBtn.style.display = 'inline-flex';
+    // 1. En el Dashboard: SIEMPRE oculto (petición de usuario)
+    if(menuBtn) menuBtn.style.display = 'none';
+
+    // 2. En el Quiz: visible si está en quiz mode (independiente si es movil o escritorio, para salir)
+    // ADICIONAL: Si el drawer está abierto, ocultamos el botón
+    const isDrawerOpen = document.getElementById('drawer').classList.contains('open');
+    if (app.quizActive && !isDrawerOpen) { 
+        if(quizMenuBtn) quizMenuBtn.style.display = 'inline-flex';
     } else { 
-        menuBtn.style.display = 'none'; 
-        quizMenuBtn.style.display = 'none';
+        if(quizMenuBtn) quizMenuBtn.style.display = 'none';
     } 
 }
 window.addEventListener('resize', checkMobileView); checkMobileView();
@@ -892,11 +1064,52 @@ function mostrarAvisoFiltro(tag) {
     badgeArea.appendChild(badge); document.getElementById('btn-clear-filter').onclick = restaurarFiltro;
 }
 
+function renderDashboardMarked() {
+   const cont = document.getElementById('dashboard-marked-card');
+   const list = document.getElementById('dashboard-marked-list');
+   if(!cont || !list) return;
+   list.innerHTML = '';
+   let count = 0;
+   
+   app.questions.forEach((q, i) => {
+      if(app.marked[q.id]) {
+         count++;
+         const item = document.createElement('div');
+         item.style.padding = '10px';
+         item.style.borderRadius = '8px';
+         item.style.background = 'var(--primary-soft)';
+         item.style.cursor = 'pointer';
+         item.style.display = 'flex';
+         item.style.justifyContent = 'space-between';
+         item.style.alignItems = 'center';
+         item.innerHTML = `
+            <div style="flex:1;"><span style="font-weight:700; color:var(--primary); margin-right:8px;">#${i+1}</span> ${q.question.substring(0, 60)}...</div>
+            <span class="material-icons" style="font-size:16px; color:var(--primary);">arrow_forward_ios</span>
+         `;
+         item.onclick = () => {
+             app.currentIndex = i;
+             openQuizView();
+         };
+         list.appendChild(item);
+      }
+   });
+   
+   cont.style.display = count > 0 ? 'block' : 'none';
+}
+
 safeAddListener('mobile-menu-btn', 'click', () => { renderBanksList('drawer-banks-list'); document.getElementById('drawer').classList.add('open'); });
-safeAddListener('quiz-menu-btn', 'click', () => { renderBanksList('drawer-banks-list'); document.getElementById('drawer').classList.add('open'); });
-safeAddListener('close-drawer', 'click', ()=> document.getElementById('drawer').classList.remove('open'));
+safeAddListener('quiz-menu-btn', 'click', () => { 
+    renderBanksList('drawer-banks-list'); 
+    document.getElementById('drawer').classList.add('open'); 
+    checkMobileView(); // Oculta el botón inmediatamente
+});
+safeAddListener('close-drawer', 'click', ()=> {
+    document.getElementById('drawer').classList.remove('open');
+    checkMobileView(); // Muestra el botón si estamos en quiz
+});
 safeAddListener('download-app-btn', 'click', handleInstallTrigger);
-safeAddListener('drawer-download', 'click', handleInstallTrigger);
+safeAddListener('tutorial-btn', 'click', ()=>document.getElementById('tutorial-overlay').classList.add('open'));
+safeAddListener('tutorial-close', 'click', ()=>document.getElementById('tutorial-overlay').classList.remove('open'));
 safeAddListener('download-overlay-close', 'click', ()=> document.getElementById('download-overlay').classList.remove('open'));
 safeAddListener('btn-json-help-details', 'click', ()=>document.getElementById('json-guide-overlay').classList.add('open'));
 safeAddListener('json-guide-close', 'click', ()=> document.getElementById('json-guide-overlay').classList.remove('open'));
@@ -926,15 +1139,108 @@ function setupSearch(inputId, resId){
 }
 setupSearch('search-bar','sidebar-search-results'); setupSearch('drawer-search','drawer-search-results');
 
-function renderBanksList(tid='banks-list'){ const c=document.getElementById(tid); if(!c)return; c.innerHTML=''; Object.keys(app.savedBanks).forEach(n=>{ const d=document.createElement('div'); d.className='bank-item'; d.style.padding='8px'; d.style.borderBottom='1px solid #eee'; d.style.cursor='pointer'; d.innerHTML=`<b>${n}</b> (${app.savedBanks[n].length})`; d.onclick=()=>{app.activeBankName=n; app.questions=app.savedBanks[n]; app.currentIndex=0; app.answersGiven={}; app.flagged={}; saveProgress(); renderQuestion(0); document.getElementById('drawer').classList.remove('open'); renderStartScreenTags();}; c.appendChild(d); }); }
-function updateProgressUI(){ document.getElementById('progress-text').textContent=`${app.currentIndex+1}/${app.questions.length}`; document.getElementById('progress-bar').style.width=Math.round(((app.currentIndex+1)/app.questions.length)*100)+'%'; updateModeButtons(); }
-function updateMarkedUI(){ const l=document.getElementById('marked-list'); l.innerHTML=''; let h=false; app.questions.forEach((q,i)=>{ if(app.marked[q.id]){ h=true; const b=document.createElement('button'); b.className='mark-btn'; b.textContent=i+1; b.onclick=()=>{app.currentIndex=i; renderQuestion(i); document.getElementById('drawer').classList.remove('open');}; l.appendChild(b); } }); document.getElementById('marked-container').style.display=h?'block':'none'; }
-function deleteCurrentQuestion(){ if(app.questions.length && confirm("¿Borrar?")){ app.questions.splice(app.currentIndex,1); if(!app.questions.length) closeQuizView(); else { if(app.currentIndex>=app.questions.length) app.currentIndex--; renderQuestion(app.currentIndex); } saveProgress(); }}
-function renderQuestionGrid() { const g=document.getElementById('nav-grid-drawer'); if(!g)return; g.innerHTML=''; const l=Math.min(app.questions.length,2000); for(let i=0;i<l;i++){ const q=app.questions[i]; const d=document.createElement('div'); d.className='nav-dot'; d.textContent=i+1; if(i===app.currentIndex) d.classList.add('current'); if(app.answersGiven[q.id]!==undefined) { d.classList.add('answered'); if(app.mode!=='exam' && app.answersGiven[q.id]!==q.correct) d.classList.add('wrong'); } if(app.flagged[q.id]) d.classList.add('flagged'); d.onclick=()=>{app.currentIndex=i; renderQuestion(i); document.getElementById('drawer').classList.remove('open');}; g.appendChild(d); }}
-function filtrarPorEtiqueta(t){ const f=app.questions.filter(q=>(q.tags||[]).includes(t)); if(f.length && confirm(`¿Practicar ${t} (${f.length})?`)){ if(!app.backupQuestions) app.backupQuestions=[...app.questions]; app.questions=f; app.currentIndex=0; app.mode='practice'; renderQuestion(0); mostrarAvisoFiltro(t); openQuizView(); }}
-async function handleInstallTrigger() { if(deferredPrompt){ deferredPrompt.prompt(); const {outcome}=await deferredPrompt.userChoice; if(outcome==='accepted') deferredPrompt=null; } else { document.getElementById('download-overlay').classList.add('open'); document.getElementById('install-content').innerHTML = /iPhone|iPad/.test(navigator.userAgent)?'Usa el botón Compartir > Agregar a Inicio':'Usa el menú del navegador > Instalar app'; } }
+/* FUSION Y GESTION DE BANCOS */
+function deleteBank(name) {
+    if(confirm(`¿Eliminar banco "${name}"?`)) {
+        delete app.savedBanks[name];
+        saveBanks();
+        if(app.activeBankName === name) {
+            app.activeBankName = null;
+            app.questions = [];
+            saveProgress();
+            location.reload(); 
+        } else {
+            renderBanksList();
+        }
+    }
+}
 
-renderBanksList(); renderStartScreenTags(); renderHistoryChart();
+function openMergeUI() {
+    const cont = document.getElementById('merge-list-container');
+    cont.innerHTML = '';
+    const names = Object.keys(app.savedBanks);
+    if(names.length < 2) return alert("Necesitas al menos 2 bancos guardados para fusionar.");
+    
+    names.forEach(n => {
+        const div = document.createElement('div');
+        div.innerHTML = `<label style="display:flex;align-items:center;padding:4px;"><input type="checkbox" value="${n}" class="merge-chk" style="margin-right:8px;"> ${n} (${app.savedBanks[n].length})</label>`;
+        cont.appendChild(div);
+    });
+    document.getElementById('merge-overlay').classList.add('open');
+}
+
+safeAddListener('btn-merge-ui', 'click', openMergeUI);
+safeAddListener('merge-close', 'click', () => document.getElementById('merge-overlay').classList.remove('open'));
+safeAddListener('confirm-merge-btn', 'click', () => {
+    const checked = Array.from(document.querySelectorAll('.merge-chk:checked')).map(c => c.value);
+    if(checked.length < 2) return alert("Selecciona al menos 2.");
+    
+    let mergedQs = [];
+    checked.forEach(n => mergedQs = mergedQs.concat(app.savedBanks[n]));
+    
+    const newName = prompt("Nombre para el nuevo banco fusionado:");
+    if(newName) {
+        app.savedBanks[newName] = mergedQs;
+        saveBanks();
+        renderBanksList();
+        document.getElementById('merge-overlay').classList.remove('open');
+        alert("Fusión exitosa.");
+    }
+});
+
+function renderBanksList(tid='banks-list'){ 
+    const c=document.getElementById(tid); if(!c)return; c.innerHTML=''; 
+    Object.keys(app.savedBanks).forEach(n=>{ 
+        const d=document.createElement('div'); d.className='bank-item'; d.style.padding='8px'; d.style.borderBottom='1px solid #eee'; d.style.cursor='pointer'; 
+        
+        // Crear elementos
+        const nameSpan = document.createElement('span'); 
+        nameSpan.className='bank-name'; 
+        nameSpan.innerHTML = `<b>${n}</b> <span class="small">(${app.savedBanks[n].length})</span>`;
+        nameSpan.onclick = ()=>{
+            app.activeBankName=n; app.questions=app.savedBanks[n]; app.currentIndex=0; app.answersGiven={}; app.flagged={}; saveProgress(); renderQuestion(0); 
+            if(document.getElementById('drawer').classList.contains('open')) document.getElementById('drawer').classList.remove('open'); 
+            renderStartScreenTags();
+        };
+
+        const delBtn = document.createElement('button');
+        delBtn.className = 'action-btn small';
+        delBtn.innerHTML = '<span class="material-icons" style="font-size:18px; color:#ef4444;">delete</span>';
+        delBtn.title = 'Eliminar Banco';
+        delBtn.onclick = (e) => { e.stopPropagation(); deleteBank(n); };
+
+        d.appendChild(nameSpan);
+        d.appendChild(delBtn);
+        c.appendChild(d); 
+    }); 
+}
+
+function updateProgressUI(){ document.getElementById('progress-text').textContent=`${app.currentIndex+1}/${app.questions.length}`; document.getElementById('progress-bar').style.width=Math.round(((app.currentIndex+1)/app.questions.length)*100)+'%'; updateModeButtons(); }
+function updateMarkedUI(){ const l=document.getElementById('marked-list'); l.innerHTML=''; let h=false; app.questions.forEach((q,i)=>{ if(app.marked[q.id]){ h=true; const b=document.createElement('button'); b.className='mark-btn'; b.textContent=i+1; b.onclick=()=>{app.currentIndex=i; renderQuestion(i); document.getElementById('drawer').classList.remove('open'); checkMobileView();}; l.appendChild(b); } }); document.getElementById('marked-container').style.display=h?'block':'none'; renderDashboardMarked(); }
+function deleteCurrentQuestion(){ if(app.questions.length && confirm("¿Borrar pregunta?")){ app.questions.splice(app.currentIndex,1); if(!app.questions.length) closeQuizView(); else { if(app.currentIndex>=app.questions.length) app.currentIndex--; renderQuestion(app.currentIndex); } saveProgress(); }}
+function renderQuestionGrid() { const g=document.getElementById('nav-grid-drawer'); if(!g)return; g.innerHTML=''; const l=Math.min(app.questions.length,2000); for(let i=0;i<l;i++){ const q=app.questions[i]; const d=document.createElement('div'); d.className='nav-dot'; d.textContent=i+1; if(i===app.currentIndex) d.classList.add('current'); if(app.answersGiven[q.id]!==undefined) { d.classList.add('answered'); if(app.mode!=='exam' && app.answersGiven[q.id]!==q.correct) d.classList.add('wrong'); } if(app.flagged[q.id]) d.classList.add('flagged'); d.onclick=()=>{app.currentIndex=i; renderQuestion(i); document.getElementById('drawer').classList.remove('open'); checkMobileView();}; g.appendChild(d); }}
+function filtrarPorEtiqueta(t){ const f=app.questions.filter(q=>(q.tags||[]).includes(t)); if(f.length && confirm(`¿Practicar ${t} (${f.length})?`)){ if(!app.backupQuestions) app.backupQuestions=[...app.questions]; app.questions=f; app.currentIndex=0; app.mode='practice'; renderQuestion(0); mostrarAvisoFiltro(t); openQuizView(); }}
+async function handleInstallTrigger() { 
+    document.getElementById('download-overlay').classList.add('open');
+    const content = document.getElementById('install-content');
+    if(deferredPrompt){ 
+        content.innerHTML = `<p>Instala la App para usarla sin conexión y pantalla completa.</p><button id="pwa-install-btn" class="btn" style="width:100%; margin-top:12px; background:var(--primary); color:white;">Instalar App Nativa</button>`;
+        document.getElementById('pwa-install-btn').onclick = async () => {
+            deferredPrompt.prompt(); 
+            const {outcome} = await deferredPrompt.userChoice; 
+            if(outcome==='accepted') deferredPrompt=null;
+            document.getElementById('download-overlay').classList.remove('open');
+        };
+    } else { 
+        if(/iPhone|iPad/.test(navigator.userAgent)) {
+            content.innerHTML = `<p><b>Para iOS (iPhone/iPad):</b></p><ol style="margin-left:20px; font-size:0.9rem;"><li>Toca el botón <b>Compartir</b> <span class="material-icons" style="font-size:1rem; vertical-align:middle;">ios_share</span></li><li>Busca y selecciona <b>"Agregar a Inicio"</b>.</li></ol><p class="small">Esto creará la App independiente.</p>`;
+        } else {
+            content.innerHTML = `<p><b>Para Android (APK Web):</b></p><ol style="margin-left:20px; font-size:0.9rem;"><li>Toca el menú del navegador (3 puntos).</li><li>Selecciona <b>"Instalar aplicación"</b> o "Agregar a pantalla principal".</li></ol><p class="small">Esto genera la APK Web (WebAPK) en tu sistema.</p>`;
+        }
+    } 
+}
+
+renderBanksList(); renderStartScreenTags(); renderHistoryChart(); renderDashboardMarked();
 });
 </script>
 </body>
