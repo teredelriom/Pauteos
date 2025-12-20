@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-<title>Pauteo Pro v3.5</title>
+<title>Pauteo Pro v3.7</title>
 
 <meta name="application-name" content="Pauteo">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -181,7 +181,7 @@ details.justification-details[open] summary { border-bottom: 1px solid var(--bor
     <div style="display:flex;justify-content:space-between;align-items:center; margin-bottom: 16px;">
       <div>
         <h2 class="text-xl font-bold tracking-tight" style="margin:0; font-size:1.25rem;">Pauteo Pro</h2>
-        <div class="small">v3.5 · <span style="color:var(--primary)">Modo Estudio</span></div>
+        <div class="small">v3.7 · <span style="color:var(--primary)">Modo Estudio</span></div>
       </div>
       <div style="display:flex; gap:6px;">
           <button id="tutorial-btn" class="icon-btn" title="Tutorial / Instrucciones"><span class="material-icons">info</span></button>
@@ -199,6 +199,7 @@ details.justification-details[open] summary { border-bottom: 1px solid var(--bor
       <div style="display:flex;gap:8px;">
         <button id="mode-study" class="btn" style="flex:1">Estudio</button>
         <button id="mode-exam" class="btn" style="flex:1" title="Resultados al final (Ciego)">Examen</button>
+        <button id="mode-pauteo" class="btn" style="flex:1" title="Ver respuestas y justificación">Pauteo</button>
       </div>
       <div style="margin-top:16px; display:flex; align-items:center; justify-content:space-between;">
         <div class="small">Timer (min)</div>
@@ -460,6 +461,7 @@ details.justification-details[open] summary { border-bottom: 1px solid var(--bor
             <ul style="padding-left:20px; font-size:0.9rem; line-height:1.6;">
                 <li><strong>Estudio:</strong> Feedback inmediato. Te muestra si acertaste o no al instante y la justificación.</li>
                 <li><strong>Examen:</strong> Simulación. No verás las respuestas correctas hasta terminar el tiempo o finalizar manualmente.</li>
+                <li><strong>Pauteo:</strong> Modo lectura. Muestra directamente la respuesta correcta y la justificación. Ideal para repasar rápido.</li>
             </ul>
         </div>
         <div style="margin-bottom:20px;">
@@ -711,6 +713,13 @@ function renderQuestion(index){
     const hint = `<span class="shortcut-hint">${i+1}</span>`;
     div.innerHTML = `${hint} <div style="display:flex; gap:10px;"><div style="font-weight:700; opacity:0.5;">${String.fromCharCode(65+i)}</div><div style="line-height:1.4">${ans}</div></div>`; 
     div.onclick = () => selectAnswer(q.id, i); 
+    
+    // Si estamos en modo PAUTEO
+    if(app.mode === 'pauteo') {
+        div.classList.add('disabled'); // Bloquear clicks
+        if(i === q.correct) div.classList.add('correct'); // Marcar correcta
+    }
+
     if(app.answersGiven[q.id] !== undefined){ 
         div.classList.add('disabled'); 
         if(app.mode === 'exam') {
@@ -727,8 +736,9 @@ function renderQuestion(index){
   const justText = document.getElementById('justification-text');
   justBox.removeAttribute('open'); 
   
-  if(app.answersGiven[q.id] !== undefined && app.mode !== 'exam'){ 
+  if( (app.answersGiven[q.id] !== undefined && app.mode !== 'exam') || app.mode === 'pauteo' ){ 
       justBox.style.display = 'block';
+      if(app.mode === 'pauteo') justBox.setAttribute('open', ''); // Abrir automáticamente en pauteo
       justText.innerHTML = q.justification ? q.justification : 'Sin justificación disponible.'; 
   } else { justBox.style.display = 'none'; }
   
@@ -736,6 +746,7 @@ function renderQuestion(index){
 }
 
 function selectAnswer(qid, chosenIdx){ 
+  if(app.mode === 'pauteo') return; // En pauteo no se puede responder
   if(app.answersGiven[qid] !== undefined) return; 
   const qIndex = app.questions.findIndex(x=>x.id===qid); const q = app.questions[qIndex];
   app.answersGiven[qid] = chosenIdx; 
@@ -988,7 +999,7 @@ safeAddListener('download-template-btn', 'click', () => {
     const dlNode = document.createElement('a'); dlNode.setAttribute("href", dataStr); dlNode.setAttribute("download", "plantilla_pauteo.json"); document.body.appendChild(dlNode); dlNode.click(); dlNode.remove();
 });
 
-const modes = ['study','exam'];
+const modes = ['study','exam','pauteo'];
 modes.forEach(m => safeAddListener('mode-'+m, 'click', ()=> { app.mode=m; app.answersGiven={}; app.flagged={}; app.currentIndex=0; updateModeButtons(); renderQuestion(0); }));
 function updateModeButtons(){ modes.forEach(m => { const el = document.getElementById('mode-'+m); if(app.mode===m) el.classList.add('mode-active'); else el.classList.remove('mode-active'); }); }
 
