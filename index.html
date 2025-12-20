@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-<title>Pauteo Pro v3.2</title>
+<title>Pauteo Pro v3.5</title>
 
 <meta name="application-name" content="Pauteo">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -65,6 +65,7 @@ body.quiz-mode #quiz-menu-btn { display: inline-flex !important; }
     .app { grid-template-columns:1fr; padding:12px; margin-top: 0; } 
     aside#left-panel { display: none; } 
     #header-bar { padding-top: 10px; }
+    #mobile-menu-btn { display: flex; }
 }
 
 /* UI Components */
@@ -137,9 +138,9 @@ details.justification-details[open] summary { border-bottom: 1px solid var(--bor
 .history-date { font-size: 0.65rem; color: var(--muted); margin-top: 4px; text-align: center; }
 
 /* Drawer & Modals */
-.drawer { position:fixed; left:-380px; top:0; bottom:0; width:360px; padding:20px; z-index:80; transition:left .3s ease; box-shadow: 5px 0 25px rgba(0,0,0,0.1); border-right: 1px solid var(--border); background: var(--card); overflow-y: auto; }
+.drawer { position:fixed; left:-380px; top:0; bottom:0; width:360px; padding:20px; z-index:2000; transition:left .3s ease; box-shadow: 5px 0 25px rgba(0,0,0,0.1); border-right: 1px solid var(--border); background: var(--card); overflow-y: auto; }
 .drawer.open { left:0; }
-.overlay { position:fixed; inset:0; display:none; align-items:center; justify-content:center; background:rgba(0,0,0,0.4); backdrop-filter: blur(2px); z-index:60; }
+.overlay { position:fixed; inset:0; display:none; align-items:center; justify-content:center; background:rgba(0,0,0,0.4); backdrop-filter: blur(2px); z-index:1500; }
 .overlay.open { display:flex; }
 .modal { width:min(920px,96vw); max-height:90vh; overflow:auto; animation: popIn 0.2s ease-out; }
 @keyframes popIn { from{transform:scale(0.95);opacity:0} to{transform:scale(1);opacity:1} }
@@ -151,7 +152,7 @@ details.justification-details[open] summary { border-bottom: 1px solid var(--bor
 
 .mark-btn { width:32px; height:32px; display:flex; align-items:center; justify-content:center; border-radius:8px; background:var(--primary-soft); color:var(--primary); font-weight:bold; font-size:0.8rem; border:none; cursor:pointer; transition:0.2s; }
 .mark-btn:hover { background:var(--primary); color:white; }
-.menu-btn { background:transparent; border:0; cursor:pointer; color: var(--text); display: flex; padding: 8px; border-radius: 8px; z-index: 100; }
+.menu-btn { background:transparent; border:0; cursor:pointer; color: var(--text); display: flex; padding: 8px; border-radius: 8px; z-index: 50; }
 .menu-btn:hover { background: var(--primary-soft); }
 .icon-btn { display:inline-flex; align-items:center; justify-content:center; border-radius:50%; padding:8px; border:1px solid var(--border); cursor:pointer; background: var(--card); color: var(--text); transition: all 0.2s; }
 .icon-btn:hover { background: var(--primary-soft); color: var(--primary); border-color: var(--primary); }
@@ -180,7 +181,7 @@ details.justification-details[open] summary { border-bottom: 1px solid var(--bor
     <div style="display:flex;justify-content:space-between;align-items:center; margin-bottom: 16px;">
       <div>
         <h2 class="text-xl font-bold tracking-tight" style="margin:0; font-size:1.25rem;">Pauteo Pro</h2>
-        <div class="small">v3.2 · <span style="color:var(--primary)">Modo Estudio</span></div>
+        <div class="small">v3.5 · <span style="color:var(--primary)">Modo Estudio</span></div>
       </div>
       <div style="display:flex; gap:6px;">
           <button id="tutorial-btn" class="icon-btn" title="Tutorial / Instrucciones"><span class="material-icons">info</span></button>
@@ -198,7 +199,6 @@ details.justification-details[open] summary { border-bottom: 1px solid var(--bor
       <div style="display:flex;gap:8px;">
         <button id="mode-study" class="btn" style="flex:1">Estudio</button>
         <button id="mode-exam" class="btn" style="flex:1" title="Resultados al final (Ciego)">Examen</button>
-        <button id="mode-practice" class="btn" style="flex:1">Práctica</button>
       </div>
       <div style="margin-top:16px; display:flex; align-items:center; justify-content:space-between;">
         <div class="small">Timer (min)</div>
@@ -460,7 +460,6 @@ details.justification-details[open] summary { border-bottom: 1px solid var(--bor
             <ul style="padding-left:20px; font-size:0.9rem; line-height:1.6;">
                 <li><strong>Estudio:</strong> Feedback inmediato. Te muestra si acertaste o no al instante y la justificación.</li>
                 <li><strong>Examen:</strong> Simulación. No verás las respuestas correctas hasta terminar el tiempo o finalizar manualmente.</li>
-                <li><strong>Práctica:</strong> Similar a estudio pero enfocado en repetición rápida.</li>
             </ul>
         </div>
         <div style="margin-bottom:20px;">
@@ -889,7 +888,7 @@ function deleteFilteredQuestions() { if(confirm("¿Eliminar preguntas visibles?"
 function startFilteredQuiz() {
     if(!app.editorQuestions.length) return alert("Selecciona algún filtro primero.");
     if(!app.backupQuestions) app.backupQuestions = [...app.questions];
-    app.questions = shuffleArray([...app.editorQuestions]); app.currentIndex = 0; app.mode = 'practice';
+    app.questions = shuffleArray([...app.editorQuestions]); app.currentIndex = 0; app.mode = 'study';
     app.answersGiven = {}; app.flagged = {};
     document.getElementById('bank-editor-screen').style.display = 'none';
     document.getElementById('quiz-shell').style.display = 'block';
@@ -960,7 +959,7 @@ safeAddListener('retry-incorrect-btn', 'click', () => {
         app.currentIndex = 0; 
         app.answersGiven = {}; 
         app.flagged = {}; 
-        app.mode = 'practice'; 
+        app.mode = 'study'; 
         app.activeBankName = null; 
         updateModeButtons();
         document.getElementById('results-panel').style.display = 'none'; 
@@ -989,7 +988,7 @@ safeAddListener('download-template-btn', 'click', () => {
     const dlNode = document.createElement('a'); dlNode.setAttribute("href", dataStr); dlNode.setAttribute("download", "plantilla_pauteo.json"); document.body.appendChild(dlNode); dlNode.click(); dlNode.remove();
 });
 
-const modes = ['study','exam','practice'];
+const modes = ['study','exam'];
 modes.forEach(m => safeAddListener('mode-'+m, 'click', ()=> { app.mode=m; app.answersGiven={}; app.flagged={}; app.currentIndex=0; updateModeButtons(); renderQuestion(0); }));
 function updateModeButtons(){ modes.forEach(m => { const el = document.getElementById('mode-'+m); if(app.mode===m) el.classList.add('mode-active'); else el.classList.remove('mode-active'); }); }
 
@@ -1029,20 +1028,22 @@ function closeQuizView(showingResults=false){
     checkMobileView(); 
 }
 function checkMobileView() { 
-    const isMobile = window.innerWidth <= 980; 
-    const menuBtn = document.getElementById('mobile-menu-btn'); 
-    const quizMenuBtn = document.getElementById('quiz-menu-btn'); 
-    
-    // 1. En el Dashboard: SIEMPRE oculto (petición de usuario)
-    if(menuBtn) menuBtn.style.display = 'none';
-
-    // 2. En el Quiz: visible si está en quiz mode (independiente si es movil o escritorio, para salir)
-    // ADICIONAL: Si el drawer está abierto, ocultamos el botón
     const isDrawerOpen = document.getElementById('drawer').classList.contains('open');
-    if (app.quizActive && !isDrawerOpen) { 
-        if(quizMenuBtn) quizMenuBtn.style.display = 'inline-flex';
-    } else { 
-        if(quizMenuBtn) quizMenuBtn.style.display = 'none';
+    const isMobile = window.innerWidth <= 980; 
+
+    const dashBtn = document.getElementById('mobile-menu-btn'); 
+    const quizBtn = document.getElementById('quiz-menu-btn'); 
+    
+    // 1. Dashboard Button: Visible solo si es móvil, no estamos en quiz y el drawer está cerrado
+    if(dashBtn) {
+        if(isMobile && !app.quizActive && !isDrawerOpen) dashBtn.style.display = 'flex';
+        else dashBtn.style.display = 'none';
+    }
+
+    // 2. Quiz Button: Visible solo si estamos en quiz y el drawer está cerrado
+    if(quizBtn) { 
+        if(app.quizActive && !isDrawerOpen) quizBtn.style.display = 'inline-flex';
+        else quizBtn.style.display = 'none';
     } 
 }
 window.addEventListener('resize', checkMobileView); checkMobileView();
@@ -1097,15 +1098,15 @@ function renderDashboardMarked() {
    cont.style.display = count > 0 ? 'block' : 'none';
 }
 
-safeAddListener('mobile-menu-btn', 'click', () => { renderBanksList('drawer-banks-list'); document.getElementById('drawer').classList.add('open'); });
+safeAddListener('mobile-menu-btn', 'click', () => { renderBanksList('drawer-banks-list'); document.getElementById('drawer').classList.add('open'); checkMobileView(); });
 safeAddListener('quiz-menu-btn', 'click', () => { 
     renderBanksList('drawer-banks-list'); 
     document.getElementById('drawer').classList.add('open'); 
-    checkMobileView(); // Oculta el botón inmediatamente
+    checkMobileView(); 
 });
 safeAddListener('close-drawer', 'click', ()=> {
     document.getElementById('drawer').classList.remove('open');
-    checkMobileView(); // Muestra el botón si estamos en quiz
+    checkMobileView(); 
 });
 safeAddListener('download-app-btn', 'click', handleInstallTrigger);
 safeAddListener('tutorial-btn', 'click', ()=>document.getElementById('tutorial-overlay').classList.add('open'));
@@ -1219,7 +1220,7 @@ function updateProgressUI(){ document.getElementById('progress-text').textConten
 function updateMarkedUI(){ const l=document.getElementById('marked-list'); l.innerHTML=''; let h=false; app.questions.forEach((q,i)=>{ if(app.marked[q.id]){ h=true; const b=document.createElement('button'); b.className='mark-btn'; b.textContent=i+1; b.onclick=()=>{app.currentIndex=i; renderQuestion(i); document.getElementById('drawer').classList.remove('open'); checkMobileView();}; l.appendChild(b); } }); document.getElementById('marked-container').style.display=h?'block':'none'; renderDashboardMarked(); }
 function deleteCurrentQuestion(){ if(app.questions.length && confirm("¿Borrar pregunta?")){ app.questions.splice(app.currentIndex,1); if(!app.questions.length) closeQuizView(); else { if(app.currentIndex>=app.questions.length) app.currentIndex--; renderQuestion(app.currentIndex); } saveProgress(); }}
 function renderQuestionGrid() { const g=document.getElementById('nav-grid-drawer'); if(!g)return; g.innerHTML=''; const l=Math.min(app.questions.length,2000); for(let i=0;i<l;i++){ const q=app.questions[i]; const d=document.createElement('div'); d.className='nav-dot'; d.textContent=i+1; if(i===app.currentIndex) d.classList.add('current'); if(app.answersGiven[q.id]!==undefined) { d.classList.add('answered'); if(app.mode!=='exam' && app.answersGiven[q.id]!==q.correct) d.classList.add('wrong'); } if(app.flagged[q.id]) d.classList.add('flagged'); d.onclick=()=>{app.currentIndex=i; renderQuestion(i); document.getElementById('drawer').classList.remove('open'); checkMobileView();}; g.appendChild(d); }}
-function filtrarPorEtiqueta(t){ const f=app.questions.filter(q=>(q.tags||[]).includes(t)); if(f.length && confirm(`¿Practicar ${t} (${f.length})?`)){ if(!app.backupQuestions) app.backupQuestions=[...app.questions]; app.questions=f; app.currentIndex=0; app.mode='practice'; renderQuestion(0); mostrarAvisoFiltro(t); openQuizView(); }}
+function filtrarPorEtiqueta(t){ const f=app.questions.filter(q=>(q.tags||[]).includes(t)); if(f.length && confirm(`¿Practicar ${t} (${f.length})?`)){ if(!app.backupQuestions) app.backupQuestions=[...app.questions]; app.questions=f; app.currentIndex=0; app.mode='study'; renderQuestion(0); mostrarAvisoFiltro(t); openQuizView(); }}
 async function handleInstallTrigger() { 
     document.getElementById('download-overlay').classList.add('open');
     const content = document.getElementById('install-content');
