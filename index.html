@@ -363,7 +363,13 @@ details.justification-details[open] summary { border-bottom: 1px solid var(--bor
 
           <div id="edit-form-container">
               <label>Pregunta:</label>
-              <textarea id="edit-q-text" class="input" rows="3" style="margin-bottom:12px;"></textarea>
+              <textarea id="edit-q-text" class="input" rows="3" style="margin-bottom:12px;"></textarea>           
+              <label>URL de Imagen (Opcional):</label>
+              <div class="small" style="color:var(--muted); margin-bottom:6px; font-size:0.75rem; line-height:1.3;">
+                  Pega el enlace directo a la imagen (debe terminar en .jpg, .png, etc).<br>
+                  Deja el campo vacío para eliminar la imagen actual.
+              </div>
+              <input type="text" id="edit-q-image" class="input" placeholder="https://ejemplo.com/imagen.jpg" style="margin-bottom:12px; font-size:0.85rem;">
               <label>Alternativas:</label>
               <div id="edit-answers-list" class="edit-answers-grid"></div>
               <label>Índice Correcta (0=A, 1=B...):</label>
@@ -816,14 +822,17 @@ function toggleEditMode() {
     const form = document.getElementById('edit-form-container');
     const qText = document.getElementById('question-text');
     const answersDiv = document.getElementById('answers');
+    const imgCont = document.getElementById('question-image-container');
     
     if (form.style.display === 'none') {
         // Entrar a edición
         form.style.display = 'block';
         qText.style.display = 'none';
         answersDiv.style.display = 'none';
+        if(imgCont) imgCont.style.display = 'none'; // Ocultamos la imagen visual mientras editamos
         
         document.getElementById('edit-q-text').value = q.question;
+        document.getElementById('edit-q-image').value = q.image || '';
         document.getElementById('edit-correct-idx').value = q.correct;
         const list = document.getElementById('edit-answers-list');
         list.innerHTML = '';
@@ -843,6 +852,8 @@ function toggleEditMode() {
 function saveEdit() {
     const q = app.questions[app.currentIndex];
     q.question = document.getElementById('edit-q-text').value;
+    const imgVal = document.getElementById('edit-q-image').value.trim();
+    q.image = imgVal ? imgVal : null; // Si está vacío, se guarda como null (borra la imagen)
     q.correct = parseInt(document.getElementById('edit-correct-idx').value) || 0;
     
     const inputs = document.querySelectorAll('#edit-answers-list input');
@@ -856,6 +867,8 @@ function saveEdit() {
     
     // Reset UI
     app.answersGiven[q.id] = undefined; // Resetear respuesta al editar
+    const imgCont = document.getElementById('question-image-container');
+    if(imgCont) imgCont.style.display = 'block';
     renderQuestion(app.currentIndex);
 }
 
@@ -1257,3 +1270,4 @@ renderBanksList(); renderStartScreenTags(); renderHistoryChart(); renderDashboar
 </script>
 </body>
 </html>
+
