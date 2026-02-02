@@ -1010,6 +1010,7 @@ function normalizeQuestions(raw){
         tags: (r.tags && Array.isArray(r.tags) && r.tags.length > 0) ? r.tags : detectTags(r.question||'') 
     })).filter(q=>q.question && q.answers.length>1); 
 }
+
 function parseTxtToQuestions(text) { const qs=[]; text.split(/\n\s*\n/).forEach((b,i)=>{ const l=b.trim().split('\n'); if(l.length<2)return; let qT="",ops=[],cor=0,jus=""; l.forEach(line=>{ if(line.match(/^[a-eA-E][\)\.]/)) ops.push(line.replace(/^[a-eA-E][\)\.]\s*/,'')); else if(line.match(/^R:/)) cor=line.toLowerCase().charCodeAt(2)-97; else qT+=line+"\n"; }); if(ops.length>1) qs.push({id:Date.now()+i, question:qT.trim(), answers:ops, correct:cor, tags:detectTags(qT)}); }); return qs; }
 /* --- MÓDULO INTELIGENCIA ARTIFICIAL (GEMINI) --- */
 
@@ -1395,6 +1396,7 @@ document.querySelectorAll('.theme-btn').forEach(b => b.addEventListener('click',
 
 const fileInput = document.getElementById('file-input');
 document.getElementById('drop-zone').addEventListener('click', ()=>fileInput.click()); 
+
 fileInput.addEventListener('change', async e => {
   const files = Array.from(e.target.files);
   let merged = [];
