@@ -218,34 +218,55 @@ details.justification-details[open] summary { border-bottom: 1px solid var(--bor
         <button class="btn theme-btn theme-btn-dark" data-theme="dark">Oscuro</button>
       </div>
     </div>
-
     <div class="mt-4 pt-4 border-t border-[var(--border)]">
-        <h3 class="font-bold text-lg mb-2" style="font-size:1rem; display:flex; justify-content:space-between;">
-            Bancos 
-            <button id="btn-merge-ui" class="small" style="background:transparent; border:none; color:var(--primary); cursor:pointer;">Fusionar</button>
-        </h3>
-        <div id="banks-list" style="margin-top:10px; max-height: 150px; overflow-y: auto;"></div>
-        
-        <div style="margin-top:10px;display:flex;gap:8px; flex-wrap:wrap;">
-          <button id="save-bank-btn" class="btn small" style="flex:1;">Guardar Como...</button>
-          <button id="update-bank-btn" class="btn small" style="width:100%; margin-top:8px; background:var(--card); color:var(--text); border:1px solid var(--primary-soft);">Guardar Cambios Actual</button>
-        </div>
-        <button id="clean-duplicates-btn" class="btn small" style="width:100%; margin-top:8px; background:var(--card); color:var(--text); border:1px solid var(--primary-soft);">
-              <span class="material-icons" style="font-size:16px; margin-right:6px;">cleaning_services</span> Limpiar Duplicados
-        </button>
-        <button id="btn-clear-tags" class="btn small" style="flex:1; background:var(--card); color:var(--incorrect-text); border:1px solid var(--incorrect-border);" title="Eliminar todas las etiquetas de las preguntas actuales">
-            <span class="material-icons" style="font-size:16px; margin-right:4px;">label_off</span> Borrar Tags
-        </button>
-        <button id="btn-ai-tags-bank" class="btn small" style="flex:1; background:linear-gradient(135deg, #6366f1, #8b5cf6); color:white; border:none;" title="Generar etiquetas automáticas con IA para el banco actual">
-            <span class="material-icons" style="font-size:16px; margin-right:4px;">auto_awesome</span> Tags IA
-        </button>
-        <button onclick="document.getElementById('ai-config-overlay').classList.add('open')" class="btn small" style="width:100%; margin-top:8px; background:var(--bg); border:1px solid var(--primary); color:var(--primary);">
-          <span class="material-icons" style="font-size:16px; margin-right:6px;">auto_awesome</span> Configurar IA
-        </button>
-        <button id="export-bank-json-btn" class="btn small" style="width:100%; margin-top:8px; background:var(--card); color:var(--text); border:1px solid var(--primary-soft);">
-              <span class="material-icons" style="font-size:16px; margin-right:6px;">file_download</span> Descargar Banco (.json)
-        </button>
-      <div style="margin-top:8px" class="small">Activo: <span id="active-bank" class="font-medium">(ninguno)</span></div>
+      <h3 class="font-bold text-lg mb-2" style="font-size:1rem; display:flex; justify-content:space-between; align-items:center;">
+          Bancos 
+          <button id="btn-merge-ui" class="small" style="background:transparent; border:none; color:var(--primary); cursor:pointer; font-weight:600;">
+            <span class="material-icons" style="font-size:16px; vertical-align:middle;">merge</span> Fusionar
+          </button>
+      </h3>
+      
+      <div id="banks-list" style="margin-top:10px; max-height: 150px; overflow-y: auto; margin-bottom: 12px; padding-right:4px;"></div>
+      
+      <div style="display: flex; flex-direction: column; gap: 8px;">
+          
+          <div style="display:grid; grid-template-columns: 1fr 1fr; gap:8px;">
+            <button id="save-bank-btn" class="btn small" style="background:var(--primary-soft); color:var(--primary); border:none;" title="Guardar como nuevo banco">
+                <span class="material-icons" style="font-size:16px; margin-right:4px;">save</span> Nuevo
+            </button>
+            <button id="update-bank-btn" class="btn small" style="background:var(--card); color:var(--text); border:1px solid var(--border);" title="Sobreescribir banco actual">
+                <span class="material-icons" style="font-size:16px; margin-right:4px;">save_as</span> Actual
+            </button>
+          </div>
+          
+          <button id="export-bank-json-btn" class="btn small" style="width:100%; background:var(--card); color:var(--text); border:1px solid var(--border);">
+              <span class="material-icons" style="font-size:16px; margin-right:6px;">file_download</span> Exportar JSON
+          </button>
+
+          <div style="margin: 6px 0; border-top: 1px dashed var(--border);"></div>
+          <div class="small font-bold" style="color:var(--muted); font-size:0.75rem; text-transform:uppercase; padding-left:2px; letter-spacing:0.5px;">Mantenimiento</div>
+
+          <button id="clean-duplicates-btn" class="btn small" style="width:100%; background:var(--bg); color:var(--text); border:1px solid var(--border); justify-content:flex-start; padding-left:12px; transition:all 0.2s;">
+                <span class="material-icons" style="font-size:18px; margin-right:10px; color:var(--orange);">cleaning_services</span> Limpiar Duplicados
+          </button>
+
+          <div style="display:grid; grid-template-columns: 1fr 1fr; gap:8px;">
+              <button id="btn-ai-tags-bank" class="btn small" style="background:linear-gradient(135deg, #6366f1, #8b5cf6); color:white; border:none;" title="Generar etiquetas automáticas con IA">
+                  <span class="material-icons" style="font-size:16px; margin-right:4px;">auto_awesome</span> Tags IA
+              </button>
+              <button id="btn-clear-tags" class="btn small" style="background:var(--incorrect-bg); color:var(--incorrect-text); border:1px solid var(--incorrect-border);" title="Borrar todas las etiquetas">
+                  <span class="material-icons" style="font-size:16px; margin-right:4px;">label_off</span> Borrar
+              </button>
+          </div>
+
+          <button onclick="document.getElementById('ai-config-overlay').classList.add('open')" class="btn small" style="width:100%; background:transparent; border:none; color:var(--muted); font-size:0.8rem; margin-top:-4px;">
+            <span class="material-icons" style="font-size:14px; margin-right:4px;">settings</span> Configurar IA
+          </button>
+      </div>
+
+      <div style="margin-top:12px; border-top:1px solid var(--border); padding-top:8px;" class="small">
+          Activo: <span id="active-bank" class="font-medium" style="color:var(--primary); margin-left:4px;">(ninguno)</span>
+      </div>
     </div>
     
 
@@ -1595,6 +1616,7 @@ renderBanksList(); renderStartScreenTags(); renderHistoryChart(); renderDashboar
 </script>
 </body>
 </html>
+
 
 
 
