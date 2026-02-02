@@ -997,7 +997,20 @@ function removeDuplicates() {
     }
     if(dups>0 && confirm(`Borrar ${dups} duplicados?`)) { app.questions=unique; app.currentIndex=0; saveProgress(); alert("Listo."); } else alert("No hay duplicados.");
 }
-function normalizeQuestions(raw){ return (raw||[]).map((r,i)=>({ id: Date.now()+Math.floor(Math.random()*100000)+i, question: (r.question||r.text||'').trim(), image: r.image||null, answers: r.answers||r.options||[], correct: r.correct||0, justification: r.justification||'', tags: detectTags(r.question||'') })).filter(q=>q.question && q.answers.length>1); }
+function normalizeQuestions(raw){ 
+    return (raw||[]).map((r,i)=>({ 
+        id: Date.now()+Math.floor(Math.random()*100000)+i, 
+        question: (r.question||r.text||'').trim(), 
+        image: r.image||null, 
+        answers: r.answers||r.options||[], 
+        correct: r.correct||0, 
+        justification: r.justification||'', 
+        // CAMBIO AQUÍ: Si el JSON trae 'tags', úsalos tal cual (sin filtrar). 
+        // Solo si NO trae tags, intenta detectarlos automáticamente.
+        tags: (r.tags && Array.isArray(r.tags) && r.tags.length > 0) ? r.tags : detectTags(r.question||'') 
+    })).filter(q=>q.question && q.answers.length>1); 
+}
+}
 function parseTxtToQuestions(text) { const qs=[]; text.split(/\n\s*\n/).forEach((b,i)=>{ const l=b.trim().split('\n'); if(l.length<2)return; let qT="",ops=[],cor=0,jus=""; l.forEach(line=>{ if(line.match(/^[a-eA-E][\)\.]/)) ops.push(line.replace(/^[a-eA-E][\)\.]\s*/,'')); else if(line.match(/^R:/)) cor=line.toLowerCase().charCodeAt(2)-97; else qT+=line+"\n"; }); if(ops.length>1) qs.push({id:Date.now()+i, question:qT.trim(), answers:ops, correct:cor, tags:detectTags(qT)}); }); return qs; }
 /* --- MÓDULO INTELIGENCIA ARTIFICIAL (GEMINI) --- */
 
@@ -1615,6 +1628,7 @@ renderBanksList(); renderStartScreenTags(); renderHistoryChart(); renderDashboar
 </script>
 </body>
 </html>
+
 
 
 
