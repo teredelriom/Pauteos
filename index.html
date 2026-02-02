@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-<title>Pauteo Pro v3.7</title>
+<title>Pauteo Pro v4.0 - Casos Clínicos</title>
 
 <meta name="application-name" content="Pauteo">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -43,11 +43,14 @@
   --selected-bg: #e0f2fe;
   --selected-border: #38bdf8;
   --selected-text: #0369a1;
+  
+  --case-accent: #10b981; /* Esmeralda para casos clínicos */
+  --case-soft: #d1fae5;
 }
 
 [data-theme='pink'] { --bg: #fff0f5; --card: #ffffff; --text: #333; --primary: #ff8ec0; --primary-soft: #ffe6f0; --primary-hover: #ff76b0; --border: rgba(255, 142, 192, 0.2); }
 [data-theme='light'] { --bg: #F5F5F7; --card: #FFFFFF; --text: #1D1D1F; --muted: #86868B; --primary: #0071E3; --primary-soft: #E8F2FF; --primary-hover: #0077ED; --shadow: 0 4px 12px rgba(0,0,0,0.08); --border: #D2D2D7; }
-[data-theme='dark'] { --bg: #000000; --card: #1c1c1e; --text: #f5f5f7; --muted: #a1a1a6; --primary: #0A84FF; --primary-soft: #2C2C2E; --primary-hover: #409CFF; --shadow: 0 8px 30px rgba(0,0,0,0.5); --border: #38383A; --correct-bg: #052e16; --correct-text: #dcfce7; --incorrect-bg: #450a0a; --incorrect-text: #fecaca; --selected-bg: #172a46; --selected-border: #38bdf8; --selected-text: #bae6fd;}
+[data-theme='dark'] { --bg: #000000; --card: #1c1c1e; --text: #f5f5f7; --muted: #a1a1a6; --primary: #0A84FF; --primary-soft: #2C2C2E; --primary-hover: #409CFF; --shadow: 0 8px 30px rgba(0,0,0,0.5); --border: #38383A; --correct-bg: #052e16; --correct-text: #dcfce7; --incorrect-bg: #450a0a; --incorrect-text: #fecaca; --selected-bg: #172a46; --selected-border: #38bdf8; --selected-text: #bae6fd; --case-accent: #34d399; --case-soft: #064e3b; }
 
 /* --- ESTILOS GLOBALES --- */
 html,body{height:100%; min-height: 100dvh; margin:0;font-family:'Inter', -apple-system, sans-serif; background:var(--bg); color:var(--text); transition: background 0.3s ease, color 0.3s ease; -webkit-tap-highlight-color: transparent;}
@@ -120,7 +123,7 @@ body.quiz-mode #quiz-menu-btn { display: inline-flex !important; }
 .nav-dot.wrong { background: #fee2e2; color: #ef4444; } 
 
 #question-text { font-size: 1.15rem; line-height: 1.6; font-weight: 500; color: var(--text); margin-bottom: 1.5rem; text-align: left; white-space: pre-wrap; }
-.question-img { max-width: 100%; max-height: 400px; border-radius: 8px; object-fit: contain; display: block; margin: 0 auto 16px auto; border: 1px solid var(--border); }
+.question-img { max-width: 100%; max-height: 400px; border-radius: 8px; object-fit: contain; display: block; margin: 0 auto 16px auto; border: 1px solid var(--border); cursor: zoom-in; }
 
 details.justification-details { margin-top: 20px; border: 1px solid var(--border); border-radius: 12px; background: var(--card); overflow: hidden; transition: all 0.3s ease; }
 details.justification-details summary { padding: 12px 16px; cursor: pointer; font-weight: 600; font-size: 0.9rem; color: var(--primary); list-style: none; display: flex; align-items: center; justify-content: space-between; }
@@ -136,6 +139,27 @@ details.justification-details[open] summary { border-bottom: 1px solid var(--bor
 .history-bar.good { background: var(--correct-border); }
 .history-bar.bad { background: var(--incorrect-border); }
 .history-date { font-size: 0.65rem; color: var(--muted); margin-top: 4px; text-align: center; }
+
+/* Casos Clínicos - Estilos Específicos */
+.srs-btn { flex: 1; border-radius: 8px; padding: 12px; border: none; font-weight: bold; cursor: pointer; transition: transform 0.2s; display: flex; flex-direction: column; align-items: center; gap: 4px; }
+.srs-btn:hover { transform: translateY(-2px); }
+.srs-btn.hard { background: #fee2e2; color: #b91c1c; border: 1px solid #fca5a5; }
+.srs-btn.good { background: #e0f2fe; color: #0369a1; border: 1px solid #7dd3fc; }
+.srs-btn.easy { background: #dcfce7; color: #15803d; border: 1px solid #86efac; }
+.srs-btn span.label { font-size: 0.75rem; opacity: 0.8; font-weight: normal; }
+
+.notepad-area { width: 100%; min-height: 100px; padding: 12px; background: #fffbeb; border: 1px solid #fcd34d; border-radius: 8px; font-family: monospace; font-size: 0.9rem; color: #78350f; resize: vertical; margin-top: 12px; }
+.notepad-area:focus { outline: none; border-color: #f59e0b; box-shadow: 0 0 0 2px rgba(245, 158, 11, 0.2); }
+[data-theme='dark'] .notepad-area { background: #2a2515; border-color: #854d0e; color: #fde68a; }
+
+.flashcard-reveal { border-top: 1px dashed var(--border); margin-top: 20px; padding-top: 20px; animation: fadeIn 0.3s ease-in-out; }
+@keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+/* Lightbox */
+.lightbox { position: fixed; inset: 0; background: rgba(0,0,0,0.9); z-index: 3000; display: none; align-items: center; justify-content: center; padding: 20px; }
+.lightbox.open { display: flex; }
+.lightbox img { max-width: 100%; max-height: 90vh; border-radius: 4px; box-shadow: 0 0 20px rgba(0,0,0,0.5); }
+.lightbox-close { position: absolute; top: 20px; right: 20px; color: white; font-size: 30px; cursor: pointer; background: rgba(255,255,255,0.2); border-radius: 50%; width: 44px; height: 44px; display: flex; align-items: center; justify-content: center; }
 
 /* Drawer & Modals */
 .drawer { position:fixed; left:-380px; top:0; bottom:0; width:360px; padding:20px; z-index:2000; transition:left .3s ease; box-shadow: 5px 0 25px rgba(0,0,0,0.1); border-right: 1px solid var(--border); background: var(--card); overflow-y: auto; }
@@ -181,7 +205,7 @@ details.justification-details[open] summary { border-bottom: 1px solid var(--bor
     <div style="display:flex;justify-content:space-between;align-items:center; margin-bottom: 16px;">
       <div>
         <h2 class="text-xl font-bold tracking-tight" style="margin:0; font-size:1.25rem;">Pauteo Pro</h2>
-        <div class="small">v3.7 · <span style="color:var(--primary)">Modo Estudio</span></div>
+        <div class="small">v4.0 · <span style="color:var(--primary)">Modo Estudio</span></div>
       </div>
       <div style="display:flex; gap:6px;">
           <button id="tutorial-btn" class="icon-btn" title="Tutorial / Instrucciones"><span class="material-icons">info</span></button>
@@ -277,7 +301,7 @@ details.justification-details[open] summary { border-bottom: 1px solid var(--bor
          <div style="font-size:0.9rem; font-weight:600;">Subir archivos JSON o TXT</div>
          <div class="small">Click o arrastra aquí</div>
       </div>
-      <input id="file-input" type="file" accept=".json,.txt" multiple style="display:none" />
+      <input id="file-input" type="file" accept=".json,.txt,.csv" multiple style="display:none" />
 
       <div style="margin-top:12px; display:flex; gap:8px;">
           <button id="btn-json-help-details" class="btn small" style="flex:1; background:var(--bg); border:1px solid var(--border);">
@@ -303,8 +327,13 @@ details.justification-details[open] summary { border-bottom: 1px solid var(--bor
                 <h2 class="text-2xl font-bold mb-2" style="font-size:1.5rem;">Listo para practicar</h2>
                 <p class="small mb-6">Selecciona un banco, usa el modo inteligente o carga tu JSON.</p>
                 <div style="display:flex; gap:12px; flex-wrap:wrap; justify-content:center;">
-                      <button id="open-pauteo-btn" class="btn" style="font-size:1.1rem; padding:16px 32px; background:var(--primary); color:white; box-shadow: 0 4px 14px rgba(0,0,0,0.2);">Iniciar</button>
-                      <button id="open-smart-btn" class="btn" style="font-size:1.1rem; padding:16px 32px; background:var(--card); color:var(--primary); border:2px solid var(--primary); box-shadow: 0 4px 14px rgba(0,0,0,0.1);"> Repaso </button>
+                      <button id="open-pauteo-btn" class="btn" style="font-size:1.1rem; padding:16px 32px; background:var(--primary); color:white; box-shadow: 0 4px 14px rgba(0,0,0,0.2);">Iniciar Quiz</button>
+                      <button id="open-smart-btn" class="btn" style="font-size:1.1rem; padding:16px 32px; background:var(--card); color:var(--primary); border:2px solid var(--primary); box-shadow: 0 4px 14px rgba(0,0,0,0.1);"> Repaso Quiz </button>
+                </div>
+                <div style="margin-top: 16px;">
+                    <button id="open-cases-module-btn" class="btn" style="font-size:1rem; padding:14px 28px; background: var(--case-accent); color: white; box-shadow: 0 4px 14px rgba(0,0,0,0.2);">
+                        <span class="material-icons" style="margin-right:8px;">medical_services</span> Casos Clínicos
+                    </button>
                 </div>
             </div>
         </div>
@@ -341,7 +370,6 @@ details.justification-details[open] summary { border-bottom: 1px solid var(--bor
     </div>
 
     <div id="quiz-view" class="card" style="display:none; height:100%; flex-direction:column; background:transparent; border:none; box-shadow:none; padding:0;">
-      
       <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
          <button id="quiz-menu-btn" class="menu-btn icon-btn" style="display:none;"><span class="material-icons">menu</span></button>
          <div style="flex:1;"></div> 
@@ -444,6 +472,94 @@ details.justification-details[open] summary { border-bottom: 1px solid var(--bor
           <button onclick="location.reload()" class="btn" style="margin-left:12px; background:transparent; border:1px solid var(--border);">Volver al inicio</button>
         </div>
       </div>
+    </div>
+
+    <div id="cases-view" style="display:none; height:100%; flex-direction:column; gap: 20px;">
+        <div style="display:flex; justify-content:space-between; align-items:center;">
+             <button onclick="exitCasesModule()" class="btn small" style="background:var(--card); border:1px solid var(--border); color:var(--text);"><span class="material-icons" style="font-size:16px; margin-right:4px;">arrow_back</span> Dashboard</button>
+             <h2 class="text-lg font-bold" style="color:var(--case-accent);">Casos Clínicos SRS</h2>
+        </div>
+
+        <div id="cases-import-screen" class="card" style="text-align:center; padding: 40px; border: 2px dashed var(--case-accent);">
+            <span class="material-icons" style="font-size:48px; color:var(--case-accent);">medical_services</span>
+            <h3 class="font-bold text-xl mt-2">Carga tus Casos</h3>
+            <p class="small text-muted mb-6">Arrastra un archivo JSON de casos clínicos aquí.</p>
+            <div id="cases-drop-zone" style="cursor:pointer; padding:20px; background:var(--bg); border-radius:12px; margin-bottom:12px;">
+                Elegir archivo
+            </div>
+            <input id="cases-file-input" type="file" accept=".json" style="display:none" />
+            <div class="small text-muted">Formato soportado: JSON con campos (title, description, diagnosis, image).</div>
+        </div>
+
+        <div id="cases-study-screen" style="display:none; flex-direction:column; flex:1;">
+            <div class="quiz-progress-container">
+                <div style="display:flex; justify-content:space-between; margin-bottom:6px;">
+                    <span id="cases-progress-text" class="small font-bold">Caso 1 / 10</span>
+                    <span class="small font-bold" style="color:var(--case-accent);">SRS Lite</span>
+                </div>
+                <div class="progress-bg"><div id="cases-progress-bar" class="progress-bar" style="background:var(--case-accent);"></div></div>
+            </div>
+
+            <div class="card" style="max-width:800px; margin:0 auto; width:100%; flex:1; display:flex; flex-direction:column;">
+                
+                <div style="display:flex; justify-content:space-between; margin-bottom:12px;">
+                    <div id="case-tags-container"></div>
+                    <button id="case-edit-btn" class="action-btn" title="Editar Caso"><span class="material-icons">edit</span></button>
+                </div>
+
+                <div id="case-edit-form" style="display:none; margin-bottom:20px; background:var(--bg); padding:12px; border:1px solid var(--case-accent); border-radius:8px;">
+                    <label class="small font-bold">Título:</label>
+                    <input id="edit-case-title" class="input input-edit">
+                    <label class="small font-bold">Descripción:</label>
+                    <textarea id="edit-case-desc" class="input input-edit" rows="4"></textarea>
+                    <label class="small font-bold">Diagnóstico (HTML permitido):</label>
+                    <textarea id="edit-case-diag" class="input input-edit" rows="4"></textarea>
+                    <div style="text-align:right;">
+                        <button id="save-case-edit" class="btn" style="background:var(--case-accent); color:white;">Guardar</button>
+                    </div>
+                </div>
+
+                <div id="case-content-front">
+                    <h2 id="case-title" class="text-xl font-bold mb-4">Título del Caso</h2>
+                    <div id="case-image-container" style="text-align:center; margin-bottom:16px;"></div>
+                    <div id="case-description" style="line-height:1.6; font-size:1.05rem; white-space: pre-wrap;">Descripción...</div>
+                </div>
+
+                <div id="case-content-back" class="flashcard-reveal" style="display:none;">
+                    <h3 class="font-bold text-lg mb-2" style="color:var(--case-accent);">Diagnóstico / Resolución</h3>
+                    <div id="case-diagnosis" style="line-height:1.6; font-size:1rem;"></div>
+                    
+                    <div style="margin-top:24px;">
+                        <label class="small font-bold" style="display:flex; align-items:center; gap:4px;">
+                            <span class="material-icons" style="font-size:16px;">edit_note</span> Mis Apuntes (Persistente)
+                        </label>
+                        <textarea id="case-notepad" class="notepad-area" placeholder="Escribe notas clínicas aquí..."></textarea>
+                    </div>
+                </div>
+
+                <div style="margin-top:auto; padding-top:24px;">
+                    <button id="case-reveal-btn" class="btn" style="width:100%; padding:16px; background:var(--case-accent); color:white; font-size:1.1rem;">
+                        Ver Diagnóstico
+                    </button>
+                    
+                    <div id="case-srs-controls" style="display:none; gap:12px; margin-top:12px;">
+                        <button onclick="handleCaseSRS('hard')" class="srs-btn hard">
+                            Difícil
+                            <span class="label">Repetir pronto</span>
+                        </button>
+                        <button onclick="handleCaseSRS('good')" class="srs-btn good">
+                            Bien
+                            <span class="label">Al final</span>
+                        </button>
+                        <button onclick="handleCaseSRS('easy')" class="srs-btn easy">
+                            Fácil
+                            <span class="label">Terminar</span>
+                        </button>
+                    </div>
+                </div>
+
+            </div>
+        </div>
     </div>
   </main>
 </div>
@@ -594,18 +710,24 @@ details.justification-details[open] summary { border-bottom: 1px solid var(--bor
         <div class="progress-bg" style="width:200px; margin:15px auto;"><div id="ai-loading-bar" class="progress-bar"></div></div>
     </div>
 </div>
+
+<div id="lightbox-modal" class="lightbox">
+    <div id="lightbox-close-btn" class="lightbox-close">&times;</div>
+    <img id="lightbox-img" src="" alt="Zoom">
+</div>
+
 <script>
 // --- PWA INIT ---
 let deferredPrompt;
 window.addEventListener('beforeinstallprompt', (e) => { e.preventDefault(); deferredPrompt = e; });
 
-const manifest = { "name": "Pauteo Pro v3.0", "short_name": "Pauteo", "start_url": ".", "display": "standalone", "background_color": "#ffffff", "theme_color": "#ff8ec0", "orientation": "any", "icons": [{ "src": document.getElementById('dynamic-apple-icon').href, "sizes": "192x192", "type": "image/svg+xml" }] };
+const manifest = { "name": "Pauteo Pro v4.0", "short_name": "Pauteo", "start_url": ".", "display": "standalone", "background_color": "#ffffff", "theme_color": "#ff8ec0", "orientation": "any", "icons": [{ "src": document.getElementById('dynamic-apple-icon').href, "sizes": "192x192", "type": "image/svg+xml" }] };
 document.querySelector('#my-manifest').setAttribute('href', URL.createObjectURL(new Blob([JSON.stringify(manifest)], {type: 'application/json'})));
 
 if ('serviceWorker' in navigator && window.location.protocol.includes('http')) {
   window.addEventListener('load', function() {
     navigator.serviceWorker.register(URL.createObjectURL(new Blob([`
-      const CACHE_NAME = 'pauteo-v3-offline';
+      const CACHE_NAME = 'pauteo-v4-offline';
       self.addEventListener('install', (e) => { e.waitUntil(caches.open(CACHE_NAME).then((cache) => cache.addAll(['./', location.href]))); self.skipWaiting(); });
       self.addEventListener('fetch', (e) => { e.respondWith(fetch(e.request).catch(() => caches.match(e.request).then(res => res || caches.match('./')))); });
     `], {type: 'application/javascript'}))).catch(console.error);
@@ -620,6 +742,8 @@ const STORAGE_KEY = 'pauteo_state_v3';
 const BANKS_KEY = 'pauteo_banks_v3';
 const HISTORY_KEY = 'pauteo_history_v1';
 const STATS_KEY = 'pauteo_stats_v1';
+const CASES_KEY = 'pauteo_cases_v1';
+const NOTES_KEY = 'pauteo_case_notes_v1';
 
 const AUTO_TAGGER = {
     'Ped. Respiratorio': ['sbo', 'bronquiolitis', 'crup', 'vrs', 'sibilancias', 'score de tal'],
@@ -654,7 +778,9 @@ function detectTags(text) {
 const app = {
   questions: [], currentIndex: 0, answersGiven: {}, marked: {}, flagged: {},
   mode: 'study', savedBanks: {}, activeBankName: null, lastPreviewArr: null, quizActive: false, backupQuestions: null,
-  currentEditorFilter: { tags: new Set() }, editorQuestions: [] 
+  currentEditorFilter: { tags: new Set() }, editorQuestions: [],
+  // NUEVO: ESTADO CASOS
+  cases: [], casesQueue: [], currentCaseIdx: 0, caseNotes: {}
 };
 
 function getQuestionStats() { return JSON.parse(localStorage.getItem(STATS_KEY) || '{}'); }
@@ -732,6 +858,11 @@ function loadAll(){
   }catch(e){ localStorage.removeItem(STORAGE_KEY); }
   try{ app.savedBanks = JSON.parse(localStorage.getItem(BANKS_KEY)) || {}; }catch(e){ app.savedBanks = {}; }
   if(app.activeBankName && app.savedBanks[app.activeBankName] && !app.questions.length) app.questions = app.savedBanks[app.activeBankName];
+  
+  // NUEVO: Cargar Casos
+  try { app.cases = JSON.parse(localStorage.getItem(CASES_KEY)) || []; } catch(e) { app.cases = []; }
+  try { app.caseNotes = JSON.parse(localStorage.getItem(NOTES_KEY)) || {}; } catch(e) { app.caseNotes = {}; }
+
   const savedTheme = localStorage.getItem('pauteo_theme') || 'pink';
   document.documentElement.setAttribute('data-theme', savedTheme);
   updateHeaderButtons();
@@ -1005,195 +1136,310 @@ function normalizeQuestions(raw){
         answers: r.answers||r.options||[], 
         correct: r.correct||0, 
         justification: r.justification||'', 
-        // CAMBIO AQUÍ: Si el JSON trae 'tags', úsalos tal cual (sin filtrar). 
-        // Solo si NO trae tags, intenta detectarlos automáticamente.
         tags: (r.tags && Array.isArray(r.tags) && r.tags.length > 0) ? r.tags : detectTags(r.question||'') 
     })).filter(q=>q.question && q.answers.length>1); 
 }
 
 function parseTxtToQuestions(text) { const qs=[]; text.split(/\n\s*\n/).forEach((b,i)=>{ const l=b.trim().split('\n'); if(l.length<2)return; let qT="",ops=[],cor=0,jus=""; l.forEach(line=>{ if(line.match(/^[a-eA-E][\)\.]/)) ops.push(line.replace(/^[a-eA-E][\)\.]\s*/,'')); else if(line.match(/^R:/)) cor=line.toLowerCase().charCodeAt(2)-97; else qT+=line+"\n"; }); if(ops.length>1) qs.push({id:Date.now()+i, question:qT.trim(), answers:ops, correct:cor, tags:detectTags(qT)}); }); return qs; }
+
 /* --- MÓDULO INTELIGENCIA ARTIFICIAL (GEMINI) --- */
 
-// 1. Gestión de la API Key
 const AI_KEY_STORAGE = 'pauteo_gemini_key_v1';
 const aiInput = document.getElementById('ai-api-key');
-
-// Cargar key guardada al abrir modal
-if(localStorage.getItem(AI_KEY_STORAGE)) {
-    aiInput.value = localStorage.getItem(AI_KEY_STORAGE);
-}
+if(localStorage.getItem(AI_KEY_STORAGE)) { aiInput.value = localStorage.getItem(AI_KEY_STORAGE); }
 
 document.getElementById('save-ai-key-btn').addEventListener('click', () => {
     const key = aiInput.value.trim();
-    if(key) {
-        localStorage.setItem(AI_KEY_STORAGE, key);
-        alert('API Key guardada correctamente. Ahora la importación usará IA.');
-        document.getElementById('ai-config-overlay').classList.remove('open');
-    } else {
-        localStorage.removeItem(AI_KEY_STORAGE);
-        alert('API Key eliminada. Se usará el sistema de tags básico.');
-    }
+    if(key) { localStorage.setItem(AI_KEY_STORAGE, key); alert('API Key guardada.'); document.getElementById('ai-config-overlay').classList.remove('open'); } 
+    else { localStorage.removeItem(AI_KEY_STORAGE); alert('API Key eliminada.'); }
 });
 
-/* --- GESTIÓN DE TAGS PARA EL BANCO ACTIVO --- */
-
-// 1. Función para BORRAR todos los tags
-safeAddListener('btn-clear-tags', 'click', () => {
-    if (!app.questions || app.questions.length === 0) return alert("No hay preguntas cargadas.");
-    
-    if (confirm(`¿Estás seguro de BORRAR TODOS los tags de las ${app.questions.length} preguntas actuales? Esta acción no se puede deshacer.`)) {
-        // Borrar tags
-        app.questions.forEach(q => {
-            q.tags = []; 
-        });
-        
-        // Guardar cambios
-        saveProgress();
-        if (app.activeBankName) {
-            app.savedBanks[app.activeBankName] = app.questions;
-            saveBanks();
-        }
-        
-        // Actualizar UI
-        alert("Tags eliminados correctamente.");
-        renderQuestion(app.currentIndex); // Refrescar pregunta actual
-        renderStartScreenTags(); // Refrescar lista de tags en dashboard
-    }
-});
-
-// 2. Función para GENERAR tags con IA (Banco Activo)
 safeAddListener('btn-ai-tags-bank', 'click', async () => {
-    if (!app.questions || app.questions.length === 0) return alert("No hay preguntas cargadas.");
-    
-    // Verificar API Key
-    const apiKey = localStorage.getItem('pauteo_gemini_key_v1'); // Asegúrate de usar la misma key que definimos antes
-    if (!apiKey) {
-        alert("Necesitas configurar tu API Key de Gemini primero. Ve al botón 'Configurar IA' (o añádelo si no lo tienes).");
-        // Opcional: Abrir modal de configuración si existe
-        const configModal = document.getElementById('ai-config-overlay');
-        if(configModal) configModal.classList.add('open');
+    // Si estamos en MODO CASOS, usar la IA para casos
+    if (app.mode === 'cases') {
+        if (!app.cases || app.cases.length === 0) return alert("No hay casos cargados.");
+        if (!confirm("¿Generar etiquetas IA para los Casos Clínicos actuales?")) return;
+        await enrichCasesWithAI(app.cases);
         return;
     }
 
-    if (confirm(`¿Generar tags con Inteligencia Artificial para las ${app.questions.length} preguntas actuales?\n\nEsto analizará el texto de cada pregunta y asignará etiquetas médicas precisas.`)) {
-        
-        // Usamos la función de enriquecimiento (definida abajo)
+    // Modo Preguntas Normal
+    if (!app.questions || app.questions.length === 0) return alert("No hay preguntas cargadas.");
+    if (confirm(`¿Generar tags IA para ${app.questions.length} preguntas?`)) {
         try {
-            const updatedQuestions = await enrichQuestionsWithAI(app.questions);
-            app.questions = updatedQuestions;
-
-            // Guardar cambios
-            saveProgress();
-            if (app.activeBankName) {
-                app.savedBanks[app.activeBankName] = app.questions;
-                saveBanks();
-            }
-
-            alert("¡Proceso finalizado! Se han generado las etiquetas.");
-            renderQuestion(app.currentIndex);
-            renderStartScreenTags();
-            
-        } catch (error) {
-            console.error(error);
-            alert("Hubo un error al procesar con la IA.");
-        }
+            const updated = await enrichQuestionsWithAI(app.questions);
+            app.questions = updated;
+            saveProgress(); if (app.activeBankName) { app.savedBanks[app.activeBankName] = app.questions; saveBanks(); }
+            alert("Tags generados."); renderQuestion(app.currentIndex); renderStartScreenTags();
+        } catch (e) { alert("Error IA."); }
     }
 });
 
-/* --- FUNCIÓN CORE DE IA (Asegúrate de tener esto en tu script) --- */
-/* Si ya la añadiste en el paso de "Importar con IA", no necesitas duplicarla, 
-   pero asegúrate de que esté accesible en el scope global o dentro del app. */
-
 async function enrichQuestionsWithAI(questionsList) {
-    const apiKey = localStorage.getItem('pauteo_gemini_key_v1');
-    if (!apiKey) return questionsList;
-
-    // UI de Carga (Reutilizamos la existente)
-    const loadingOverlay = document.getElementById('ai-loading-overlay') || createLoadingOverlay(); // Helper por si no existe
-    const loadingText = document.getElementById('ai-loading-text');
-    const loadingBar = document.getElementById('ai-loading-bar');
-    loadingOverlay.classList.add('open');
-
-    const BATCH_SIZE = 5; // Lotes pequeños para asegurar precisión
-    const totalBatches = Math.ceil(questionsList.length / BATCH_SIZE);
-    
-    // Clonamos para no mutar directamente si falla
-    let processedList = JSON.parse(JSON.stringify(questionsList));
-
+    const apiKey = localStorage.getItem(AI_KEY_STORAGE);
+    if (!apiKey) { alert("Falta API Key."); return questionsList; }
+    const loadingOverlay = createLoadingOverlay(); loadingOverlay.classList.add('open');
+    const BATCH_SIZE = 5; let processedList = JSON.parse(JSON.stringify(questionsList));
     for (let i = 0; i < processedList.length; i += BATCH_SIZE) {
         const batch = processedList.slice(i, i + BATCH_SIZE);
-        
-        // Actualizar barra de progreso
-        const pct = Math.round((i / processedList.length) * 100);
-        if(loadingBar) loadingBar.style.width = `${pct}%`;
-        if(loadingText) loadingText.textContent = `Analizando bloque ${Math.floor(i/BATCH_SIZE)+1}/${totalBatches} con IA...`;
-
-        // Prompt optimizado para preguntas tipo test
         const promptText = batch.map((q, idx) => `ID ${idx}: ${q.question.substring(0, 300)}`).join('\n---\n');
-        
-        const prompt = `
-        Actúa como médico docente. Analiza estas preguntas de medicina.
-        Asigna de 1 a 3 etiquetas (tags) clínicas PRECISAS y ESTÁNDAR a cada una (ej: "Cardiología", "Fármacos", "Pediatría - Respiratorio").
-        Responde SOLO un objeto JSON válido donde la clave es el ID numérico (0, 1...) y el valor es un array de strings.
-        
-        Preguntas:
-        ${promptText}
-        `;
-
+        const prompt = `Actúa como médico. Asigna 1-3 tags clínicos precisos. Responde SOLO JSON { "0": ["tag1"], "1": ["tag2"] }. Preguntas:\n${promptText}`;
         try {
-            const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }] })
-            });
-
-            const data = await response.json();
-            const textResponse = data.candidates?.[0]?.content?.parts?.[0]?.text;
-            
-            if (textResponse) {
-                const cleanJson = textResponse.replace(/```json|```/g, '').trim();
-                const tagsMap = JSON.parse(cleanJson);
-                
-                batch.forEach((q, idx) => {
-                    if (tagsMap[idx] && Array.isArray(tagsMap[idx])) {
-                        // Combinar tags nuevos con existentes (sin duplicados)
-                        const existingTags = new Set(q.tags || []);
-                        tagsMap[idx].forEach(t => existingTags.add(t));
-                        q.tags = Array.from(existingTags);
-                    }
-                });
-            }
-        } catch (e) {
-            console.error("Error en lote IA:", e);
-        }
-        
-        // Pequeña pausa para no saturar rate limits
-        await new Promise(r => setTimeout(r, 500));
+            const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }] }) });
+            const data = await res.json();
+            const tagsMap = JSON.parse(data.candidates?.[0]?.content?.parts?.[0]?.text.replace(/```json|```/g, '').trim());
+            batch.forEach((q, idx) => { if (tagsMap[idx]) q.tags = Array.from(new Set([...(q.tags || []), ...tagsMap[idx]])); });
+        } catch (e) { console.error(e); }
     }
-
-    loadingOverlay.classList.remove('open');
-    return processedList;
+    loadingOverlay.classList.remove('open'); return processedList;
 }
 
-// Helper para crear el overlay si no existe (Seguridad)
+// NUEVO: IA PARA CASOS CLÍNICOS
+async function enrichCasesWithAI(casesList) {
+    const apiKey = localStorage.getItem(AI_KEY_STORAGE);
+    if (!apiKey) { alert("Falta API Key."); return; }
+    const loadingOverlay = createLoadingOverlay(); loadingOverlay.classList.add('open');
+    
+    // Procesar casos uno a uno o en lotes muy pequeños (tienen mucho texto)
+    const BATCH_SIZE = 3; 
+    let updatedCases = [...casesList];
+
+    for (let i = 0; i < updatedCases.length; i += BATCH_SIZE) {
+        const batch = updatedCases.slice(i, i + BATCH_SIZE);
+        const promptText = batch.map((c, idx) => `ID ${idx}: Título: ${c.title}. Desc: ${c.description.substring(0, 400)}`).join('\n---\n');
+        const prompt = `Analiza estos casos clínicos. Asigna 2-4 tags médicos (Ej: #Cardiología, #Urgencias). Responde SOLO JSON { "0": ["Tag1", "Tag2"] }. Casos:\n${promptText}`;
+        
+        try {
+            const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }] }) });
+            const data = await res.json();
+            const text = data.candidates?.[0]?.content?.parts?.[0]?.text;
+            if(text) {
+                const tagsMap = JSON.parse(text.replace(/```json|```/g, '').trim());
+                batch.forEach((c, idx) => { if (tagsMap[idx]) c.tags = Array.from(new Set([...(c.tags || []), ...tagsMap[idx]])); });
+            }
+        } catch (e) { console.error("Error IA Casos", e); }
+    }
+    
+    app.cases = updatedCases;
+    localStorage.setItem(CASES_KEY, JSON.stringify(app.cases));
+    loadingOverlay.classList.remove('open');
+    alert("Casos etiquetados exitosamente.");
+    if(app.casesQueue.length > 0) renderCase(0); // Refrescar vista actual
+}
+
 function createLoadingOverlay() {
     if(document.getElementById('ai-loading-overlay')) return document.getElementById('ai-loading-overlay');
-    const div = document.createElement('div');
-    div.id = 'ai-loading-overlay';
-    div.className = 'overlay';
-    div.style.zIndex = '3000';
-    div.innerHTML = `
-        <div class="card" style="padding:30px; text-align:center;">
-            <div style="font-size:40px; margin-bottom:10px;">✨</div>
-            <h3 class="font-bold">Trabajando...</h3>
-            <p id="ai-loading-text" class="small">Procesando con IA...</p>
-            <div class="progress-bg" style="width:200px; margin:15px auto;"><div id="ai-loading-bar" class="progress-bar"></div></div>
-        </div>
-    `;
-    document.body.appendChild(div);
-    return div;
+    const div = document.createElement('div'); div.id = 'ai-loading-overlay'; div.className = 'overlay'; div.style.zIndex = '3000';
+    div.innerHTML = `<div class="card" style="padding:30px; text-align:center;"><div style="font-size:40px; margin-bottom:10px;">✨</div><h3 class="font-bold">Analizando...</h3><div class="progress-bg" style="width:200px; margin:15px auto;"><div id="ai-loading-bar" class="progress-bar"></div></div></div>`;
+    document.body.appendChild(div); return div;
 }
-/* EVENTOS DE UI */
+
+/* =========================================
+   MÓDULO: CASOS CLÍNICOS (LÓGICA)
+   ========================================= */
+
+// 1. Navegación
+window.openCasesModule = function() {
+    app.mode = 'cases';
+    document.getElementById('dashboard-view').style.display = 'none';
+    document.getElementById('quiz-view').style.display = 'none';
+    document.getElementById('cases-view').style.display = 'flex';
+    
+    if (app.cases && app.cases.length > 0) {
+        startCasesSession();
+    } else {
+        document.getElementById('cases-import-screen').style.display = 'block';
+        document.getElementById('cases-study-screen').style.display = 'none';
+    }
+};
+
+window.exitCasesModule = function() {
+    app.mode = 'study';
+    document.getElementById('cases-view').style.display = 'none';
+    document.getElementById('dashboard-view').style.display = 'flex';
+};
+
+safeAddListener('open-cases-module-btn', 'click', openCasesModule);
+
+// 2. Importación (Drag & Drop)
+const casesDropZone = document.getElementById('cases-drop-zone');
+const casesFileInput = document.getElementById('cases-file-input');
+
+casesDropZone.addEventListener('click', () => casesFileInput.click());
+casesFileInput.addEventListener('change', (e) => loadCasesFile(e.target.files[0]));
+
+// Drag events
+['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+  casesDropZone.addEventListener(eventName, preventDefaults, false);
+});
+function preventDefaults(e) { e.preventDefault(); e.stopPropagation(); }
+casesDropZone.addEventListener('drop', (e) => loadCasesFile(e.dataTransfer.files[0]));
+
+async function loadCasesFile(file) {
+    if (!file) return;
+    try {
+        const text = await file.text();
+        const json = JSON.parse(text);
+        // Validar estructura básica
+        const validCases = json.filter(c => c.title && c.description).map((c, i) => ({
+            id: c.id || Date.now() + i,
+            title: c.title,
+            description: c.description,
+            image: c.image || null,
+            diagnosis: c.diagnosis || c.resolution || "Sin diagnóstico.",
+            tags: c.tags || c.category ? [c.category] : [],
+        }));
+
+        if (validCases.length === 0) return alert("Formato inválido. Se requieren campos: title, description.");
+        
+        app.cases = validCases;
+        localStorage.setItem(CASES_KEY, JSON.stringify(app.cases));
+        
+        // Sugerir IA
+        if(localStorage.getItem(AI_KEY_STORAGE) && confirm("Casos cargados. ¿Usar IA para generar etiquetas automáticas ahora?")) {
+            await enrichCasesWithAI(app.cases);
+        }
+        
+        startCasesSession();
+
+    } catch (e) {
+        alert("Error al leer archivo JSON: " + e.message);
+    }
+}
+
+// 3. Sesión de Estudio SRS Lite
+function startCasesSession() {
+    document.getElementById('cases-import-screen').style.display = 'none';
+    document.getElementById('cases-study-screen').style.display = 'flex';
+    
+    // Crear cola de estudio (Indices)
+    app.casesQueue = app.cases.map((_, i) => i);
+    // Mezclar un poco
+    app.casesQueue.sort(() => Math.random() - 0.5);
+    
+    renderCase(0);
+}
+
+function renderCase(queueIndex) {
+    if (app.casesQueue.length === 0) {
+        alert("¡Sesión de casos terminada!");
+        return exitCasesModule();
+    }
+    
+    const realIdx = app.casesQueue[0]; // Siempre miramos el primero de la cola
+    const c = app.cases[realIdx];
+    app.currentCaseIdx = realIdx;
+
+    // Reset UI
+    document.getElementById('case-content-back').style.display = 'none';
+    document.getElementById('case-reveal-btn').style.display = 'block';
+    document.getElementById('case-srs-controls').style.display = 'none';
+    document.getElementById('case-edit-form').style.display = 'none';
+    document.getElementById('case-content-front').style.display = 'block';
+
+    // Rellenar datos
+    document.getElementById('case-title').textContent = c.title;
+    document.getElementById('case-description').textContent = c.description;
+    document.getElementById('case-diagnosis').innerHTML = c.diagnosis.replace(/\n/g, '<br>');
+    
+    // Imagen
+    const imgCont = document.getElementById('case-image-container');
+    imgCont.innerHTML = '';
+    if (c.image) {
+        const img = document.createElement('img');
+        img.src = c.image;
+        img.className = 'question-img';
+        img.style.maxHeight = '300px';
+        img.onclick = () => openLightbox(c.image);
+        imgCont.appendChild(img);
+    }
+
+    // Tags
+    const tagsCont = document.getElementById('case-tags-container');
+    tagsCont.innerHTML = '';
+    (c.tags || []).forEach(t => {
+        const s = document.createElement('span'); s.className = 'tag-pill'; s.textContent = t;
+        tagsCont.appendChild(s);
+    });
+
+    // Notas
+    const noteArea = document.getElementById('case-notepad');
+    noteArea.value = app.caseNotes[c.id] || "";
+    noteArea.oninput = () => {
+        app.caseNotes[c.id] = noteArea.value;
+        localStorage.setItem(NOTES_KEY, JSON.stringify(app.caseNotes));
+    };
+
+    // Progreso
+    const total = app.cases.length;
+    const left = app.casesQueue.length;
+    const done = total - left;
+    document.getElementById('cases-progress-text').textContent = `Pendientes: ${left}`;
+    document.getElementById('cases-progress-bar').style.width = `${(done/total)*100}%`;
+}
+
+// Revelar
+safeAddListener('case-reveal-btn', 'click', () => {
+    document.getElementById('case-content-back').style.display = 'block';
+    document.getElementById('case-reveal-btn').style.display = 'none';
+    document.getElementById('case-srs-controls').style.display = 'flex';
+});
+
+// Lógica SRS Lite
+window.handleCaseSRS = function(difficulty) {
+    const currentItem = app.casesQueue.shift(); // Sacar el actual
+
+    if (difficulty === 'hard') {
+        // Reinsertar pronto (posición 3 o final)
+        const insertPos = Math.min(app.casesQueue.length, 3);
+        app.casesQueue.splice(insertPos, 0, currentItem);
+    } else if (difficulty === 'good') {
+        // Reinsertar al final
+        app.casesQueue.push(currentItem);
+    } else if (difficulty === 'easy') {
+        // No reinsertar (ya salió de la cola)
+    }
+
+    renderCase(0);
+};
+
+// 4. Edición de Casos
+safeAddListener('case-edit-btn', 'click', () => {
+    const form = document.getElementById('case-edit-form');
+    const c = app.cases[app.currentCaseIdx];
+    
+    if (form.style.display === 'none') {
+        form.style.display = 'block';
+        document.getElementById('edit-case-title').value = c.title;
+        document.getElementById('edit-case-desc').value = c.description;
+        document.getElementById('edit-case-diag').value = c.diagnosis;
+    } else {
+        form.style.display = 'none';
+    }
+});
+
+safeAddListener('save-case-edit', 'click', () => {
+    const c = app.cases[app.currentCaseIdx];
+    c.title = document.getElementById('edit-case-title').value;
+    c.description = document.getElementById('edit-case-desc').value;
+    c.diagnosis = document.getElementById('edit-case-diag').value;
+    
+    localStorage.setItem(CASES_KEY, JSON.stringify(app.cases));
+    renderCase(0); // Refrescar UI
+});
+
+// 5. Lightbox
+const lightbox = document.getElementById('lightbox-modal');
+const lbImg = document.getElementById('lightbox-img');
+
+function openLightbox(src) {
+    lbImg.src = src;
+    lightbox.classList.add('open');
+}
+lightbox.addEventListener('click', () => lightbox.classList.remove('open'));
+
+
+/* --- FUNCIONES GENERALES PREVIAS (SIN CAMBIOS MAYORES) --- */
 safeAddListener('prev-btn', 'click', ()=>{ if(app.questions.length && app.currentIndex > 0){ app.currentIndex--; renderQuestion(app.currentIndex); } });
 safeAddListener('next-btn', 'click', ()=>{ if(app.questions.length && app.currentIndex < app.questions.length - 1){ app.currentIndex++; renderQuestion(app.currentIndex); } });
 safeAddListener('restart-btn', 'click', () => { if(confirm('¿Reiniciar?')) { app.answersGiven = {}; app.flagged = {}; app.currentIndex = 0; renderQuestion(0); saveProgress(); } });
@@ -1396,12 +1642,9 @@ document.querySelectorAll('.theme-btn').forEach(b => b.addEventListener('click',
 
 const fileInput = document.getElementById('file-input');
 document.getElementById('drop-zone').addEventListener('click', ()=>fileInput.click()); 
-
 fileInput.addEventListener('change', async e => {
   const files = Array.from(e.target.files);
   let merged = [];
-  
-  // 1. Lectura de archivos (igual que antes)
   for(const f of files) { 
       const txt = await f.text(); 
       let qs=[]; 
@@ -1409,16 +1652,12 @@ fileInput.addEventListener('change', async e => {
       if(!qs.length) qs=parseTxtToQuestions(txt); 
       if(qs.length) merged=merged.concat(qs); 
   }
-
   if(merged.length) {
-      // 2. INYECCIÓN IA: Preguntar si quiere usar IA si hay Key configurada
       if(localStorage.getItem(AI_KEY_STORAGE)) {
           if(confirm(`Se detectaron ${merged.length} preguntas. ¿Deseas usar IA para generar etiquetas automáticas? (Tomará unos segundos)`)) {
               merged = await enrichQuestionsWithAI(merged);
           }
       }
-
-      // 3. Flujo normal de vista previa (igual que antes)
       app.lastPreviewArr = merged; 
       const list = document.getElementById('preview-list'); 
       list.innerHTML=''; 
@@ -1426,15 +1665,12 @@ fileInput.addEventListener('change', async e => {
           const d=document.createElement('div'); 
           d.style.padding='8px'; 
           d.style.borderBottom='1px solid #eee'; 
-          // Mostrar tags en la preview para confirmar que funcionó
           const tagsHtml = (q.tags||[]).map(t => `<span class="tag-pill small" style="font-size:0.6em; padding:2px 6px;">${t}</span>`).join('');
           d.innerHTML=`<b>${i+1}.</b> ${q.question.substring(0,60)}... <br> ${tagsHtml}`; 
           list.appendChild(d); 
       }); 
       document.getElementById('preview-overlay').classList.add('open'); 
   }
-  
-  // Limpiar input para permitir subir el mismo archivo de nuevo si se desea
   fileInput.value = '';
 });
 
@@ -1451,82 +1687,38 @@ function setupSearch(inputId, resId){
 }
 setupSearch('search-bar','sidebar-search-results'); setupSearch('drawer-search','drawer-search-results');
 
-/* FUSION Y GESTION DE BANCOS */
 function deleteBank(name) {
     if(confirm(`¿Eliminar banco "${name}"?`)) {
-        delete app.savedBanks[name];
-        saveBanks();
-        if(app.activeBankName === name) {
-            app.activeBankName = null;
-            app.questions = [];
-            saveProgress();
-            location.reload(); 
-        } else {
-            renderBanksList();
-        }
+        delete app.savedBanks[name]; saveBanks();
+        if(app.activeBankName === name) { app.activeBankName = null; app.questions = []; saveProgress(); location.reload(); } 
+        else { renderBanksList(); }
     }
 }
-
 function openMergeUI() {
-    const cont = document.getElementById('merge-list-container');
-    cont.innerHTML = '';
-    const names = Object.keys(app.savedBanks);
+    const cont = document.getElementById('merge-list-container'); cont.innerHTML = ''; const names = Object.keys(app.savedBanks);
     if(names.length < 2) return alert("Necesitas al menos 2 bancos guardados para fusionar.");
-    
-    names.forEach(n => {
-        const div = document.createElement('div');
-        div.innerHTML = `<label style="display:flex;align-items:center;padding:4px;"><input type="checkbox" value="${n}" class="merge-chk" style="margin-right:8px;"> ${n} (${app.savedBanks[n].length})</label>`;
-        cont.appendChild(div);
-    });
+    names.forEach(n => { const div = document.createElement('div'); div.innerHTML = `<label style="display:flex;align-items:center;padding:4px;"><input type="checkbox" value="${n}" class="merge-chk" style="margin-right:8px;"> ${n} (${app.savedBanks[n].length})</label>`; cont.appendChild(div); });
     document.getElementById('merge-overlay').classList.add('open');
 }
-
 safeAddListener('btn-merge-ui', 'click', openMergeUI);
 safeAddListener('merge-close', 'click', () => document.getElementById('merge-overlay').classList.remove('open'));
 safeAddListener('confirm-merge-btn', 'click', () => {
     const checked = Array.from(document.querySelectorAll('.merge-chk:checked')).map(c => c.value);
     if(checked.length < 2) return alert("Selecciona al menos 2.");
-    
-    let mergedQs = [];
-    checked.forEach(n => mergedQs = mergedQs.concat(app.savedBanks[n]));
-    
+    let mergedQs = []; checked.forEach(n => mergedQs = mergedQs.concat(app.savedBanks[n]));
     const newName = prompt("Nombre para el nuevo banco fusionado:");
-    if(newName) {
-        app.savedBanks[newName] = mergedQs;
-        saveBanks();
-        renderBanksList();
-        document.getElementById('merge-overlay').classList.remove('open');
-        alert("Fusión exitosa.");
-    }
+    if(newName) { app.savedBanks[newName] = mergedQs; saveBanks(); renderBanksList(); document.getElementById('merge-overlay').classList.remove('open'); alert("Fusión exitosa."); }
 });
-
 function renderBanksList(tid='banks-list'){ 
     const c=document.getElementById(tid); if(!c)return; c.innerHTML=''; 
     Object.keys(app.savedBanks).forEach(n=>{ 
         const d=document.createElement('div'); d.className='bank-item'; d.style.padding='8px'; d.style.borderBottom='1px solid #eee'; d.style.cursor='pointer'; 
-        
-        // Crear elementos
-        const nameSpan = document.createElement('span'); 
-        nameSpan.className='bank-name'; 
-        nameSpan.innerHTML = `<b>${n}</b> <span class="small">(${app.savedBanks[n].length})</span>`;
-        nameSpan.onclick = ()=>{
-            app.activeBankName=n; app.questions=app.savedBanks[n]; app.currentIndex=0; app.answersGiven={}; app.flagged={}; saveProgress(); renderQuestion(0); 
-            if(document.getElementById('drawer').classList.contains('open')) document.getElementById('drawer').classList.remove('open'); 
-            renderStartScreenTags();
-        };
-
-        const delBtn = document.createElement('button');
-        delBtn.className = 'action-btn small';
-        delBtn.innerHTML = '<span class="material-icons" style="font-size:18px; color:#ef4444;">delete</span>';
-        delBtn.title = 'Eliminar Banco';
-        delBtn.onclick = (e) => { e.stopPropagation(); deleteBank(n); };
-
-        d.appendChild(nameSpan);
-        d.appendChild(delBtn);
-        c.appendChild(d); 
+        const nameSpan = document.createElement('span'); nameSpan.className='bank-name'; nameSpan.innerHTML = `<b>${n}</b> <span class="small">(${app.savedBanks[n].length})</span>`;
+        nameSpan.onclick = ()=>{ app.activeBankName=n; app.questions=app.savedBanks[n]; app.currentIndex=0; app.answersGiven={}; app.flagged={}; saveProgress(); renderQuestion(0); if(document.getElementById('drawer').classList.contains('open')) document.getElementById('drawer').classList.remove('open'); renderStartScreenTags(); };
+        const delBtn = document.createElement('button'); delBtn.className = 'action-btn small'; delBtn.innerHTML = '<span class="material-icons" style="font-size:18px; color:#ef4444;">delete</span>'; delBtn.title = 'Eliminar Banco'; delBtn.onclick = (e) => { e.stopPropagation(); deleteBank(n); };
+        d.appendChild(nameSpan); d.appendChild(delBtn); c.appendChild(d); 
     }); 
 }
-
 function updateProgressUI(){ document.getElementById('progress-text').textContent=`${app.currentIndex+1}/${app.questions.length}`; document.getElementById('progress-bar').style.width=Math.round(((app.currentIndex+1)/app.questions.length)*100)+'%'; updateModeButtons(); }
 function updateMarkedUI(){ const l=document.getElementById('marked-list'); l.innerHTML=''; let h=false; app.questions.forEach((q,i)=>{ if(app.marked[q.id]){ h=true; const b=document.createElement('button'); b.className='mark-btn'; b.textContent=i+1; b.onclick=()=>{app.currentIndex=i; renderQuestion(i); document.getElementById('drawer').classList.remove('open'); checkMobileView();}; l.appendChild(b); } }); document.getElementById('marked-container').style.display=h?'block':'none'; renderDashboardMarked(); }
 function deleteCurrentQuestion(){ if(app.questions.length && confirm("¿Borrar pregunta?")){ app.questions.splice(app.currentIndex,1); if(!app.questions.length) closeQuizView(); else { if(app.currentIndex>=app.questions.length) app.currentIndex--; renderQuestion(app.currentIndex); } saveProgress(); }}
@@ -1537,21 +1729,12 @@ async function handleInstallTrigger() {
     const content = document.getElementById('install-content');
     if(deferredPrompt){ 
         content.innerHTML = `<p>Instala la App para usarla sin conexión y pantalla completa.</p><button id="pwa-install-btn" class="btn" style="width:100%; margin-top:12px; background:var(--primary); color:white;">Instalar App Nativa</button>`;
-        document.getElementById('pwa-install-btn').onclick = async () => {
-            deferredPrompt.prompt(); 
-            const {outcome} = await deferredPrompt.userChoice; 
-            if(outcome==='accepted') deferredPrompt=null;
-            document.getElementById('download-overlay').classList.remove('open');
-        };
+        document.getElementById('pwa-install-btn').onclick = async () => { deferredPrompt.prompt(); const {outcome} = await deferredPrompt.userChoice; if(outcome==='accepted') deferredPrompt=null; document.getElementById('download-overlay').classList.remove('open'); };
     } else { 
-        if(/iPhone|iPad/.test(navigator.userAgent)) {
-            content.innerHTML = `<p><b>Para iOS (iPhone/iPad):</b></p><ol style="margin-left:20px; font-size:0.9rem;"><li>Toca el botón <b>Compartir</b> <span class="material-icons" style="font-size:1rem; vertical-align:middle;">ios_share</span></li><li>Busca y selecciona <b>"Agregar a Inicio"</b>.</li></ol><p class="small">Esto creará la App independiente.</p>`;
-        } else {
-            content.innerHTML = `<p><b>Para Android (APK Web):</b></p><ol style="margin-left:20px; font-size:0.9rem;"><li>Toca el menú del navegador (3 puntos).</li><li>Selecciona <b>"Instalar aplicación"</b> o "Agregar a pantalla principal".</li></ol><p class="small">Esto genera la APK Web (WebAPK) en tu sistema.</p>`;
-        }
+        if(/iPhone|iPad/.test(navigator.userAgent)) { content.innerHTML = `<p><b>Para iOS (iPhone/iPad):</b></p><ol style="margin-left:20px; font-size:0.9rem;"><li>Toca el botón <b>Compartir</b> <span class="material-icons" style="font-size:1rem; vertical-align:middle;">ios_share</span></li><li>Busca y selecciona <b>"Agregar a Inicio"</b>.</li></ol><p class="small">Esto creará la App independiente.</p>`; } 
+        else { content.innerHTML = `<p><b>Para Android (APK Web):</b></p><ol style="margin-left:20px; font-size:0.9rem;"><li>Toca el menú del navegador (3 puntos).</li><li>Selecciona <b>"Instalar aplicación"</b> o "Agregar a pantalla principal".</li></ol><p class="small">Esto genera la APK Web (WebAPK) en tu sistema.</p>`; }
     } 
 }
-
 renderBanksList(); renderStartScreenTags(); renderHistoryChart(); renderDashboardMarked();
 });
 </script>
