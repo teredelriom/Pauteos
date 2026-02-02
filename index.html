@@ -233,6 +233,12 @@ details.justification-details[open] summary { border-bottom: 1px solid var(--bor
         <button id="clean-duplicates-btn" class="btn small" style="width:100%; margin-top:8px; background:var(--card); color:var(--text); border:1px solid var(--primary-soft);">
               <span class="material-icons" style="font-size:16px; margin-right:6px;">cleaning_services</span> Limpiar Duplicados
         </button>
+        <button id="btn-clear-tags" class="btn small" style="flex:1; background:var(--card); color:var(--incorrect-text); border:1px solid var(--incorrect-border);" title="Eliminar todas las etiquetas de las preguntas actuales">
+            <span class="material-icons" style="font-size:16px; margin-right:4px;">label_off</span> Borrar Tags
+        </button>
+        <button id="btn-ai-tags-bank" class="btn small" style="flex:1; background:linear-gradient(135deg, #6366f1, #8b5cf6); color:white; border:none;" title="Generar etiquetas automáticas con IA para el banco actual">
+            <span class="material-icons" style="font-size:16px; margin-right:4px;">auto_awesome</span> Tags IA
+        </button>
         <button onclick="document.getElementById('ai-config-overlay').classList.add('open')" class="btn small" style="width:100%; margin-top:8px; background:var(--bg); border:1px solid var(--primary); color:var(--primary);">
           <span class="material-icons" style="font-size:16px; margin-right:6px;">auto_awesome</span> Configurar IA
         </button>
@@ -1066,6 +1072,164 @@ async function enrichQuestionsWithAI(questions) {
     loadingOverlay.classList.remove('open');
     return questions;
 }
+/* --- GESTIÓN DE TAGS PARA EL BANCO ACTIVO --- */
+
+// 1. Función para BORRAR todos los tags
+safeAddListener('btn-clear-tags', 'click', () => {
+    if (!app.questions || app.questions.length === 0) return alert("No hay preguntas cargadas.");
+    
+    if (confirm(`¿Estás seguro de BORRAR TODOS los tags de las ${app.questions.length} preguntas actuales? Esta acción no se puede deshacer.`)) {
+        // Borrar tags
+        app.questions.forEach(q => {
+            q.tags = []; 
+        });
+        
+        // Guardar cambios
+        saveProgress();
+        if (app.activeBankName) {
+            app.savedBanks[app.activeBankName] = app.questions;
+            saveBanks();
+        }
+        
+        // Actualizar UI
+        alert("Tags eliminados correctamente.");
+        renderQuestion(app.currentIndex); // Refrescar pregunta actual
+        renderStartScreenTags(); // Refrescar lista de tags en dashboard
+    }
+});
+
+// 2. Función para GENERAR tags con IA (Banco Activo)
+safeAddListener('btn-ai-tags-bank', 'click', async () => {
+    if (!app.questions || app.questions.length === 0) return alert("No hay preguntas cargadas.");
+    
+    // Verificar API Key
+    const apiKey = localStorage.getItem('pauteo_gemini_key_v1'); // Asegúrate de usar la misma key que definimos antes
+    if (!apiKey) {
+        alert("Necesitas configurar tu API Key de Gemini primero. Ve al botón 'Configurar IA' (o añádelo si no lo tienes).");
+        // Opcional: Abrir modal de configuración si existe
+        const configModal = document.getElementById('ai-config-overlay');
+        if(configModal) configModal.classList.add('open');
+        return;
+    }
+
+    if (confirm(`¿Generar tags con Inteligencia Artificial para las ${app.questions.length} preguntas actuales?\n\nEsto analizará el texto de cada pregunta y asignará etiquetas médicas precisas.`)) {
+        
+        // Usamos la función de enriquecimiento (definida abajo)
+        try {
+            const updatedQuestions = await enrichQuestionsWithAI(app.questions);
+            app.questions = updatedQuestions;
+
+            // Guardar cambios
+            saveProgress();
+            if (app.activeBankName) {
+                app.savedBanks[app.activeBankName] = app.questions;
+                saveBanks();
+            }
+
+            alert("¡Proceso finalizado! Se han generado las etiquetas.");
+            renderQuestion(app.currentIndex);
+            renderStartScreenTags();
+            
+        } catch (error) {
+            console.error(error);
+            alert("Hubo un error al procesar con la IA.");
+        }
+    }
+});
+
+/* --- FUNCIÓN CORE DE IA (Asegúrate de tener esto en tu script) --- */
+/* Si ya la añadiste en el paso de "Importar con IA", no necesitas duplicarla, 
+   pero asegúrate de que esté accesible en el scope global o dentro del app. */
+
+async function enrichQuestionsWithAI(questionsList) {
+    const apiKey = localStorage.getItem('pauteo_gemini_key_v1');
+    if (!apiKey) return questionsList;
+
+    // UI de Carga (Reutilizamos la existente)
+    const loadingOverlay = document.getElementById('ai-loading-overlay') || createLoadingOverlay(); // Helper por si no existe
+    const loadingText = document.getElementById('ai-loading-text');
+    const loadingBar = document.getElementById('ai-loading-bar');
+    loadingOverlay.classList.add('open');
+
+    const BATCH_SIZE = 5; // Lotes pequeños para asegurar precisión
+    const totalBatches = Math.ceil(questionsList.length / BATCH_SIZE);
+    
+    // Clonamos para no mutar directamente si falla
+    let processedList = JSON.parse(JSON.stringify(questionsList));
+
+    for (let i = 0; i < processedList.length; i += BATCH_SIZE) {
+        const batch = processedList.slice(i, i + BATCH_SIZE);
+        
+        // Actualizar barra de progreso
+        const pct = Math.round((i / processedList.length) * 100);
+        if(loadingBar) loadingBar.style.width = `${pct}%`;
+        if(loadingText) loadingText.textContent = `Analizando bloque ${Math.floor(i/BATCH_SIZE)+1}/${totalBatches} con IA...`;
+
+        // Prompt optimizado para preguntas tipo test
+        const promptText = batch.map((q, idx) => `ID ${idx}: ${q.question.substring(0, 300)}`).join('\n---\n');
+        
+        const prompt = `
+        Actúa como médico docente. Analiza estas preguntas de medicina.
+        Asigna de 1 a 3 etiquetas (tags) clínicas PRECISAS y ESTÁNDAR a cada una (ej: "Cardiología", "Fármacos", "Pediatría - Respiratorio").
+        Responde SOLO un objeto JSON válido donde la clave es el ID numérico (0, 1...) y el valor es un array de strings.
+        
+        Preguntas:
+        ${promptText}
+        `;
+
+        try {
+            const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }] })
+            });
+
+            const data = await response.json();
+            const textResponse = data.candidates?.[0]?.content?.parts?.[0]?.text;
+            
+            if (textResponse) {
+                const cleanJson = textResponse.replace(/```json|```/g, '').trim();
+                const tagsMap = JSON.parse(cleanJson);
+                
+                batch.forEach((q, idx) => {
+                    if (tagsMap[idx] && Array.isArray(tagsMap[idx])) {
+                        // Combinar tags nuevos con existentes (sin duplicados)
+                        const existingTags = new Set(q.tags || []);
+                        tagsMap[idx].forEach(t => existingTags.add(t));
+                        q.tags = Array.from(existingTags);
+                    }
+                });
+            }
+        } catch (e) {
+            console.error("Error en lote IA:", e);
+        }
+        
+        // Pequeña pausa para no saturar rate limits
+        await new Promise(r => setTimeout(r, 500));
+    }
+
+    loadingOverlay.classList.remove('open');
+    return processedList;
+}
+
+// Helper para crear el overlay si no existe (Seguridad)
+function createLoadingOverlay() {
+    if(document.getElementById('ai-loading-overlay')) return document.getElementById('ai-loading-overlay');
+    const div = document.createElement('div');
+    div.id = 'ai-loading-overlay';
+    div.className = 'overlay';
+    div.style.zIndex = '3000';
+    div.innerHTML = `
+        <div class="card" style="padding:30px; text-align:center;">
+            <div style="font-size:40px; margin-bottom:10px;">✨</div>
+            <h3 class="font-bold">Trabajando...</h3>
+            <p id="ai-loading-text" class="small">Procesando con IA...</p>
+            <div class="progress-bg" style="width:200px; margin:15px auto;"><div id="ai-loading-bar" class="progress-bar"></div></div>
+        </div>
+    `;
+    document.body.appendChild(div);
+    return div;
+}
 /* EVENTOS DE UI */
 safeAddListener('prev-btn', 'click', ()=>{ if(app.questions.length && app.currentIndex > 0){ app.currentIndex--; renderQuestion(app.currentIndex); } });
 safeAddListener('next-btn', 'click', ()=>{ if(app.questions.length && app.currentIndex < app.questions.length - 1){ app.currentIndex++; renderQuestion(app.currentIndex); } });
@@ -1431,5 +1595,6 @@ renderBanksList(); renderStartScreenTags(); renderHistoryChart(); renderDashboar
 </script>
 </body>
 </html>
+
 
 
