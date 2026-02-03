@@ -96,6 +96,15 @@ body.quiz-mode #quiz-menu-btn { display: inline-flex !important; }
 .overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.5); backdrop-filter: blur(4px); z-index: 1500; display: none; align-items: center; justify-content: center; }
 .overlay.open { display: flex; }
 .modal { background: var(--card); width: 90%; max-width: 600px; max-height: 90vh; border-radius: var(--radius); padding: 24px; overflow-y: auto; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1); }
+.overlay.fullscreen { align-items: stretch; justify-content: stretch; }
+.modal.fullscreen-modal { width: 100%; height: 100%; max-width: none; max-height: none; border-radius: 0; padding: 24px; }
+.filter-summary { display: flex; flex-direction: column; gap: 12px; padding: 12px; border-radius: 12px; border: 1px solid var(--border); background: var(--bg); margin-bottom: 16px; }
+.filter-summary-header { display: flex; justify-content: space-between; align-items: center; gap: 12px; }
+.filter-chips { display: flex; flex-wrap: wrap; gap: 8px; }
+.filter-chip { display: inline-flex; align-items: center; gap: 6px; padding: 4px 10px; border-radius: 999px; border: 1px solid var(--primary); background: var(--primary-soft); color: var(--primary); font-size: 0.75rem; font-weight: 600; }
+.filter-chip .material-icons { font-size: 16px; }
+.filter-chip button { background: transparent; border: none; padding: 0; cursor: pointer; color: inherit; display: inline-flex; align-items: center; }
+.filter-tag-area { border: 1px solid var(--border); border-radius: 12px; padding: 12px; background: var(--bg); max-height: 260px; overflow-y: auto; }
 #drop-zone, #cases-drop-zone { border: 2px dashed var(--border); border-radius: var(--radius); padding: 32px; text-align: center; color: var(--muted); cursor: pointer; transition: 0.2s; }
 #drop-zone:hover { border-color: var(--primary); background: var(--primary-soft); color: var(--primary); }
 
@@ -324,7 +333,7 @@ body.quiz-mode #quiz-menu-btn { display: inline-flex !important; }
              <div id="score-text" style="font-size:1.2rem; margin-bottom:20px; color:var(--primary); font-weight:700;"></div>
              <button id="retry-incorrect-btn" class="btn" style="background:var(--error-bg); color:var(--error-text); width:100%; justify-content:center; margin-bottom:12px; display:none;">Reintentar Errores</button>
              <div id="results-list" style="text-align:left; max-height:400px; overflow-y:auto; margin-bottom:20px;"></div>
-             <button onclick="location.reload()" class="btn outline">Volver al Inicio</button>
+             <button onclick="closeQuizView()" class="btn outline">Volver al Inicio</button>
         </div>
     </div>
 
@@ -391,19 +400,31 @@ body.quiz-mode #quiz-menu-btn { display: inline-flex !important; }
             </div>
         </div>
     </div>
-    <div id="bank-editor-screen" class="card" style="display:none; position:absolute; inset:0; z-index:50; overflow-y:auto;">
-             <div class="flex-between" style="margin-bottom:16px;">
-                <h3>Editor / Filtro Avanzado</h3>
-                <button onclick="$('bank-editor-screen').style.display='none'" class="btn small outline">Cerrar</button>
+    <div id="bank-editor-screen" class="overlay fullscreen">
+             <div class="modal fullscreen-modal">
+                <div class="flex-between" style="margin-bottom:16px;">
+                    <h3 style="margin:0;">Editor / Filtro Avanzado</h3>
+                    <button id="close-bank-editor-btn" class="btn small outline">Cerrar</button>
+                </div>
+                <p class="small text-muted">Selecciona tags para filtrar el banco actual. Si no eliges filtros, el quiz usará todas las preguntas.</p>
+                <div class="filter-summary">
+                    <div class="filter-summary-header">
+                        <div>
+                            <div class="block-header" style="margin:0;"><span class="material-icons" style="font-size:16px;">filter_alt</span> Filtros activos</div>
+                            <div class="text-muted" style="font-size:0.8rem;">Toca un filtro para deseleccionarlo.</div>
+                        </div>
+                        <button id="clear-editor-filters-btn" class="btn small outline">Limpiar filtros</button>
+                    </div>
+                    <div id="active-filter-chips" class="filter-chips"></div>
+                </div>
+                <div id="editor-tag-filter" class="filter-tag-area" style="display:flex; flex-wrap:wrap; gap:8px; margin-bottom:16px;"></div>
+                <div style="display:flex; gap:12px; margin-bottom:16px; flex-wrap:wrap;">
+                    <button id="start-filtered-quiz-btn" class="btn primary" style="flex:1;">Practicar selección</button>
+                    <button id="create-filtered-bank-btn" class="btn outline" style="flex:1;">Guardar como banco</button>
+                    <button id="delete-filtered-btn" class="btn" style="background:var(--error-bg); color:var(--error-text);">Borrar</button>
+                </div>
+                <div id="editor-question-list" style="font-size:0.85rem;"></div>
              </div>
-             <p class="small text-muted">Selecciona tags para filtrar el banco actual.</p>
-             <div id="editor-tag-filter" style="display:flex; flex-wrap:wrap; gap:6px; margin-bottom:16px;"></div>
-             <div style="display:flex; gap:12px; margin-bottom:16px;">
-                 <button id="start-filtered-quiz-btn" class="btn primary" style="flex:1;">Practicar Selección</button>
-                 <button id="create-filtered-bank-btn" class="btn outline" style="flex:1;">Guardar como Banco</button>
-                 <button id="delete-filtered-btn" class="btn" style="background:var(--error-bg); color:var(--error-text);">Borrar</button>
-             </div>
-             <div id="editor-question-list" style="font-size:0.85rem;"></div>
         </div>
   </main>
 </div>
@@ -665,6 +686,12 @@ window.addEventListener('DOMContentLoaded', () => {
     $('create-filtered-bank-btn').onclick = createBankFromFilter;
     $('delete-filtered-btn').onclick = deleteFiltered;
     $('start-filtered-quiz-btn').onclick = startFilteredQuiz;
+    $('close-bank-editor-btn').onclick = () => $('bank-editor-screen').classList.remove('open');
+    $('clear-editor-filters-btn').onclick = () => {
+        app.currentEditorFilter.tags.clear();
+        updateTagStyles();
+        filterQuestions();
+    };
 
     // Modes
     ['study','exam','pauteo'].forEach(m => {
@@ -846,6 +873,8 @@ function startQuiz(mode, shuffle=false) {
     app.answersGiven = {}; app.currentIndex = 0;
     updateModeButtons();
     if(shuffle) app.questions.sort(() => Math.random() - 0.5);
+    $('results-panel').style.display = 'none';
+    $('quiz-shell').style.display='flex';
     $('dashboard-view').style.display='none'; $('cases-view').style.display='none'; $('quiz-view').style.display='flex';
     document.body.classList.add('quiz-mode');
     renderQuestion(0);
@@ -931,6 +960,7 @@ function showResults() {
     let corr=0; app.questions.forEach(q => { if(app.answersGiven[q.id]===q.correct) corr++; });
     $('score-text').textContent = `${corr} / ${app.questions.length}`;
     $('results-panel').style.display = 'block'; $('quiz-shell').style.display='none';
+    document.body.classList.remove('quiz-mode');
     
     // Retry Logic Button Visibility
     if(corr < app.questions.length && Object.keys(app.answersGiven).length > 0) {
@@ -970,7 +1000,7 @@ function updateProgress() { $('progress-bar').style.width = `${((app.currentInde
 // --- BANK EDITOR / FILTRO AVANZADO MEJORADO ---
 
 function openBankEditor() {
-    $('bank-editor-screen').style.display = 'block';
+    $('bank-editor-screen').classList.add('open');
     
     // Si masterQuestions está vacío (ej. recarga de página), intentamos recuperarlo de questions
     if (!app.masterQuestions || app.masterQuestions.length === 0) {
@@ -980,6 +1010,7 @@ function openBankEditor() {
     app.currentEditorFilter.tags.clear();
     app.editorQuestions = [...app.masterQuestions]; // Empezamos con todo
     renderEditorTags(); // Renderizar tags una sola vez
+    renderActiveFilterChips();
     renderEditorList(); // Renderizar lista
 }
 
@@ -990,20 +1021,6 @@ function renderEditorTags() {
     
     const tc = $('editor-tag-filter'); 
     tc.innerHTML = '';
-    
-    // Botón para limpiar filtros
-    if (ts.size > 0) {
-        const clearBtn = document.createElement('button');
-        clearBtn.className = 'tag-pill';
-        clearBtn.style.border = '1px solid var(--primary)';
-        clearBtn.innerText = 'Limpiar Filtros';
-        clearBtn.onclick = () => {
-            app.currentEditorFilter.tags.clear();
-            updateTagStyles();
-            filterQuestions();
-        };
-        tc.appendChild(clearBtn);
-    }
 
     // Renderizar botones de tags
     Array.from(ts).sort().forEach(t => {
@@ -1027,18 +1044,48 @@ function updateTagStyles() {
     const container = $('editor-tag-filter');
     Array.from(container.children).forEach(btn => {
         const t = btn.dataset.tag;
-        if (!t) return; // Ignorar botón de limpiar
+        if (!t) return;
         if (app.currentEditorFilter.tags.has(t)) btn.classList.add('active');
         else btn.classList.remove('active');
+    });
+    renderActiveFilterChips();
+}
+
+function renderActiveFilterChips() {
+    const chipsContainer = $('active-filter-chips');
+    chipsContainer.innerHTML = '';
+    if (app.currentEditorFilter.tags.size === 0) {
+        const empty = document.createElement('span');
+        empty.className = 'text-muted';
+        empty.style.fontSize = '0.85rem';
+        empty.textContent = 'Sin filtros seleccionados.';
+        chipsContainer.appendChild(empty);
+        return;
+    }
+
+    Array.from(app.currentEditorFilter.tags).sort().forEach(tag => {
+        const chip = document.createElement('div');
+        chip.className = 'filter-chip';
+        chip.innerHTML = `<span>${tag}</span>`;
+        const removeBtn = document.createElement('button');
+        removeBtn.innerHTML = '<span class="material-icons">close</span>';
+        removeBtn.onclick = () => {
+            app.currentEditorFilter.tags.delete(tag);
+            updateTagStyles();
+            filterQuestions();
+        };
+        chip.appendChild(removeBtn);
+        chipsContainer.appendChild(chip);
     });
 }
 
 function filterQuestions() {
+    const source = (app.masterQuestions && app.masterQuestions.length) ? app.masterQuestions : app.questions;
     // Filtramos sobre la COPIA MAESTRA
     if (app.currentEditorFilter.tags.size === 0) {
-        app.editorQuestions = [...app.masterQuestions];
+        app.editorQuestions = [...source];
     } else {
-        app.editorQuestions = app.masterQuestions.filter(q => 
+        app.editorQuestions = source.filter(q => 
             (q.tags || []).some(tag => app.currentEditorFilter.tags.has(tag))
         );
     }
@@ -1063,6 +1110,10 @@ function createBankFromFilter() {
     const n = prompt("Nombre nuevo banco:"); if(n) { app.savedBanks[n] = app.editorQuestions; saveBanks(); renderBanksList(); alert("Creado"); }
 }
 function startFilteredQuiz() {
+    const source = (app.masterQuestions && app.masterQuestions.length) ? app.masterQuestions : app.questions;
+    if (app.currentEditorFilter.tags.size === 0) {
+        app.editorQuestions = [...source];
+    }
     if(!app.editorQuestions.length) return alert("No hay preguntas con esos filtros.");
     
     // Aquí está el truco: app.questions es lo que usa el Quiz.
@@ -1070,7 +1121,7 @@ function startFilteredQuiz() {
     app.questions = [...app.editorQuestions]; 
     
     startQuiz('study', true); // True para mezclar
-    $('bank-editor-screen').style.display = 'none';
+    $('bank-editor-screen').classList.remove('open');
 }
 
 function deleteFiltered() { if(confirm("Borrar preguntas visibles?")) { const ids = new Set(app.editorQuestions.map(q=>q.id)); app.questions = app.questions.filter(q=>!ids.has(q.id)); saveState(); if(app.activeBankName){ app.savedBanks[app.activeBankName]=app.questions; saveBanks(); } openBankEditor(); } }
@@ -1275,7 +1326,7 @@ function renderNavGrid() {
 }
 function closeQuizView(){ 
     if(timerInterval) clearInterval(timerInterval); $('timer-display').textContent=''; 
-    app.quizActive=false; $('quiz-view').style.display='none'; $('dashboard-view').style.display='flex'; document.body.classList.remove('quiz-mode'); renderStartTags(); renderMarkedDashboard(); 
+    app.quizActive=false; $('quiz-view').style.display='none'; $('dashboard-view').style.display='flex'; document.body.classList.remove('quiz-mode'); $('results-panel').style.display='none'; $('quiz-shell').style.display='flex'; renderStartTags(); renderMarkedDashboard(); 
 }
 $('open-pauteo-btn').onclick = () => startQuiz('study', true);
 $('open-cases-module-btn').onclick = openCasesModule;
