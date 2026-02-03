@@ -2,10 +2,12 @@
 <html lang="es" class="antialiased" data-theme="pink">
 <head>
 <meta charset="utf-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
 <title>Pauteo Pro v5.1 (Fixed)</title>
 
 <meta name="application-name" content="Pauteo">
+<meta name="apple-mobile-web-app-title" content="Pauteo Pro">
+<meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="theme-color" content="#ff8ec0">
@@ -35,14 +37,23 @@
 [data-theme='dark'] { --bg: #0f172a; --card: #1e293b; --text: #f1f5f9; --muted: #94a3b8; --border: #334155; --primary: #38bdf8; --primary-soft: #0c4a6e; --success-bg: #064e3b; --error-bg: #7f1d1d; --case-soft: #0c4a6e; --shadow: 0 10px 15px -3px rgba(0,0,0,0.5); }
 
 html, body { height:100%; min-height:100dvh; margin:0; font-family:'Inter', sans-serif; background:var(--bg); color:var(--text); -webkit-tap-highlight-color: transparent; transition: background 0.3s, color 0.3s; }
+body { padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left); }
 * { box-sizing: border-box; }
 
 /* --- 2. LAYOUT --- */
-.app { max-width: 1200px; margin: 0 auto; padding: 20px; display: grid; grid-template-columns: 320px 1fr; gap: 24px; min-height: 100vh; padding-bottom: 80px; }
+.app { max-width: 1200px; margin: 0 auto; padding: calc(20px + env(safe-area-inset-top)) 20px calc(80px + env(safe-area-inset-bottom)); display: grid; grid-template-columns: 320px 1fr; gap: 24px; min-height: 100vh; }
 body.quiz-mode .app { grid-template-columns: 1fr; padding-top: 10px; }
 body.quiz-mode aside#left-panel { display: none !important; }
 body.quiz-mode #quiz-menu-btn { display: inline-flex !important; }
 @media(max-width: 980px){ .app { grid-template-columns: 1fr; padding: 12px; } aside#left-panel { display: none; } #mobile-menu-btn { display: flex; } }
+@media(max-width: 640px){
+  .app { padding: calc(12px + env(safe-area-inset-top)) 12px calc(72px + env(safe-area-inset-bottom)); gap: 16px; }
+  .card { padding: 18px; border-radius: 14px; }
+  .btn { min-height: 44px; }
+  .icon-btn { width: 40px; height: 40px; }
+  .drawer { width: min(90vw, 340px); }
+  #question-text { font-size: 1.05rem; }
+}
 
 /* --- 3. COMPONENTES UI --- */
 .card { background: var(--card); border-radius: var(--radius); padding: 24px; box-shadow: var(--shadow); border: 1px solid var(--border); position: relative; }
@@ -574,9 +585,72 @@ const AI_KEY_STORAGE = 'pauteo_gemini_key';
 
 let timerInterval = null; 
 let deferredPrompt; // GLOBAL VARIABLE FOR PWA INSTALL
+const APP_ICON_SVG = 'data:image/svg+xml,<svg width="512" height="512" viewBox="0 0 512 512" fill="none" xmlns="http://www.w3.org/2000/svg"><defs><linearGradient id="g" x1="0" y1="0" x2="512" y2="512" gradientUnits="userSpaceOnUse"><stop offset="0%25" stop-color="%23FF9A9E"/><stop offset="100%25" stop-color="%23FECFEF"/></linearGradient></defs><rect x="0" y="0" width="512" height="512" rx="120" fill="url(%23g)"/><rect x="106" y="106" width="300" height="300" rx="40" fill="white"/><path d="M160 256 L210 306 L240 210 L270 280 L352 180" stroke="%23FF758C" stroke-width="32" stroke-linecap="round" stroke-linejoin="round" fill="none"/></svg>';
 
 const AUTO_TAGGER = {'Cardio':['iam','infarto','ecg'],'Resp':['neumonia','epoc','asma'],'Neuro':['acv','stroke'],'Gastro':['hda','hdb','cirrosis'],'Ped':['bronquiolitis','sbo']};
 function detectTags(txt) { const t=new Set(); const l=txt.toLowerCase(); for(const[k,v] of Object.entries(AUTO_TAGGER)){if(v.some(w=>l.includes(w)))t.add(k);} return Array.from(t); }
+
+function setupPwaAssets() {
+    const manifest = {
+        name: 'Pauteo Pro',
+        short_name: 'Pauteo',
+        description: 'Plataforma de estudio médico modular con IA y SRS.',
+        start_url: '.',
+        scope: '.',
+        display: 'standalone',
+        background_color: '#f8fafc',
+        theme_color: '#ff8ec0',
+        icons: [
+            { src: APP_ICON_SVG, sizes: '512x512', type: 'image/svg+xml', purpose: 'any maskable' }
+        ]
+    };
+    const manifestBlob = new Blob([JSON.stringify(manifest)], { type: 'application/json' });
+    const manifestUrl = URL.createObjectURL(manifestBlob);
+    const manifestLink = $('my-manifest');
+    if (manifestLink) {
+        manifestLink.setAttribute('href', manifestUrl);
+    }
+
+    if ('serviceWorker' in navigator && location.protocol.startsWith('http')) {
+        const swCode = `
+            const CACHE_NAME = 'pauteo-pwa-v1';
+            const CORE_ASSETS = ['.'];
+
+            self.addEventListener('install', (event) => {
+                event.waitUntil(caches.open(CACHE_NAME).then((cache) => cache.addAll(CORE_ASSETS)));
+                self.skipWaiting();
+            });
+
+            self.addEventListener('activate', (event) => {
+                event.waitUntil(
+                    caches.keys().then((keys) => Promise.all(keys.filter((k) => k !== CACHE_NAME).map((k) => caches.delete(k))))
+                );
+                self.clients.claim();
+            });
+
+            self.addEventListener('fetch', (event) => {
+                if (event.request.method !== 'GET') return;
+                event.respondWith(
+                    caches.match(event.request).then((cached) => cached || fetch(event.request).then((response) => {
+                        const copy = response.clone();
+                        if (event.request.url.startsWith(self.location.origin)) {
+                            caches.open(CACHE_NAME).then((cache) => cache.put(event.request, copy));
+                        }
+                        return response;
+                    }).catch(() => caches.match('.')))
+                );
+            });
+        `;
+        const swBlob = new Blob([swCode], { type: 'text/javascript' });
+        const swUrl = URL.createObjectURL(swBlob);
+        navigator.serviceWorker.register(swUrl).catch(() => {});
+    }
+
+    window.addEventListener('appinstalled', () => {
+        const btn = $('download-app-btn');
+        if (btn) btn.style.display = 'none';
+    });
+}
 
 // --- STATS & SMART SHUFFLE ---
 function getQuestionStats() { 
@@ -613,6 +687,7 @@ window.addEventListener('beforeinstallprompt', (e) => {
 });
 
 window.addEventListener('DOMContentLoaded', () => {
+    setupPwaAssets();
     try {
         const s = JSON.parse(localStorage.getItem(STORAGE_KEY)); if(s) Object.assign(app, s);
         app.savedBanks = JSON.parse(localStorage.getItem(BANKS_KEY) || '{}');
