@@ -1,93 +1,76 @@
-**Pauteo App (PWA)**
-
-Aplicación de simulación de exámenes médicos ("Pauteo") diseñada como una Single Page Application (SPA) auto-contenida con capacidades de Progressive Web App (PWA).
-
-🚀 Características Técnicas
-
-Arquitectura Monolítica: Todo el código (HTML, CSS, JS, Lógica, Iconos SVG) reside en un único archivo index.html. No requiere bases de datos ni servidores backend.
-
-PWA & Offline First: Utiliza un ServiceWorker integrado para cachear la aplicación, permitiendo su funcionamiento total sin conexión a internet.
-
-Persistencia de Datos: Utiliza localStorage para guardar el progreso, los bancos de preguntas importados, las marcas de dudas y favoritos.
-
-Responsive Design: Interfaz fluida que se adapta desde monitores de escritorio hasta teléfonos móviles, con soporte para gestos táctiles.
-
-🛠️ Instalación y Despliegue
-
-Para que la funcionalidad PWA (instalar en inicio) y la persistencia de datos funcionen correctamente, el archivo no debe abrirse localmente (file://), sino servirse a través de HTTPS.
-
-Opción Recomendada: GitHub Pages
-
-Sube el archivo index.html a un repositorio de GitHub.
-
-Activa GitHub Pages en la configuración del repositorio.
-
-Accede a la URL proporcionada (ej: tu-usuario.github.io/pauteo).
-
-**Instalación en Dispositivos**
-
-Android (Chrome): Al entrar a la web, aparecerá un aviso automático para instalar. Si no, ve al menú (3 puntos) -> "Instalar aplicación".
-
-iOS (Safari): Presiona el botón "Compartir" (cuadrado con flecha) -> "Agregar al inicio" (Add to Home Screen).
-
-**📂 Formatos de Importación Soportados**
-
-La app permite importar preguntas arrastrando archivos o seleccionándolos desde el menú.
-
+🧠 Pauteo Pro v5.1
+Pauteo Pro es una plataforma de estudio médico modular, diseñada para funcionar completamente en el navegador (offline-first). Combina simulacros de examen, estudio con retroalimentación inmediata y un módulo de casos clínicos con Sistema de Repetición Espaciada (SRS).
+✨ Características Principales
+📚 Modos de Estudio
+ * Modo Estudio: Feedback inmediato. Responde y ve la justificación al instante.
+ * Modo Examen: Simulación ciega. Cronómetro activado y resultados al final.
+ * Modo Pauteo: Lectura rápida. Muestra la respuesta correcta marcada automáticamente para repasar conceptos.
+ * Ensayo/Simulacro: Configura tiempo y cantidad de preguntas para simular un examen real.
+🩺 Módulo de Casos Clínicos (SRS)
+ * Sistema independiente para casos largos.
+ * Algoritmo SRS (Spaced Repetition System): Clasifica casos en Difícil, Bien o Fácil para optimizar tu curva de aprendizaje.
+🛠️ Herramientas de Gestión de Bancos
+ * Gestión Local: Crea, guarda, fusiona y elimina bancos de preguntas directamente en el navegador.
+ * Limpieza: Detección y eliminación automática de preguntas duplicadas.
+ * Filtros Avanzados: Crea nuevos bancos basándote en etiquetas (tags) específicas.
+ * Importación/Exportación: Soporte para archivos .json y .txt.
+🤖 Inteligencia Artificial (Gemini)
+ * Integración con Google Gemini API.
+ * Auto-Tagging: Clasifica automáticamente tus preguntas por especialidad (Cardio, Resp, Neuro, etc.) con un solo clic.
+🚀 Instalación y Uso
+No requiere instalación de servidores ni bases de datos.
+ * Descarga el archivo Pauteo 2.html.
+ * Ábrelo en cualquier navegador web moderno (Chrome, Edge, Safari).
+ * ¡Listo! La aplicación funciona localmente.
+> Nota: Para una mejor experiencia en móviles, puedes usar la opción "Agregar a la pantalla de inicio" del navegador para usarla como una Web App.
+> 
+📂 Formatos de Importación
+Para cargar preguntas, puedes arrastrar y soltar archivos en la zona de carga.
 1. Formato JSON (Recomendado)
-
-Es el formato nativo y más robusto. Permite incluir imágenes, etiquetas y justificaciones detalladas.
-
+El formato más completo para preguntas de selección múltiple.
 [
   {
-    "question": "Paciente de 45 años con dolor torácico...",
+    "question": "¿Cuál es el tratamiento de primera línea para...?",
     "answers": [
-      "Infarto Agudo al Miocardio",
-      "Pericarditis",
-      "Costocondritis",
-      "Reflujo Gastroesofágico"
+      "Opción A: Ibuprofeno",
+      "Opción B: Paracetamol",
+      "Opción C: Ketorolaco"
     ],
-    "correct": 0,
-    "justification": "La clínica es sugerente de IAM por...",
-    "tags": ["Cardiología", "Urgencias"],
-    "image": "[https://link-a-imagen.com/ecg.jpg](https://link-a-imagen.com/ecg.jpg)"
+    "correct": 1, 
+    "justification": "El paracetamol es primera línea porque...",
+    "tags": ["Farmacología", "Dolor"],
+    "image": "https://link-a-imagen.com/img.jpg"
   }
 ]
 
+Nota: correct es el índice de la respuesta correcta (0 = A, 1 = B, etc.).
+2. Formato Casos Clínicos (JSON)
+Para el módulo SRS de casos.
+[
+  {
+    "title": "Paciente con disnea súbita",
+    "description": "Mujer de 35 años, antecedentes de ACO...",
+    "diagnosis": "TEP. El dímero D elevado sugiere...",
+    "tags": ["Respiratorio", "Urgencias"],
+    "image": ""
+  }
+]
 
-Nota: El campo correct es el índice del array answers (0 es la A, 1 es la B, etc.).
+3. Formato TXT (Simple)
+Ideal para copiar y pegar rápido. El sistema detecta automáticamente las alternativas y la respuesta si sigue este patrón:
+¿Pregunta clínica aquí?
+A) Alternativa 1
+B) Alternativa 2
+C) Alternativa 3
+R: B
 
-2. Formato Texto Plano (.txt)
-
-Ideal para copiar y pegar rápidamente desde documentos viejos. El parseador interno intentará identificar la estructura.
-
-1. ¿Cuál es la capital de Francia?
-a) Londres
-b) París
-c) Madrid
-d) Berlín
-Respuesta: b
-Justificación: París es la capital histórica...
-
-2. Siguiente pregunta...
-
-
-⚙️ Funcionalidades Clave del Código
-
-saveProgress(): Guarda el estado actual (índice de pregunta, respuestas marcadas) en el almacenamiento local cada vez que el usuario interactúa.
-
-removeDuplicates(): Implementa un algoritmo de similitud de Jaccard para detectar preguntas con texto muy similar (umbral 0.85) y eliminarlas.
-
-filtrarPorEtiqueta(): Crea sub-arrays de preguntas basados en las etiquetas (tags) detectadas automáticamente o definidas en el JSON.
-
-handleInstallTrigger(): Gestiona el evento beforeinstallprompt para ofrecer la instalación nativa en Android y mostrar instrucciones personalizadas en iOS.
-
-**🎨 Personalización**
-
-El diseño utiliza variables CSS (:root) para facilitar el cambio de temas.
-
-Color Principal: Modificar --primary y --primary-soft.
-
-Tema Oscuro: La app detecta la preferencia del sistema o permite el cambio manual, ajustando las variables --bg y --card.
-
-Desarrollado para facilitar el estudio médico autónomo.
+⚙️ Configuración de IA
+Para usar el etiquetado automático:
+ * Obtén tu API Key gratuita en Google AI Studio.
+ * En la app, ve a Importar > Config IA.
+ * Pega tu clave. (Se guarda localmente en tu navegador).
+🔒 Privacidad y Datos
+ * Local Storage: Todos tus bancos, progreso, notas y estadísticas se guardan en el localStorage de tu navegador.
+ * Cero Nube: Nada se sube a ningún servidor externo (excepto el texto de las preguntas enviado a Gemini si usas la función de IA).
+ * Advertencia: Si borras la caché del navegador, perderás tus bancos guardados. Usa el botón "Exportar JSON" regularmente para hacer copias de seguridad.
+Desarrollado para facilitar el estudio médico de alto rendimiento.
