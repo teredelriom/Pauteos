@@ -3,13 +3,15 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-<title>Pauteo Pro v5.1 (Fixed)</title>
+<title>Pauteo Pro v4.0 - Casos Clínicos</title>
 
 <meta name="application-name" content="Pauteo">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Pauteo">
 <meta name="theme-color" content="#ff8ec0">
-<meta name="description" content="Plataforma de estudio médico modular con IA y SRS.">
+<meta name="description" content="App de estudio médico modular.">
+<meta name="screen-orientation" content="any"> 
 
 <link rel="icon" id="dynamic-favicon" href='data:image/svg+xml,<svg width="512" height="512" viewBox="0 0 512 512" fill="none" xmlns="http://www.w3.org/2000/svg"><defs><linearGradient id="g" x1="0" y1="0" x2="512" y2="512" gradientUnits="userSpaceOnUse"><stop offset="0%" stop-color="%23FF9A9E"/><stop offset="100%" stop-color="%23FECFEF"/></linearGradient></defs><rect x="0" y="0" width="512" height="512" rx="120" fill="url(%23g)"/><rect x="106" y="106" width="300" height="300" rx="40" fill="white"/><path d="M160 256 L210 306 L240 210 L270 280 L352 180" stroke="%23FF758C" stroke-width="32" stroke-linecap="round" stroke-linejoin="round" fill="none"/></svg>'>
 <link rel="apple-touch-icon" id="dynamic-apple-icon" href='data:image/svg+xml,<svg width="512" height="512" viewBox="0 0 512 512" fill="none" xmlns="http://www.w3.org/2000/svg"><defs><linearGradient id="g" x1="0" y1="0" x2="512" y2="512" gradientUnits="userSpaceOnUse"><stop offset="0%" stop-color="%23FF9A9E"/><stop offset="100%" stop-color="%23FECFEF"/></linearGradient></defs><rect x="0" y="0" width="512" height="512" rx="120" fill="url(%23g)"/><rect x="106" y="106" width="300" height="300" rx="40" fill="white"/><path d="M160 256 L210 306 L240 210 L270 280 L352 180" stroke="%23FF758C" stroke-width="32" stroke-linecap="round" stroke-linejoin="round" fill="none"/></svg>'>
@@ -17,968 +19,1166 @@
 
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <link href="https://fonts.googleapis.com/css2?family=Material+Icons" rel="stylesheet">
-
 <style>
-/* --- 1. VARIABLES --- */
+/* --- VARIABLES --- */
 :root {
-  --bg: #f8fafc; --card: #ffffff; --text: #1e293b; --muted: #64748b; --border: #e2e8f0;
-  --primary: #ec4899; --primary-soft: #fce7f3; --primary-hover: #db2777;
-  --success-bg: #dcfce7; --success-text: #166534; --success-border: #86efac;
-  --error-bg: #fee2e2; --error-text: #991b1b; --error-border: #fca5a5;
-  --warn-bg: #fff7ed; --warn-text: #9a3412; --warn-border: #fdba74;
-  --case-accent: #10b981; --case-soft: #ecfdf5;
+  --bg: #fbfbfd;
+  --card: #ffffff;
+  --text: #0f172a;
+  --muted: #6b7280;
+  --primary: #ff8ec0;
+  --primary-soft: #ffe6f0;
+  --primary-hover: #ff7eb6;
   --radius: 16px; 
-  --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+  --shadow: 0 4px 20px rgba(0,0,0,0.03);
+  --border: rgba(0,0,0,0.06);
+  --gold: #fbbf24;
+  --orange: #f97316;
+  --correct-bg: #d4f8d4;
+  --correct-border: #46c26f;
+  --correct-text: #0f5132;
+  --incorrect-bg: #ffd6d6;
+  --incorrect-border: #ff6b6b;
+  --incorrect-text: #842029;
+  --selected-bg: #e0f2fe;
+  --selected-border: #38bdf8;
+  --selected-text: #0369a1;
+  
+  --case-accent: #10b981; /* Esmeralda para casos clínicos */
+  --case-soft: #d1fae5;
 }
-[data-theme='pink'] { --primary: #ec4899; --primary-soft: #fce7f3; }
-[data-theme='light'] { --bg: #f3f4f6; --primary: #3b82f6; --primary-soft: #dbeafe; }
-[data-theme='dark'] { --bg: #0f172a; --card: #1e293b; --text: #f1f5f9; --muted: #94a3b8; --border: #334155; --primary: #38bdf8; --primary-soft: #0c4a6e; --success-bg: #064e3b; --error-bg: #7f1d1d; --case-soft: #064e3b; --shadow: 0 10px 15px -3px rgba(0,0,0,0.5); }
 
-html, body { height:100%; min-height:100dvh; margin:0; font-family:'Inter', sans-serif; background:var(--bg); color:var(--text); -webkit-tap-highlight-color: transparent; transition: background 0.3s, color 0.3s; }
+[data-theme='pink'] { --bg: #fff0f5; --card: #ffffff; --text: #333; --primary: #ff8ec0; --primary-soft: #ffe6f0; --primary-hover: #ff76b0; --border: rgba(255, 142, 192, 0.2); }
+[data-theme='light'] { --bg: #F5F5F7; --card: #FFFFFF; --text: #1D1D1F; --muted: #86868B; --primary: #0071E3; --primary-soft: #E8F2FF; --primary-hover: #0077ED; --shadow: 0 4px 12px rgba(0,0,0,0.08); --border: #D2D2D7; }
+[data-theme='dark'] { --bg: #000000; --card: #1c1c1e; --text: #f5f5f7; --muted: #a1a1a6; --primary: #0A84FF; --primary-soft: #2C2C2E; --primary-hover: #409CFF; --shadow: 0 8px 30px rgba(0,0,0,0.5); --border: #38383A; --correct-bg: #052e16; --correct-text: #dcfce7; --incorrect-bg: #450a0a; --incorrect-text: #fecaca; --selected-bg: #172a46; --selected-border: #38bdf8; --selected-text: #bae6fd; --case-accent: #34d399; --case-soft: #064e3b; }
+
+/* --- ESTILOS GLOBALES --- */
+html,body{height:100%; min-height: 100dvh; margin:0;font-family:'Inter', -apple-system, sans-serif; background:var(--bg); color:var(--text); transition: background 0.3s ease, color 0.3s ease; -webkit-tap-highlight-color: transparent;}
 * { box-sizing: border-box; }
 
-/* --- 2. LAYOUT --- */
-.app { max-width: 1200px; margin: 0 auto; padding: 20px; display: grid; grid-template-columns: 320px 1fr; gap: 24px; min-height: 100vh; padding-bottom: 80px; }
-body.quiz-mode .app { grid-template-columns: 1fr; padding-top: 10px; }
+/* LAYOUT GRID PRINCIPAL */
+.app { max-width:1200px; margin:28px auto; padding:18px; display:grid; grid-template-columns: 340px 1fr; gap:24px; transition: grid-template-columns 0.4s ease; padding-bottom: 80px; }
+
+/* MODO ZEN / QUIZ FOCUS */
+body.quiz-mode .app { grid-template-columns: 1fr; margin-top: 10px; }
 body.quiz-mode aside#left-panel { display: none !important; }
 body.quiz-mode #quiz-menu-btn { display: inline-flex !important; }
-@media(max-width: 980px){ .app { grid-template-columns: 1fr; padding: 12px; } aside#left-panel { display: none; } #mobile-menu-btn { display: flex; } }
 
-/* --- 3. COMPONENTES UI --- */
-.card { background: var(--card); border-radius: var(--radius); padding: 24px; box-shadow: var(--shadow); border: 1px solid var(--border); position: relative; }
-.btn { background: var(--primary-soft); color: var(--primary); border-radius: 12px; padding: 10px 16px; border: none; cursor: pointer; font-weight: 600; font-size: 0.9rem; display: inline-flex; align-items: center; justify-content: center; transition: all 0.2s; gap: 6px; }
+@media(max-width:980px){ 
+    .app { grid-template-columns:1fr; padding:12px; margin-top: 0; } 
+    aside#left-panel { display: none; } 
+    #header-bar { padding-top: 10px; }
+    #mobile-menu-btn { display: flex; }
+}
+
+/* UI Components */
+.card { background:var(--card); border-radius:var(--radius); padding:24px; box-shadow:var(--shadow); border:1px solid var(--border); transition: background 0.3s ease; position: relative;}
+.btn { background:var(--primary-soft); color: var(--primary); border-radius:12px; padding:8px 14px; border:0; cursor:pointer; font-weight:600; transition:all .2s; font-size: 0.9rem; display:inline-flex; align-items:center; justify-content:center; }
 .btn:hover { transform: translateY(-1px); filter: brightness(0.95); }
 .btn:active { transform: scale(0.96); }
-.btn.primary { background: var(--primary); color: white; }
-.btn.outline { background: transparent; border: 1px solid var(--border); color: var(--text); }
-.btn.small { padding: 6px 12px; font-size: 0.8rem; border-radius: 8px; }
-.btn.active-mode { background: var(--primary); color: white; border-color: var(--primary); }
 
-.input { width: 100%; padding: 10px 12px; border-radius: 10px; border: 1px solid var(--border); background: var(--bg); color: var(--text); outline: none; font-size: 0.95rem; }
+.theme-btn-pink { background: #ff8ec0 !important; color: white !important; }
+.theme-btn-light { background: #ffffff !important; color: #1d1d1f !important; border: 1px solid #ccc !important; }
+.theme-btn-dark { background: #1f2937 !important; color: white !important; }
+.mode-active { background:var(--primary)!important; color:#fff!important; box-shadow:0 4px 12px rgba(0,0,0,0.15); }
+
+.action-btn { background: transparent; border: 0; cursor: pointer; color: var(--muted); transition: transform 0.2s, color 0.2s; padding: 4px; display: flex; align-items: center; justify-content: center; min-width: 44px; min-height: 44px; }
+.action-btn:hover { transform: scale(1.1); }
+.star-btn.active { color: var(--gold); }
+.flag-btn.active { color: var(--orange); } 
+.action-btn .material-icons { font-size: 28px; }
+
+.bank-item { transition: background 0.2s; display: flex; justify-content: space-between; align-items: center; }
+.bank-item:hover { background: var(--primary-soft); }
+.bank-name { flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+.answer-card { padding:16px; border-radius:12px; border:1px solid var(--border); background:var(--card); cursor:pointer; transition:transform .12s, background .2s; margin-bottom: 10px; position: relative; }
+.answer-card:hover { transform:translateY(-2px); border-color: var(--primary); }
+.answer-card.correct { background:var(--correct-bg)!important; border-color:var(--correct-border)!important; color: var(--correct-text); }
+.answer-card.incorrect { background:var(--incorrect-bg)!important; border-color:var(--incorrect-border)!important; color: var(--incorrect-text); }
+.answer-card.selected-blind { background:var(--selected-bg)!important; border-color:var(--selected-border)!important; color: var(--selected-text); border-width: 2px; }
+.answer-card.disabled { opacity:0.9; pointer-events:none; }
+
+.shortcut-hint { position: absolute; right: 10px; top: 50%; transform: translateY(-50%); opacity: 0.3; font-size: 0.8rem; font-weight: bold; border: 1px solid currentColor; padding: 2px 6px; border-radius: 4px; display: none; }
+@media (min-width: 981px) { body.quiz-mode .shortcut-hint { display: block; } }
+
+.tag-pill { display:inline-block; padding:4px 10px; border-radius:999px; background:var(--primary-soft); color: var(--primary); font-size:0.75rem; margin-right:6px; font-weight: 600; margin-bottom: 4px; border: 1px solid transparent; transition: all 0.2s;}
+.tag-pill.active { background: var(--primary); color: white; border-color: var(--primary); transform: scale(1.05); }
+
+.small { font-size:0.85rem; color:var(--muted); }
+.input { width:100%; padding:10px 12px; border-radius:10px; border:1px solid var(--border); background: var(--bg); color: var(--text); outline: none; transition: border 0.2s; font-size: 16px; }
 .input:focus { border-color: var(--primary); }
+.input-edit { margin-bottom: 8px; font-size: 0.9rem; }
 
-.tag-pill { display: inline-block; padding: 4px 10px; border-radius: 99px; background: var(--primary-soft); color: var(--primary); font-size: 0.75rem; font-weight: 600; margin-right: 6px; margin-bottom: 4px; cursor: pointer; border: 1px solid transparent; }
-.tag-pill:hover, .tag-pill.active { background: var(--primary); color: white; }
+.quiz-progress-container { width: 100%; max-width: 800px; margin: 0 auto 24px auto; }
+.progress-bg { background:var(--border); border-radius:999px; height:10px; overflow:hidden; }
+.progress-bar { height:10px; background:var(--primary); width:0%; transition:width .3s ease; }
 
-.icon-btn { display: inline-flex; align-items: center; justify-content: center; border-radius: 50%; width: 36px; height: 36px; border: 1px solid var(--border); cursor: pointer; background: var(--card); color: var(--muted); }
-.icon-btn:hover { background: var(--primary-soft); color: var(--primary); border-color: var(--primary); }
+.nav-grid-scrollable { display: flex; flex-wrap: wrap; gap: 6px; max-height: 250px; overflow-y: auto; padding: 4px; align-content: flex-start; }
+.nav-dot { width: 32px; height: 32px; border-radius: 50%; font-size: 0.75rem; font-weight: 600; display: flex; align-items: center; justify-content: center; cursor: pointer; background: var(--bg); border: 1px solid var(--border); color: var(--muted); transition: all 0.2s; }
+.nav-dot:hover { border-color: var(--primary); }
+.nav-dot.current { border-color: var(--primary); border-width: 2px; transform: scale(1.1); font-weight:800; }
+.nav-dot.answered { background: var(--primary-soft); color: var(--primary); border-color: transparent; }
+.nav-dot.flagged { background: #fff7ed; color: var(--orange); border-color: var(--orange); }
+.nav-dot.wrong { background: #fee2e2; color: #ef4444; } 
 
-.block-header { font-weight: 700; font-size: 0.85rem; text-transform: uppercase; color: var(--muted); margin-bottom: 12px; display: flex; align-items: center; gap: 8px; }
-.flex-between { display: flex; justify-content: space-between; align-items: center; }
-.text-muted { color: var(--muted); }
+#question-text { font-size: 1.15rem; line-height: 1.6; font-weight: 500; color: var(--text); margin-bottom: 1.5rem; text-align: left; white-space: pre-wrap; }
+.question-img { max-width: 100%; max-height: 400px; border-radius: 8px; object-fit: contain; display: block; margin: 0 auto 16px auto; border: 1px solid var(--border); cursor: zoom-in; }
 
-/* Quiz & Answers */
-.answer-card { padding: 16px; border-radius: 12px; border: 1px solid var(--border); background: var(--card); cursor: pointer; margin-bottom: 10px; display: flex; gap: 12px; align-items: flex-start; transition: 0.2s; }
-.answer-card:hover { transform: translateY(-2px); border-color: var(--primary); }
-.answer-card.correct { background: var(--success-bg) !important; border-color: var(--success-border) !important; color: var(--success-text); }
-.answer-card.incorrect { background: var(--error-bg) !important; border-color: var(--error-border) !important; color: var(--error-text); }
-.answer-card.disabled { opacity: 0.9; pointer-events: none; }
-.answer-card.selected-blind { border: 2px solid var(--primary); background: var(--primary-soft); }
+details.justification-details { margin-top: 20px; border: 1px solid var(--border); border-radius: 12px; background: var(--card); overflow: hidden; transition: all 0.3s ease; }
+details.justification-details summary { padding: 12px 16px; cursor: pointer; font-weight: 600; font-size: 0.9rem; color: var(--primary); list-style: none; display: flex; align-items: center; justify-content: space-between; }
+details.justification-details summary::-webkit-details-marker { display: none; }
+details.justification-details summary::after { content: '+'; font-size: 1.2rem; margin-left: 8px; transition: transform 0.2s; }
+details.justification-details[open] summary::after { transform: rotate(45deg); }
+details.justification-details[open] summary { border-bottom: 1px solid var(--border); background: var(--primary-soft); }
+.justification-content { padding: 16px; font-size: 0.95rem; line-height: 1.5; color: var(--text); background: var(--bg); }
 
-#question-text { font-size: 1.15rem; line-height: 1.6; font-weight: 500; margin-bottom: 1.5rem; white-space: pre-wrap; }
-.question-img { max-width: 100%; max-height: 350px; border-radius: 8px; object-fit: contain; margin: 0 auto 16px; display: block; border: 1px solid var(--border); cursor: zoom-in; }
+.history-bar-container { display: flex; align-items: flex-end; gap: 8px; height: 100px; padding-top: 10px; }
+.history-bar-wrapper { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: flex-end; height: 100%; }
+.history-bar { width: 100%; background: var(--primary-soft); border-radius: 4px 4px 0 0; transition: height 0.5s ease; position: relative; min-height: 4px; }
+.history-bar.good { background: var(--correct-border); }
+.history-bar.bad { background: var(--incorrect-border); }
+.history-date { font-size: 0.65rem; color: var(--muted); margin-top: 4px; text-align: center; }
 
-.progress-bg { background: var(--border); border-radius: 99px; height: 8px; overflow: hidden; }
-.progress-fill { height: 100%; background: var(--primary); width: 0%; transition: width 0.4s ease; }
+/* Casos Clínicos - Estilos Específicos */
+.srs-btn { flex: 1; border-radius: 8px; padding: 12px; border: none; font-weight: bold; cursor: pointer; transition: transform 0.2s; display: flex; flex-direction: column; align-items: center; gap: 4px; }
+.srs-btn:hover { transform: translateY(-2px); }
+.srs-btn.hard { background: #fee2e2; color: #b91c1c; border: 1px solid #fca5a5; }
+.srs-btn.good { background: #e0f2fe; color: #0369a1; border: 1px solid #7dd3fc; }
+.srs-btn.easy { background: #dcfce7; color: #15803d; border: 1px solid #86efac; }
+.srs-btn span.label { font-size: 0.75rem; opacity: 0.8; font-weight: normal; }
 
-/* Cases */
-.srs-controls { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; margin-top: 20px; }
-.srs-btn { display: flex; flex-direction: column; align-items: center; padding: 12px; border-radius: 12px; border: 1px solid transparent; cursor: pointer; }
-.srs-hard { background: var(--error-bg); color: var(--error-text); border-color: var(--error-border); }
-.srs-good { background: #e0f2fe; color: #0369a1; border-color: #7dd3fc; }
-.srs-easy { background: var(--success-bg); color: var(--success-text); border-color: var(--success-border); }
-.notepad { width: 100%; min-height: 120px; padding: 12px; border-radius: 8px; border: 1px solid #fcd34d; background: #fffbeb; color: #78350f; font-family: monospace; resize: vertical; margin-top: 10px; }
-[data-theme='dark'] .notepad { background: #2a2515; border-color: #854d0e; color: #fde68a; }
+.notepad-area { width: 100%; min-height: 100px; padding: 12px; background: #fffbeb; border: 1px solid #fcd34d; border-radius: 8px; font-family: monospace; font-size: 0.9rem; color: #78350f; resize: vertical; margin-top: 12px; }
+.notepad-area:focus { outline: none; border-color: #f59e0b; box-shadow: 0 0 0 2px rgba(245, 158, 11, 0.2); }
+[data-theme='dark'] .notepad-area { background: #2a2515; border-color: #854d0e; color: #fde68a; }
+
+.flashcard-reveal { border-top: 1px dashed var(--border); margin-top: 20px; padding-top: 20px; animation: fadeIn 0.3s ease-in-out; }
+@keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+/* Lightbox */
+.lightbox { position: fixed; inset: 0; background: rgba(0,0,0,0.9); z-index: 3000; display: none; align-items: center; justify-content: center; padding: 20px; }
+.lightbox.open { display: flex; }
+.lightbox img { max-width: 100%; max-height: 90vh; border-radius: 4px; box-shadow: 0 0 20px rgba(0,0,0,0.5); }
+.lightbox-close { position: absolute; top: 20px; right: 20px; color: white; font-size: 30px; cursor: pointer; background: rgba(255,255,255,0.2); border-radius: 50%; width: 44px; height: 44px; display: flex; align-items: center; justify-content: center; }
 
 /* Drawer & Modals */
-.drawer { position: fixed; left: -360px; top: 0; bottom: 0; width: 340px; background: var(--card); z-index: 2000; transition: left 0.3s; box-shadow: 5px 0 25px rgba(0,0,0,0.1); padding: 20px; overflow-y: auto; border-right: 1px solid var(--border); }
-.drawer.open { left: 0; }
-.overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.5); backdrop-filter: blur(4px); z-index: 1500; display: none; align-items: center; justify-content: center; }
-.overlay.open { display: flex; }
-.modal { background: var(--card); width: 90%; max-width: 600px; max-height: 90vh; border-radius: var(--radius); padding: 24px; overflow-y: auto; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1); }
-#drop-zone, #cases-drop-zone { border: 2px dashed var(--border); border-radius: var(--radius); padding: 32px; text-align: center; color: var(--muted); cursor: pointer; transition: 0.2s; }
-#drop-zone:hover { border-color: var(--primary); background: var(--primary-soft); color: var(--primary); }
+.drawer { position:fixed; left:-380px; top:0; bottom:0; width:360px; padding:20px; z-index:2000; transition:left .3s ease; box-shadow: 5px 0 25px rgba(0,0,0,0.1); border-right: 1px solid var(--border); background: var(--card); overflow-y: auto; }
+.drawer.open { left:0; }
+.overlay { position:fixed; inset:0; display:none; align-items:center; justify-content:center; background:rgba(0,0,0,0.4); backdrop-filter: blur(2px); z-index:1500; }
+.overlay.open { display:flex; }
+.modal { width:min(920px,96vw); max-height:90vh; overflow:auto; animation: popIn 0.2s ease-out; }
+@keyframes popIn { from{transform:scale(0.95);opacity:0} to{transform:scale(1);opacity:1} }
 
-.nav-grid { display: flex; flex-wrap: wrap; gap: 6px; max-height: 250px; overflow-y: auto; margin-top: 10px; }
-.nav-dot { width: 30px; height: 30px; border-radius: 50%; font-size: 0.7rem; display: flex; align-items: center; justify-content: center; cursor: pointer; border: 1px solid var(--border); background: var(--bg); }
-.nav-dot.current { border: 2px solid var(--primary); font-weight: bold; }
-.nav-dot.answered { background: var(--primary-soft); color: var(--primary); border-color: transparent; }
-.nav-dot.wrong { background: var(--error-bg); color: var(--error-text); }
-.nav-dot.flagged { border-color: var(--warn-border); color: var(--warn-text); background: var(--warn-bg); }
+#drop-zone { border:2px dashed var(--primary); padding:24px; border-radius:12px; text-align:center; color:var(--text); background: var(--card); transition: all 0.2s; cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 8px; }
+#drop-zone:hover { border-color: var(--primary-hover); background: var(--primary-soft); }
+.code-block { background: #f4f4f5; padding: 12px; border-radius: 8px; font-family: monospace; font-size: 0.8rem; overflow-x: auto; white-space: pre-wrap; }
+[data-theme='dark'] .code-block { background: #2c2c2e; color: #e5e5e5; }
 
-.search-results { position: absolute; top: 100%; left: 0; right: 0; background: var(--card); border: 1px solid var(--border); border-radius: 8px; z-index: 100; max-height: 200px; overflow-y: auto; display: none; box-shadow: var(--shadow); }
-.search-item { padding: 8px 12px; border-bottom: 1px solid var(--border); cursor: pointer; font-size: 0.85rem; }
+.mark-btn { width:32px; height:32px; display:flex; align-items:center; justify-content:center; border-radius:8px; background:var(--primary-soft); color:var(--primary); font-weight:bold; font-size:0.8rem; border:none; cursor:pointer; transition:0.2s; }
+.mark-btn:hover { background:var(--primary); color:white; }
+.menu-btn { background:transparent; border:0; cursor:pointer; color: var(--text); display: flex; padding: 8px; border-radius: 8px; z-index: 50; }
+.menu-btn:hover { background: var(--primary-soft); }
+.icon-btn { display:inline-flex; align-items:center; justify-content:center; border-radius:50%; padding:8px; border:1px solid var(--border); cursor:pointer; background: var(--card); color: var(--text); transition: all 0.2s; }
+.icon-btn:hover { background: var(--primary-soft); color: var(--primary); border-color: var(--primary); }
+
+.search-results-container { max-height: 200px; overflow-y: auto; background: var(--card); border: 1px solid var(--border); border-radius: 0 0 10px 10px; margin-top: -5px; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1); display: none; position: relative; z-index: 10; }
+.search-results-container.visible { display: block; }
+.search-item { padding: 8px 12px; border-bottom: 1px solid var(--border); cursor: pointer; font-size: 0.85rem; transition: background 0.1s; }
 .search-item:hover { background: var(--primary-soft); }
+.search-item strong { color: var(--primary); }
 
-/* Tutorial Styles */
-.tutorial-section { margin-bottom: 24px; }
-.tutorial-title { font-weight: 700; color: var(--primary); margin-bottom: 8px; display: flex; align-items: center; gap: 8px; }
-.key-badge { display: inline-block; padding: 2px 6px; border: 1px solid var(--border); border-radius: 4px; font-family: monospace; font-size: 0.8rem; background: var(--bg); }
+/* Block Headers Styling */
+.block-header { font-weight: 700; font-size: 0.95rem; margin-bottom: 16px; display: flex; align-items: center; gap: 8px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.5px; }
 
+/* Edit Form */
+#edit-form-container { background: var(--bg); padding: 16px; border-radius: 8px; margin-bottom: 20px; border: 1px solid var(--primary); display: none; }
+#edit-form-container label { font-size: 0.8rem; font-weight: bold; margin-bottom: 4px; display: block; }
+.edit-answers-grid { display: grid; grid-template-columns: 1fr; gap: 8px; margin-bottom: 12px; }
+
+@supports (-webkit-touch-callout: none) { .app { padding-bottom: 100px; } }
 </style>
 </head>
 <body>
 
 <div class="app" id="app-root">
-  
-  <aside id="left-panel" class="card" style="height: fit-content; min-height: 80vh; display:flex; flex-direction:column; gap: 16px;">
-    
-    <div class="flex-between">
+  <aside id="left-panel" class="card" style="position:relative; height: fit-content; min-height: 80vh; display:flex; flex-direction:column;">
+    <div style="display:flex;justify-content:space-between;align-items:center; margin-bottom: 16px;">
       <div>
-        <h2 style="margin:0; font-size:1.4rem;">Pauteo Pro</h2>
-        <div class="small text-muted">v5.1 · <span style="color:var(--primary)">Ultimate</span></div>
+        <h2 class="text-xl font-bold tracking-tight" style="margin:0; font-size:1.25rem;">Pauteo Pro</h2>
+        <div class="small">v4.0 · <span style="color:var(--primary)">Modo Estudio</span></div>
       </div>
-      <div style="display:flex; gap:8px;">
-          <button id="tutorial-btn" class="icon-btn" title="Ayuda"><span class="material-icons">info</span></button>
-          <button id="download-app-btn" class="icon-btn" title="Instalar App" style="display:none;"><span class="material-icons">install_mobile</span></button>
+      <div style="display:flex; gap:6px;">
+          <button id="tutorial-btn" class="icon-btn" title="Tutorial / Instrucciones"><span class="material-icons">info</span></button>
+          <button id="download-app-btn" class="icon-btn" title="Descargar App / Instalar"><span class="material-icons">install_mobile</span></button>
       </div>
     </div>
 
-    <div style="position:relative;">
-        <input id="search-bar" class="input" placeholder="Buscar pregunta..." autocomplete="off" />
-        <div id="sidebar-search-results" class="search-results"></div>
+    <div style="margin-top:12px; position:relative;">
+        <input id="search-bar" class="input" placeholder="Buscar pregunta o tag..." autocomplete="off" />
+        <div id="sidebar-search-results" class="search-results-container"></div>
     </div>
 
-    <div>
-      <div class="block-header"><span class="material-icons" style="font-size:16px;">quiz</span> MODOS</div>
-      <div style="display:flex; gap:8px; margin-bottom:12px;">
-        <button id="mode-study" class="btn outline" style="flex:1">Estudio</button>
-        <button id="mode-exam" class="btn outline" style="flex:1">Examen</button>
-        <button id="mode-pauteo" class="btn outline" style="flex:1">Pauteo</button>
+    <div style="margin-top:16px">
+      <div class="small font-semibold mb-2">Modo</div>
+      <div style="display:flex;gap:8px;">
+        <button id="mode-study" class="btn" style="flex:1">Estudio</button>
+        <button id="mode-exam" class="btn" style="flex:1" title="Resultados al final (Ciego)">Examen</button>
+        <button id="mode-pauteo" class="btn" style="flex:1" title="Ver respuestas y justificación">Pauteo</button>
       </div>
-      <div class="flex-between">
-        <span class="small">Timer (min)</span>
-        <div style="display:flex; gap:8px;">
-          <input id="timer-input" class="input" type="number" min="1" value="30" style="width:60px; text-align:center; padding:4px;" />
-          <button id="start-exam" class="btn small">Go</button>
+      <div style="margin-top:16px; display:flex; align-items:center; justify-content:space-between;">
+        <div class="small">Timer (min)</div>
+        <div style="display:flex;gap:8px;">
+          <input id="timer-input" class="input" type="number" min="1" value="30" style="width:60px; text-align:center;" />
+          <button id="start-exam" class="btn">Iniciar</button>
         </div>
       </div>
     </div>
 
-    <hr style="border:0; border-top:1px solid var(--border); width:100%;">
-
-    <div style="flex:1; display:flex; flex-direction:column; min-height:0;">
-       <div class="block-header">
-           <span class="material-icons" style="font-size:16px;">folder_open</span> BANCOS
-           <div style="margin-left:auto; display:flex; gap:4px;">
-                <button id="clean-duplicates-btn" class="btn small outline" title="Limpiar Duplicados"><span class="material-icons" style="font-size:14px;">cleaning_services</span></button>
-                <button id="btn-merge-ui" class="btn small outline" title="Fusionar"><span class="material-icons" style="font-size:14px;">merge</span></button>
-           </div>
-       </div>
-       <div id="banks-list" style="flex:1; overflow-y:auto; margin-bottom:12px; padding-right:4px;"></div>
-       <div style="display:grid; grid-template-columns: 1fr 1fr; gap:8px; margin-bottom:8px;">
-            <button id="save-bank-btn" class="btn small outline">Guardar Nuevo</button>
-            <button id="update-bank-btn" class="btn small outline">Actualizar</button>
-       </div>
-       <div style="font-size:0.75rem; color:var(--muted); text-align:center;">Activo: <span id="active-bank" style="color:var(--primary); font-weight:600;">(ninguno)</span></div>
-       <button id="export-json-btn" class="btn small outline" style="width:100%; margin-top:4px;">Exportar JSON</button>
+    <div class="card mt-4" style="background:rgba(0,0,0,0.02); border:0;">
+      <h3 class="font-semibold mb-2" style="font-size:0.9rem;">Temas</h3>
+      <div style="display:flex; gap:8px; flex-wrap:wrap;">
+        <button class="btn theme-btn theme-btn-pink" data-theme="pink">Pink</button>
+        <button class="btn theme-btn theme-btn-light" data-theme="light">Claro</button>
+        <button class="btn theme-btn theme-btn-dark" data-theme="dark">Oscuro</button>
+      </div>
     </div>
-
-    <hr style="border:0; border-top:1px solid var(--border); width:100%;">
-
-    <div>
-        <div class="block-header"><span class="material-icons" style="font-size:16px;">upload_file</span> IMPORTAR</div>
-        <div id="drop-zone" style="padding:16px;">
-            <span class="material-icons" style="font-size:24px; color:var(--primary);">cloud_upload</span>
-            <div style="font-size:0.8rem; margin-top:4px;">Arrastra JSON o TXT</div>
-        </div>
-        <input id="file-input" type="file" accept=".json,.txt,.csv" multiple style="display:none" />
-        <div style="display:flex; gap:8px; margin-top:12px;">
-             <button id="btn-ai-config" class="btn small outline" style="flex:1;">Config IA</button>
-             <button id="btn-ai-tags-bank" class="btn small" style="flex:1; background:var(--primary-soft);">Tags IA</button>
-        </div>
-        <button id="btn-show-templates" class="btn small outline" style="width:100%; margin-top:8px; border-style:dashed;">
-            <span class="material-icons" style="font-size:14px; margin-right:6px;">data_object</span> Ver Plantillas JSON
+    <div class="mt-4 pt-4 border-t border-[var(--border)]">
+      <h3 class="font-bold text-lg mb-2" style="font-size:1rem; display:flex; justify-content:space-between; align-items:center;">
+          Bancos 
+          <button id="btn-merge-ui" class="small" style="background:transparent; border:none; color:var(--primary); cursor:pointer; font-weight:600; padding:0;">
+            <span class="material-icons" style="font-size:16px; vertical-align:middle;">merge</span> Fusionar
+          </button>
+      </h3>
+      
+      <div id="banks-list" style="margin-top:10px; max-height: 150px; overflow-y: auto; margin-bottom: 12px; padding-right:2px;"></div>
+      
+      <div style="display:grid; grid-template-columns: 1fr 1fr; gap:8px; margin-bottom:8px;">
+        <button id="save-bank-btn" class="btn small" style="background:var(--primary-soft); color:var(--primary); border:none;" title="Guardar como nuevo banco">
+            <span class="material-icons" style="font-size:16px; margin-right:4px;">save</span> Nuevo
         </button>
-    </div>
+        <button id="update-bank-btn" class="btn small" style="background:var(--card); color:var(--text); border:1px solid var(--primary-soft);" title="Guardar cambios en el actual">
+            <span class="material-icons" style="font-size:16px; margin-right:4px;">save_as</span> Actual
+        </button>
+      </div>
 
-    <div style="display:flex; gap:6px; justify-content:center; margin-top:8px;">
-        <button class="icon-btn" onclick="setTheme('pink')" style="background:#fce7f3;"></button>
-        <button class="icon-btn" onclick="setTheme('light')" style="background:#f3f4f6;"></button>
-        <button class="icon-btn" onclick="setTheme('dark')" style="background:#1e293b; border-color:#334155;"></button>
+      <button id="export-bank-json-btn" class="btn small" style="width:100%; margin-bottom:12px; background:var(--card); color:var(--text); border:1px solid var(--border);">
+          <span class="material-icons" style="font-size:16px; margin-right:6px;">file_download</span> Descargar JSON
+      </button>
+
+      <div style="border-top: 1px dashed var(--border); padding-top:12px;">
+          <div class="small font-bold mb-2" style="color:var(--muted); font-size:0.75rem; text-transform:uppercase; letter-spacing:0.5px;">Herramientas</div>
+          
+          <button id="clean-duplicates-btn" class="btn small" style="width:100%; margin-bottom:8px; background:var(--card); color:var(--text); border:1px solid var(--primary-soft); justify-content: center;">
+                <span class="material-icons" style="font-size:18px; margin-right:6px; color:var(--orange);">cleaning_services</span> Limpiar Duplicados
+          </button>
+
+          <div style="display:grid; grid-template-columns: 1fr 1fr; gap:8px; margin-bottom:8px;">
+              <button id="btn-ai-tags-bank" class="btn small" style="background:var(--primary-soft); color:var(--primary); border:1px solid var(--primary);" title="Generar etiquetas automáticas con IA">
+                  <span class="material-icons" style="font-size:16px; margin-right:4px;">auto_awesome</span> Tags IA
+              </button>
+              <button id="btn-clear-tags" class="btn small" style="background:var(--incorrect-bg); color:var(--incorrect-text); border:1px solid var(--incorrect-border);" title="Eliminar todas las etiquetas">
+                  <span class="material-icons" style="font-size:16px; margin-right:4px;">label_off</span> Borrar
+              </button>
+          </div>
+
+          <button onclick="document.getElementById('ai-config-overlay').classList.add('open')" class="btn small" style="width:100%; background:transparent; border:none; color:var(--muted); font-size:0.8rem;">
+            <span class="material-icons" style="font-size:14px; margin-right:4px;">settings</span> Configurar IA
+          </button>
+      </div>
+
+      <div style="margin-top:8px; border-top:1px solid var(--border); padding-top:8px;" class="small">
+          Activo: <span id="active-bank" class="font-medium" style="color:var(--primary); margin-left:4px;">(ninguno)</span>
+      </div>
+    </div>
+    </div>
+    
+
+    <div class="mt-4 pt-4 border-t border-[var(--border)]">
+      <h3 class="font-bold text-base mb-2" style="font-size:0.9rem;">Importar / Crear</h3>
+      
+      <div id="drop-zone">
+         <span class="material-icons" style="font-size:32px; color:var(--primary)">cloud_upload</span>
+         <div style="font-size:0.9rem; font-weight:600;">Subir archivos JSON o TXT</div>
+         <div class="small">Click o arrastra aquí</div>
+      </div>
+      <input id="file-input" type="file" accept=".json,.txt,.csv" multiple style="display:none" />
+
+      <div style="margin-top:12px; display:flex; gap:8px;">
+          <button id="btn-json-help-details" class="btn small" style="flex:1; background:var(--bg); border:1px solid var(--border);">
+             <span class="material-icons" style="font-size:16px; margin-right:6px;">help_outline</span> Ayuda JSON
+          </button>
+          <button id="download-template-btn" class="btn small" style="flex:1; background:var(--bg); border:1px solid var(--border);">
+             <span class="material-icons" style="font-size:16px; margin-right:6px;">download</span> Planilla
+          </button>
+      </div>
     </div>
   </aside>
 
   <main id="main-panel" style="height:100%; display:flex; flex-direction:column;">
-
+    
     <div id="dashboard-view" style="display:flex; flex-direction:column; gap:24px;">
-        <div class="card" style="text-align:center; padding: 40px 20px;">
-            <div style="display:flex; justify-content:space-between; position:absolute; top:20px; left:20px; right:20px;">
-                <button id="mobile-menu-btn" class="icon-btn" style="display:none;"><span class="material-icons">menu</span></button>
-                <div id="filter-badge-area"></div>
+        
+        <div class="card">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
+                <button id="mobile-menu-btn" class="menu-btn icon-btn" style="display:none;"><span class="material-icons">menu</span></button>
+                <div id="filter-badge-area" style="flex:1; display:flex; justify-content:flex-end;"></div>
             </div>
-            <h1 style="font-size:2rem; margin-bottom:8px;">Listo para aprender</h1>
-            <p class="text-muted" style="margin-bottom:32px;">Selecciona tu modo de entrenamiento.</p>
-            <div style="display:flex; justify-content:center; gap:16px; flex-wrap:wrap;">
-                <button id="open-pauteo-btn" class="btn primary" style="padding:14px 28px; font-size:1rem; box-shadow: 0 4px 14px rgba(236, 72, 153, 0.4);">
-                    <span class="material-icons">play_arrow</span> Iniciar Quiz
-                </button>
-                <button id="open-smart-btn" class="btn outline" style="padding:14px 28px; font-size:1rem;">
-                    <span class="material-icons">school</span> Repaso Inteligente
-                </button>
-            </div>
-            <div style="margin-top:24px;">
-                <button id="open-cases-module-btn" class="btn" style="background:var(--case-soft); color:var(--case-accent); border:1px solid var(--case-accent); padding:12px 24px;">
-                    <span class="material-icons">medical_services</span> Módulo Casos Clínicos
-                </button>
+            <div style="text-align:center;">
+                <h2 class="text-2xl font-bold mb-2" style="font-size:1.5rem;">Listo para practicar</h2>
+                <p class="small mb-6">Selecciona un banco, usa el modo inteligente o carga tu JSON.</p>
+                <div style="display:flex; gap:12px; flex-wrap:wrap; justify-content:center;">
+                      <button id="open-pauteo-btn" class="btn" style="font-size:1.1rem; padding:16px 32px; background:var(--primary); color:white; box-shadow: 0 4px 14px rgba(0,0,0,0.2);">Iniciar Quiz</button>
+                      <button id="open-smart-btn" class="btn" style="font-size:1.1rem; padding:16px 32px; background:var(--card); color:var(--primary); border:2px solid var(--primary); box-shadow: 0 4px 14px rgba(0,0,0,0.1);"> Repaso Quiz </button>
+                </div>
+                <div style="margin-top: 16px;">
+                    <button id="open-cases-module-btn" class="btn" style="font-size:1rem; padding:14px 28px; background: var(--case-accent); color: white; box-shadow: 0 4px 14px rgba(0,0,0,0.2);">
+                        <span class="material-icons" style="margin-right:8px;">medical_services</span> Casos Clínicos
+                    </button>
+                </div>
             </div>
         </div>
 
-        <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap:24px;">
-            <div class="card">
-                <div class="block-header"><span class="material-icons">bar_chart</span> RENDIMIENTO</div>
-                <div id="history-chart" style="display:flex; align-items:flex-end; height:120px; gap:8px;"></div>
+        <div class="card" style="border-left: 6px solid var(--primary);">
+            <div class="block-header">
+                <span class="material-icons">bar_chart</span> TU PROGRESO (Últimos 5)
             </div>
-            <div class="card">
-                <div class="block-header">
-                    <span class="material-icons">local_offer</span> TEMAS
-                    <button id="open-editor-hero-btn" class="btn small outline" style="margin-left:auto;">Filtro Avanzado</button>
-                </div>
-                <div id="start-tags-list" style="display:flex; flex-wrap:wrap; gap:6px;"></div>
+            <div id="history-chart" class="history-bar-container">
+                <div class="small text-muted" style="width:100%; text-align:center;">No hay historial reciente.</div>
             </div>
         </div>
-        
-        <div id="dashboard-marked-card" class="card" style="display:none; border-left:4px solid var(--gold);">
-            <div class="block-header"><span class="material-icons" style="color:var(--gold)">star</span> MARCADAS RECIENTES</div>
-            <div id="dashboard-marked-list" style="display:flex; flex-direction:column; gap:8px;"></div>
+
+        <div class="card">
+            <div class="block-header">
+                <span class="material-icons">tune</span> Personalización
+            </div>
+            
+            <button id="open-editor-hero-btn" class="btn" style="width:100%; margin-bottom:20px; background:var(--bg); color:var(--text); border:1px solid var(--border); display:flex; align-items:center; justify-content:center; padding:16px;">
+                Filtro Avanzado / Selección Manual
+            </button>
+
+            <div id="start-tags-container" style="display: none; text-align: left; border-top: 1px solid var(--border); padding-top: 16px;">
+                <div class="small font-bold mb-3" style="opacity:0.7; letter-spacing:0.5px;">EXPLORAR TEMAS RÁPIDOS</div>
+                <div id="start-tags-list" style="display: flex; flex-wrap: wrap; gap: 6px;"></div>
+            </div>
         </div>
+
+        <div id="dashboard-marked-card" class="card" style="display:none; border-left: 6px solid var(--gold);">
+           <div class="block-header"><span class="material-icons" style="color:var(--gold)">star</span> Marcadas (Sesión Actual)</div>
+           <div id="dashboard-marked-list" style="display:flex; flex-direction:column; gap:8px;"></div>
+        </div>
+
     </div>
 
-    <div id="quiz-view" class="card" style="display:none; height:100%; flex-direction:column; padding:0; border:none; background:transparent; box-shadow:none;">
-        <div class="flex-between" style="margin-bottom:16px;">
-            <button id="quiz-menu-btn" class="icon-btn" style="display:none;"><span class="material-icons">menu</span></button>
-            <div style="width: 100%; max-width: 600px; margin: 0 12px; flex:1;">
-                <div class="flex-between" style="margin-bottom:4px;">
-                    <span id="progress-text" class="small font-bold">1 / 10</span>
-                    <span id="timer-display" class="small font-bold" style="color:var(--primary);"></span>
-                </div>
-                <div class="progress-bg"><div id="progress-bar" class="progress-fill"></div></div>
+    <div id="quiz-view" class="card" style="display:none; height:100%; flex-direction:column; background:transparent; border:none; box-shadow:none; padding:0;">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+         <button id="quiz-menu-btn" class="menu-btn icon-btn" style="display:none;"><span class="material-icons">menu</span></button>
+         <div style="flex:1;"></div> 
+      </div>
+
+      <div id="bank-editor-screen" style="display:none;">
+        <div class="card">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
+                <h2 class="text-xl font-bold">Editor Avanzado</h2>
+                <button id="close-editor-btn" class="btn small" style="background:var(--incorrect-bg); color:var(--incorrect-text);">Volver</button>
             </div>
-            <button onclick="closeQuizView()" class="btn small outline">Salir</button>
+            <p class="small mb-4">Preguntas visibles: <span id="editor-count" style="font-weight:bold;">0</span></p>
+            <div class="card" style="padding:10px; margin-bottom:15px; border:2px solid var(--primary-soft);">
+                <div class="small font-semibold mb-2 text-center" style="color:var(--primary);">Selecciona temas:</div>
+                <div id="editor-tag-filter" style="display:flex; flex-wrap:wrap; gap:6px; justify-content:center;"></div>
+            </div>
+            <div style="display:grid; grid-template-columns: 1fr 1fr; gap:12px; margin-bottom:12px;">
+                 <button id="start-filtered-quiz-btn" class="btn" style="background:var(--primary); color:white; grid-column: span 2; padding:12px; font-size:1rem;">
+                    <span class="material-icons" style="margin-right:6px;">play_arrow</span> Practicar Selección
+                </button>
+                <button id="create-filtered-bank-btn" class="btn" style="background:#bbf7d0; color:#15803d;">Guardar Banco</button>
+                <button id="delete-filtered-btn" class="btn" style="background:#ffd6d6; color:#ef4444;">Eliminar Visibles</button>
+            </div>
+            <div style="max-height: 50vh; overflow-y: auto;">
+                <div id="editor-question-list"></div>
+            </div>
+        </div>
+      </div>
+      
+      <div id="quiz-shell" style="display:none; flex:1;" class="quiz-shell">
+        <div class="quiz-progress-container" id="quiz-progress-wrap">
+            <div style="display:flex; justify-content:space-between; margin-bottom:6px;">
+              <span id="progress-text" class="small font-bold">Pregunta 0 / 0</span>
+              <span id="timer-display" class="small font-mono font-bold text-red-500">00:00</span>
+            </div>
+            <div class="progress-bg"><div id="progress-bar" class="progress-bar"></div></div>
         </div>
 
-        <div id="bank-editor-screen" class="card" style="display:none; position:absolute; inset:0; z-index:50; overflow-y:auto;">
-             <div class="flex-between" style="margin-bottom:16px;">
-                <h3>Editor / Filtro Avanzado</h3>
-                <button onclick="$('bank-editor-screen').style.display='none'" class="btn small outline">Cerrar</button>
-             </div>
-             <p class="small text-muted">Selecciona tags para filtrar el banco actual.</p>
-             <div id="editor-tag-filter" style="display:flex; flex-wrap:wrap; gap:6px; margin-bottom:16px;"></div>
-             <div style="display:flex; gap:12px; margin-bottom:16px;">
-                 <button id="start-filtered-quiz-btn" class="btn primary" style="flex:1;">Practicar Selección</button>
-                 <button id="create-filtered-bank-btn" class="btn outline" style="flex:1;">Guardar como Banco</button>
-                 <button id="delete-filtered-btn" class="btn" style="background:var(--error-bg); color:var(--error-text);">Borrar</button>
-             </div>
-             <div id="editor-question-list" style="font-size:0.85rem;"></div>
+        <div id="question-card" class="card" style="max-width: 800px; margin: 0 auto; width: 100%;">
+          <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:12px;">
+              <div id="question-tags"></div>
+              <div style="display:flex; gap:8px;">
+                  <button id="edit-q-btn" class="action-btn" title="Editar pregunta"><span class="material-icons">edit</span></button>
+                  <button id="delete-q-btn" class="action-btn" title="Eliminar"><span class="material-icons">delete_outline</span></button>
+                  <button id="flag-btn" class="action-btn flag-btn" title="Duda"><span class="material-icons">flag</span></button>
+                  <button id="star-btn" class="action-btn star-btn" title="Favorito"><span class="material-icons">star_border</span></button>
+              </div>
+          </div>
+
+          <div id="edit-form-container">
+              <label>Pregunta:</label>
+              <textarea id="edit-q-text" class="input" rows="3" style="margin-bottom:12px;"></textarea>           
+              <label>URL de Imagen (Opcional):</label>
+              <div class="small" style="color:var(--muted); margin-bottom:6px; font-size:0.75rem; line-height:1.3;">
+                  Pega el enlace directo a la imagen (debe terminar en .jpg, .png, etc).<br>
+                  Deja el campo vacío para eliminar la imagen actual.
+              </div>
+              <input type="text" id="edit-q-image" class="input" placeholder="https://ejemplo.com/imagen.jpg" style="margin-bottom:12px; font-size:0.85rem;">
+              <label>Alternativas:</label>
+              <div id="edit-answers-list" class="edit-answers-grid"></div>
+              <label>Índice Correcta (0=A, 1=B...):</label>
+              <input type="number" id="edit-correct-idx" class="input" style="width:80px; margin-bottom:12px;">
+              <div style="display:flex; gap:8px; justify-content:flex-end;">
+                  <button id="cancel-edit-btn" class="btn" style="background:var(--muted); color:white;">Cancelar</button>
+                  <button id="save-edit-btn" class="btn" style="background:var(--primary); color:white;">Guardar Cambios</button>
+              </div>
+          </div>
+
+          <div id="question-image-container"></div>
+          <div id="question-text">Cargando...</div>
+          <div id="answers" style="display:grid; grid-template-columns:1fr; gap:12px;"></div>
+          
+          <details id="justification-box" class="justification-details" style="display:none;">
+              <summary>Ver Justificación / Explicación</summary>
+              <div class="justification-content" id="justification-text"></div>
+          </details>
+
+          <div style="margin-top:32px; display:flex; justify-content:space-between; align-items:center; padding-top:20px; border-top:1px solid var(--border);">
+            <div><button id="prev-btn" class="btn" style="background:transparent; border:1px solid var(--border); color:var(--muted);">Anterior</button></div>
+            <div style="display:flex; gap:12px;">
+              <button id="restart-btn" class="btn" style="background:transparent; color:var(--muted);">Reiniciar</button>
+              <button id="next-btn" class="btn" style="padding:10px 24px; background:var(--primary); color:white;">Siguiente</button>
+            </div>
+          </div>
+          <div style="text-align:center; margin-top:12px;">
+             <button id="show-results-btn" class="small" style="background:none; border:none; text-decoration:underline; cursor:pointer;">Terminar y ver resultados</button>
+          </div>
         </div>
+      </div>
 
-        <div id="quiz-shell" style="flex:1; display:flex; flex-direction:column;">
-             <div class="card" style="max-width:800px; margin:0 auto; width:100%; flex:1; display:flex; flex-direction:column;">
-                <div class="flex-between" style="margin-bottom:16px;">
-                    <div id="question-tags"></div>
-                    <div style="display:flex; gap:6px;">
-                        <button id="edit-q-btn" class="icon-btn" title="Editar"><span class="material-icons" style="font-size:18px;">edit</span></button>
-                        <button id="flag-btn" class="icon-btn" title="Duda"><span class="material-icons" style="font-size:18px;">outlined_flag</span></button>
-                        <button id="star-btn" class="icon-btn" title="Favorito"><span class="material-icons" style="font-size:18px;">star_border</span></button>
-                    </div>
-                </div>
-
-                <div id="edit-form-container" style="display:none; margin-bottom:20px; padding:12px; background:var(--bg); border:1px solid var(--primary); border-radius:12px;">
-                     <label class="small font-bold">Pregunta:</label>
-                     <textarea id="edit-q-text" class="input" rows="3" style="margin-bottom:8px;"></textarea>
-                     <label class="small font-bold">Imagen URL:</label>
-                     <input type="text" id="edit-q-image" class="input" style="margin-bottom:8px;">
-                     <label class="small font-bold">Alternativas:</label>
-                     <div id="edit-answers-list" style="display:grid; gap:6px; margin-bottom:8px;"></div>
-                     <label class="small font-bold">Correcta (0=A, 1=B...):</label>
-                     <input type="number" id="edit-correct-idx" class="input" style="width:60px;">
-                     <div style="text-align:right; margin-top:8px;">
-                        <button id="save-edit-btn" class="btn primary">Guardar</button>
-                     </div>
-                </div>
-
-                <div style="flex:1;">
-                    <div id="question-image-container"></div>
-                    <div id="question-text"></div>
-                    <div id="answers"></div>
-                    <details id="justification-box" style="margin-top:20px; display:none; border:1px solid var(--border); border-radius:8px; padding:8px;">
-                        <summary style="cursor:pointer; font-weight:bold; color:var(--primary);">Explicación</summary>
-                        <div id="justification-text" style="padding-top:8px; line-height:1.6;"></div>
-                    </details>
-                </div>
-
-                <div class="flex-between" style="margin-top:24px; padding-top:16px; border-top:1px solid var(--border);">
-                    <button id="prev-btn" class="btn outline">Anterior</button>
-                    <div style="display:flex; gap:12px;">
-                        <button id="restart-btn" class="btn outline">Reiniciar</button>
-                        <button id="next-btn" class="btn primary">Siguiente</button>
-                    </div>
-                </div>
-                <div style="text-align:center; margin-top:8px;">
-                    <button id="show-results-btn" style="background:none; border:none; text-decoration:underline; cursor:pointer; font-size:0.8rem; color:var(--muted);">Finalizar</button>
-                </div>
-             </div>
+      <div id="results-panel" class="card" style="display:none; padding:20px; max-width:800px; margin:0 auto; width:100%;">
+        <div style="text-align:center; margin-bottom:24px;">
+           <h2 class="text-2xl font-bold" style="font-size:1.5rem;">Resultados</h2>
+           <div id="score-text" class="text-lg" style="margin-top:8px; color:var(--primary); font-weight:600;"></div>
+           <button id="retry-incorrect-btn" class="btn mt-4" style="display:none; margin: 12px auto; background:#fee2e2; color:#ef4444;"><span class="material-icons" style="vertical-align:middle; font-size:18px; margin-right:4px;">refresh</span> Reintentar Incorrectas y Omitidas</button>
         </div>
-
-        <div id="results-panel" class="card" style="display:none; max-width:600px; margin:0 auto; text-align:center;">
-             <h2 style="font-size:1.8rem;">Resultados</h2>
-             <div id="score-text" style="font-size:1.2rem; margin-bottom:20px; color:var(--primary); font-weight:700;"></div>
-             <button id="retry-incorrect-btn" class="btn" style="background:var(--error-bg); color:var(--error-text); width:100%; justify-content:center; margin-bottom:12px; display:none;">Reintentar Errores</button>
-             <div id="results-list" style="text-align:left; max-height:400px; overflow-y:auto; margin-bottom:20px;"></div>
-             <button onclick="location.reload()" class="btn outline">Volver al Inicio</button>
+        <div id="results-list" style="margin-top:12px"></div>
+        <div style="margin-top:24px; text-align:center;">
+          <button id="export-results-btn" class="btn">Exportar JSON</button>
+          <button onclick="location.reload()" class="btn" style="margin-left:12px; background:transparent; border:1px solid var(--border);">Volver al inicio</button>
         </div>
+      </div>
     </div>
 
     <div id="cases-view" style="display:none; height:100%; flex-direction:column; gap: 20px;">
-        <div class="flex-between">
-             <button onclick="exitCasesModule()" class="btn small outline"><span class="material-icons" style="font-size:16px;">arrow_back</span> Dashboard</button>
-             <h2 class="font-bold" style="color:var(--case-accent); margin:0;">Casos Clínicos SRS</h2>
+        <div style="display:flex; justify-content:space-between; align-items:center;">
+             <button onclick="exitCasesModule()" class="btn small" style="background:var(--card); border:1px solid var(--border); color:var(--text);"><span class="material-icons" style="font-size:16px; margin-right:4px;">arrow_back</span> Dashboard</button>
+             <h2 class="text-lg font-bold" style="color:var(--case-accent);">Casos Clínicos SRS</h2>
         </div>
 
-        <div id="cases-import-screen" class="card" style="text-align:center; padding:60px 20px; border: 2px dashed var(--case-accent);">
-            <div style="width:60px; height:60px; background:var(--case-soft); border-radius:50%; display:flex; align-items:center; justify-content:center; margin:0 auto 16px;">
-                <span class="material-icons" style="font-size:32px; color:var(--case-accent);">medical_services</span>
+        <div id="cases-import-screen" class="card" style="text-align:center; padding: 40px; border: 2px dashed var(--case-accent);">
+            <span class="material-icons" style="font-size:48px; color:var(--case-accent);">medical_services</span>
+            <h3 class="font-bold text-xl mt-2">Carga tus Casos</h3>
+            <p class="small text-muted mb-6">Arrastra un archivo JSON de casos clínicos aquí.</p>
+            <div id="cases-drop-zone" style="cursor:pointer; padding:20px; background:var(--bg); border-radius:12px; margin-bottom:12px;">
+                Elegir archivo
             </div>
-            <h3 class="font-bold text-xl">Carga tus Casos</h3>
-            <p class="text-muted mb-6">Arrastra un archivo JSON compatible aquí.</p>
-            <div id="cases-drop-zone" style="margin-bottom:16px; padding:20px; background:var(--bg); border-radius:12px;">Elegir archivo</div>
             <input id="cases-file-input" type="file" accept=".json" style="display:none" />
+            <div class="small text-muted">Formato soportado: JSON con campos (title, description, diagnosis, image).</div>
         </div>
 
-        <div id="cases-study-screen" style="display:none; flex-direction:column; flex:1; overflow-y: auto;">
-            <div style="width:100%; max-width:600px; margin:0 auto 10px;">
-                <div class="flex-between" style="margin-bottom:4px;">
-                    <span id="cases-progress-text" class="small font-bold">0 / 0</span>
+        <div id="cases-study-screen" style="display:none; flex-direction:column; flex:1;">
+            <div class="quiz-progress-container">
+                <div style="display:flex; justify-content:space-between; margin-bottom:6px;">
+                    <span id="cases-progress-text" class="small font-bold">Caso 1 / 10</span>
                     <span class="small font-bold" style="color:var(--case-accent);">SRS Lite</span>
                 </div>
-                <div class="progress-bg"><div id="cases-progress-bar" class="progress-fill" style="background:var(--case-accent);"></div></div>
+                <div class="progress-bg"><div id="cases-progress-bar" class="progress-bar" style="background:var(--case-accent);"></div></div>
             </div>
 
-            <div class="card" style="max-width:800px; margin:0 auto; width:100%; flex:1; display:flex; flex-direction:column; border-top: 4px solid var(--case-accent);">
-                <div class="flex-between" style="margin-bottom:12px;">
+            <div class="card" style="max-width:800px; margin:0 auto; width:100%; flex:1; display:flex; flex-direction:column;">
+                
+                <div style="display:flex; justify-content:space-between; margin-bottom:12px;">
                     <div id="case-tags-container"></div>
-                    <button id="case-edit-btn" class="icon-btn"><span class="material-icons" style="font-size:18px;">edit</span></button>
-                </div>
-                <div id="case-edit-form" style="display:none; margin-bottom:12px; padding:12px; border:1px solid var(--case-accent); border-radius:8px;">
-                     <label>Título:</label><input id="edit-case-title" class="input">
-                     <label>Desc:</label><textarea id="edit-case-desc" class="input"></textarea>
-                     <label>Diag:</label><textarea id="edit-case-diag" class="input"></textarea>
-                     <button id="save-case-edit" class="btn small" style="background:var(--case-accent); color:white; margin-top:8px;">Guardar</button>
+                    <button id="case-edit-btn" class="action-btn" title="Editar Caso"><span class="material-icons">edit</span></button>
                 </div>
 
-                <div id="case-content-front" style="flex:1;">
-                    <h2 id="case-title" style="margin-top:0;"></h2>
+                <div id="case-edit-form" style="display:none; margin-bottom:20px; background:var(--bg); padding:12px; border:1px solid var(--case-accent); border-radius:8px;">
+                    <label class="small font-bold">Título:</label>
+                    <input id="edit-case-title" class="input input-edit">
+                    <label class="small font-bold">Descripción:</label>
+                    <textarea id="edit-case-desc" class="input input-edit" rows="4"></textarea>
+                    <label class="small font-bold">Diagnóstico (HTML permitido):</label>
+                    <textarea id="edit-case-diag" class="input input-edit" rows="4"></textarea>
+                    <div style="text-align:right;">
+                        <button id="save-case-edit" class="btn" style="background:var(--case-accent); color:white;">Guardar</button>
+                    </div>
+                </div>
+
+                <div id="case-content-front">
+                    <h2 id="case-title" class="text-xl font-bold mb-4">Título del Caso</h2>
                     <div id="case-image-container" style="text-align:center; margin-bottom:16px;"></div>
-                    <div id="case-description" style="line-height:1.6; white-space:pre-wrap;"></div>
+                    <div id="case-description" style="line-height:1.6; font-size:1.05rem; white-space: pre-wrap;">Descripción...</div>
                 </div>
 
-                <div id="case-content-back" style="display:none; margin-top:24px; padding-top:24px; border-top:1px dashed var(--border); animation:fadeIn 0.3s;">
-                    <h3 style="color:var(--case-accent);">Diagnóstico</h3>
-                    <div id="case-diagnosis" style="line-height:1.6;"></div>
+                <div id="case-content-back" class="flashcard-reveal" style="display:none;">
+                    <h3 class="font-bold text-lg mb-2" style="color:var(--case-accent);">Diagnóstico / Resolución</h3>
+                    <div id="case-diagnosis" style="line-height:1.6; font-size:1rem;"></div>
+                    
                     <div style="margin-top:24px;">
-                        <label class="small font-bold">Mis Apuntes</label>
-                        <textarea id="case-notepad" class="notepad" placeholder="Notas..."></textarea>
+                        <label class="small font-bold" style="display:flex; align-items:center; gap:4px;">
+                            <span class="material-icons" style="font-size:16px;">edit_note</span> Mis Apuntes (Persistente)
+                        </label>
+                        <textarea id="case-notepad" class="notepad-area" placeholder="Escribe notas clínicas aquí..."></textarea>
                     </div>
                 </div>
 
-                <div style="margin-top:24px; padding-bottom: 20px;">
-                    <button id="case-reveal-btn" class="btn" style="width:100%; padding:14px; background:var(--case-accent); color:white; font-size:1rem;">Ver Respuesta</button>
-                    <div id="case-srs-controls" class="srs-controls" style="display:none;">
-                        <button onclick="handleCaseSRS('hard')" class="srs-btn srs-hard"><strong>Difícil</strong> <small>Repetir ahora</small></button>
-                        <button onclick="handleCaseSRS('good')" class="srs-btn srs-good"><strong>Bien</strong> <small>Al final</small></button>
-                        <button onclick="handleCaseSRS('easy')" class="srs-btn srs-easy"><strong>Fácil</strong> <small>Archivar</small></button>
+                <div style="margin-top:auto; padding-top:24px;">
+                    <button id="case-reveal-btn" class="btn" style="width:100%; padding:16px; background:var(--case-accent); color:white; font-size:1.1rem;">
+                        Ver Diagnóstico
+                    </button>
+                    
+                    <div id="case-srs-controls" style="display:none; gap:12px; margin-top:12px;">
+                        <button onclick="handleCaseSRS('hard')" class="srs-btn hard">
+                            Difícil
+                            <span class="label">Repetir pronto</span>
+                        </button>
+                        <button onclick="handleCaseSRS('good')" class="srs-btn good">
+                            Bien
+                            <span class="label">Al final</span>
+                        </button>
+                        <button onclick="handleCaseSRS('easy')" class="srs-btn easy">
+                            Fácil
+                            <span class="label">Terminar</span>
+                        </button>
                     </div>
                 </div>
+
             </div>
         </div>
     </div>
   </main>
 </div>
 
-<div id="drawer" class="drawer">
-    <div class="flex-between" style="margin-bottom:20px;"><h3>Menú</h3><button onclick="$('drawer').classList.remove('open')" class="icon-btn"><span class="material-icons">close</span></button></div>
-    <div style="margin-bottom:12px;"><input id="drawer-search" class="input" placeholder="Buscar..." /><div id="drawer-search-results" class="search-results"></div></div>
-    <div id="nav-grid-drawer" class="nav-grid"></div>
-</div>
-
-<div id="preview-overlay" class="overlay">
-  <div class="modal" style="max-width: 800px; display: flex; flex-direction: column; max-height: 85vh;">
-    <div class="flex-between" style="border-bottom:1px solid var(--border); padding-bottom:12px; margin-bottom:12px;">
-      <h3 style="margin:0;">Vista Previa</h3>
-      <div style="display:flex; gap:8px">
-        <button id="preview-save-btn" class="btn primary">Guardar Banco</button>
-        <button onclick="$('preview-overlay').classList.remove('open')" class="btn outline">Cancelar</button>
-      </div>
+<div id="drawer" class="drawer" aria-hidden="true">
+  <div style="display:flex;justify-content:space-between;align-items:center; margin-bottom:20px;">
+    <h2 class="font-bold text-lg">Menú</h2>
+    <button id="close-drawer" class="icon-btn"><span class="material-icons">close</span></button>
+  </div>
+  <div style="display:flex; flex-direction:column; gap:12px;">
+    <div id="mobile-sidebar-content"></div>
+    <div style="position:relative">
+        <input id="drawer-search" class="input" placeholder="Buscar..." autocomplete="off"/>
+        <div id="drawer-search-results" class="search-results-container"></div>
     </div>
-    <div style="flex:1; overflow-y:auto; padding-right:4px;">
-        <div id="preview-list"></div>
+    <div class="card" style="background:var(--bg); border:1px solid var(--border);">
+            <details> <summary style="cursor:pointer; font-weight:700; list-style:none; display:flex; align-items:center; justify-content:space-between; font-size:0.9rem;">
+                    <div style="display:flex; align-items:center;">
+                        <span class="material-icons" style="font-size:16px; margin-right:4px;">grid_view</span> Mapa
+                    </div>
+                    <span class="material-icons" style="font-size:16px; opacity:0.5;">expand_more</span>
+                </summary>
+                <div id="nav-grid-drawer" class="nav-grid-scrollable" style="max-height:300px; margin-top:12px; border-top:1px solid var(--border); padding-top:8px;">
+                    <div class="small text-muted">Inicia un pauteo para ver el mapa.</div>
+                </div>
+            </details>
+    </div>
+    <div id="marked-container" class="card mt-2" style="background:var(--bg); display:none;">
+        <div class="small mb-2 font-bold" style="color:var(--gold); display:flex; align-items:center;"><span class="material-icons" style="font-size:16px; margin-right:4px;">star</span> Marcadas</div>
+        <div id="marked-list" style="display:flex; flex-wrap:wrap; gap:8px;"></div>
+    </div>
+    <div class="card mt-2" style="background:var(--bg);">
+        <div class="small mb-2">Bancos</div>
+        <div id="drawer-banks-list" style="max-height:150px; overflow:auto;"></div>
+    </div>
+    <div style="margin-top: auto; padding-top: 10px; display: flex; flex-direction: column; gap: 8px;">
+        <button onclick="location.reload()" class="btn mt-2" style="background:#fee2e2; color:#ef4444;">Salir del Pauteo</button>
     </div>
   </div>
 </div>
 
-<div id="tutorial-overlay" class="overlay">
-    <div class="modal" style="max-width:700px;">
-        <div class="flex-between" style="margin-bottom:16px; border-bottom:1px solid var(--border); padding-bottom:12px;">
-            <h3>Guía de Pauteo Pro</h3>
-            <button onclick="$('tutorial-overlay').classList.remove('open')" class="icon-btn"><span class="material-icons">close</span></button>
-        </div>
-        <div class="tutorial-section">
-            <div class="tutorial-title"><span class="material-icons">school</span> Modos de Estudio</div>
-            <ul style="padding-left:20px; line-height:1.6;">
-                <li><strong>Estudio:</strong> Feedback inmediato. Te muestra si fallaste o acertaste al instante.</li>
-                <li><strong>Examen:</strong> Simulación ciega. No verás las respuestas hasta terminar el tiempo.</li>
-                <li><strong>Pauteo:</strong> <span class="key-badge">Nuevo</span> Muestra la respuesta correcta marcada automáticamente. Ideal para lectura rápida.</li>
+<div id="tutorial-overlay" class="overlay" role="dialog" aria-modal="true">
+  <div class="card modal" style="max-width:700px;">
+    <div style="display:flex;justify-content:space-between;align-items:center; border-bottom:1px solid var(--border); padding-bottom:12px;">
+      <h3 class="font-bold text-lg">Guía de Uso Pauteo Pro</h3>
+      <button id="tutorial-close" class="icon-btn"><span class="material-icons">close</span></button>
+    </div>
+    <div style="padding-top:16px; overflow-y:auto; max-height:70vh;">
+        <div style="margin-bottom:20px;">
+            <h4 style="color:var(--primary); font-size:1rem; margin-bottom:8px;">1. Modos de Estudio</h4>
+            <ul style="padding-left:20px; font-size:0.9rem; line-height:1.6;">
+                <li><strong>Estudio:</strong> Feedback inmediato. Te muestra si acertaste o no al instante y la justificación.</li>
+                <li><strong>Examen:</strong> Simulación. No verás las respuestas correctas hasta terminar el tiempo o finalizar manualmente.</li>
+                <li><strong>Pauteo:</strong> Modo lectura. Muestra directamente la respuesta correcta y la justificación. Ideal para repasar rápido.</li>
             </ul>
         </div>
-        <div class="tutorial-section">
-            <div class="tutorial-title"><span class="material-icons" style="color:var(--case-accent);">medical_services</span> Casos Clínicos (SRS)</div>
-            <p>Sistema de repetición espaciada para casos largos:</p>
-            <ul style="padding-left:20px; line-height:1.6;">
-                <li><span style="color:var(--error-text)">Difícil:</span> El caso vuelve a aparecer en 3 turnos.</li>
-                <li><span style="color:#0369a1">Bien:</span> Se mueve al final de la cola.</li>
-                <li><span style="color:var(--success-text)">Fácil:</span> Se archiva por hoy.</li>
+        <div style="margin-bottom:20px;">
+            <h4 style="color:var(--primary); font-size:1rem; margin-bottom:8px;">2. Cargar Preguntas</h4>
+            <p style="font-size:0.9rem;">Arrastra archivos <strong>JSON</strong> o <strong>TXT</strong> al área punteada en la barra lateral. La app intentará detectar preguntas automáticamente. También puedes <strong>Fusionar</strong> varios bancos en uno solo.</p>
+        </div>
+        <div style="margin-bottom:20px;">
+            <h4 style="color:var(--primary); font-size:1rem; margin-bottom:8px;">3. Herramientas</h4>
+            <ul style="padding-left:20px; font-size:0.9rem; line-height:1.6;">
+                <li><span class="material-icons" style="font-size:16px; vertical-align:middle; color:var(--gold);">star</span> <strong>Favorito:</strong> Marca preguntas difíciles para revisarlas luego en el Dashboard.</li>
+                <li><span class="material-icons" style="font-size:16px; vertical-align:middle; color:var(--orange);">flag</span> <strong>Duda:</strong> Marca preguntas que creas que están mal planteadas.</li>
+                <li><span class="material-icons" style="font-size:16px; vertical-align:middle;">edit</span> <strong>Editar:</strong> Corrige errores tipográficos o de contenido en tiempo real (se guardan localmente).</li>
+                <li><span class="material-icons" style="font-size:16px; vertical-align:middle;">tune</span> <strong>Filtro:</strong> Crea un mini-examen solo con ciertos temas (tags).</li>
             </ul>
         </div>
-        <div class="tutorial-section">
-            <div class="tutorial-title"><span class="material-icons">auto_awesome</span> Inteligencia Artificial</div>
-            <p>Configura tu API Key de Gemini en "Config IA" para etiquetado automático.</p>
+        <p class="small text-muted" style="text-align:center;">Tus datos se guardan en el navegador. Si borras caché, perderás el progreso.</p>
+    </div>
+  </div>
+</div>
+
+<div id="json-guide-overlay" class="overlay" role="dialog" aria-modal="true">
+  <div class="card modal" style="max-width:600px;">
+    <div style="display:flex;justify-content:space-between;align-items:center; border-bottom:1px solid var(--border); padding-bottom:12px;">
+      <h3 class="font-bold text-lg">Formato JSON</h3>
+      <button id="json-guide-close" class="icon-btn"><span class="material-icons">close</span></button>
+    </div>
+    <div style="padding-top:12px;">
+        <p class="small" style="margin-bottom:8px;">Usa este formato para subir tus propias preguntas. También aceptamos TXT simple.</p>
+        <div class="code-block" id="json-template-code">[{ "question": "Texto de pregunta...", "answers": ["Alternativa A", "Alternativa B"], "correct": 0, "justification": "Explicación opcional", "tags": ["Tema1"] }]</div>
+        <div style="margin-top:16px; display:flex; justify-content:flex-end;"><button id="copy-template-btn" class="btn" style="background:var(--primary); color:white;">Copiar Plantilla</button></div>
+    </div>
+  </div>
+</div>
+
+<div id="merge-overlay" class="overlay" role="dialog" aria-modal="true">
+    <div class="card modal" style="max-width:500px;">
+      <div style="display:flex;justify-content:space-between;align-items:center; border-bottom:1px solid var(--border); padding-bottom:12px;">
+        <h3 class="font-bold text-lg">Fusionar Bancos</h3>
+        <button id="merge-close" class="icon-btn"><span class="material-icons">close</span></button>
+      </div>
+      <div style="padding-top:12px;">
+          <p class="small mb-4">Selecciona los bancos para unir:</p>
+          <div id="merge-list-container" style="max-height:200px; overflow-y:auto; margin-bottom:12px;"></div>
+          <button id="confirm-merge-btn" class="btn" style="width:100%; background:var(--primary); color:white;">Crear Banco Fusionado</button>
+      </div>
+    </div>
+</div>
+
+<div id="preview-overlay" class="overlay" role="dialog" aria-modal="true">
+  <div class="card modal">
+    <div style="display:flex;justify-content:space-between;align-items:center; border-bottom:1px solid var(--border); padding-bottom:12px;">
+      <h3 class="font-bold">Vista previa</h3>
+      <div style="display:flex;gap:8px"><button id="preview-merge-save" class="btn" style="background:var(--primary); color:white;">Guardar Banco</button><button id="preview-close" class="btn">Cancelar</button></div>
+    </div>
+    <div id="preview-list" style="margin-top:12px; max-height:60vh; overflow:auto;"></div>
+  </div>
+</div>
+
+<div id="download-overlay" class="overlay" role="dialog" aria-modal="true">
+  <div class="card modal" style="max-width:500px;">
+    <div style="display:flex;justify-content:space-between;align-items:center; margin-bottom:16px;">
+      <h3 class="font-bold text-lg" id="install-title">Instalar Pauteo</h3>
+      <button id="download-overlay-close" class="icon-btn"><span class="material-icons">close</span></button>
+    </div>
+    <div id="install-content" style="line-height:1.6"></div>
+  </div>
+</div>
+<div id="ai-config-overlay" class="overlay" role="dialog" aria-modal="true">
+  <div class="card modal" style="max-width:500px;">
+    <div style="display:flex;justify-content:space-between;align-items:center; border-bottom:1px solid var(--border); padding-bottom:12px;">
+      <h3 class="font-bold text-lg"><span class="material-icons" style="vertical-align:middle; color:var(--primary)">auto_awesome</span> Configurar IA</h3>
+      <button onclick="document.getElementById('ai-config-overlay').classList.remove('open')" class="icon-btn"><span class="material-icons">close</span></button>
+    </div>
+    <div style="padding-top:16px;">
+        <p class="small mb-4">Para generar tags automáticos al importar, necesitas una API Key de Google Gemini (es gratuita para uso personal).</p>
+        
+        <label class="small font-bold">Gemini API Key:</label>
+        <input id="ai-api-key" type="password" class="input" placeholder="Pega tu API Key aquí (AIzaSy...)" style="margin-bottom:8px;">
+        <div class="small text-muted" style="margin-bottom:20px;">Tu llave se guarda solo en tu navegador (localStorage).</div>
+
+        <button id="save-ai-key-btn" class="btn" style="width:100%; background:var(--primary); color:white;">Guardar Configuración</button>
+        <div style="text-align:center; margin-top:12px;">
+            <a href="https://aistudio.google.com/app/apikey" target="_blank" class="small" style="color:var(--primary);">Conseguir API Key gratis aquí</a>
         </div>
     </div>
+  </div>
 </div>
 
-<div id="templates-overlay" class="overlay">
-    <div class="modal" style="max-width:650px;">
-        <div class="flex-between" style="margin-bottom:16px; border-bottom:1px solid var(--border); padding-bottom:12px;">
-            <h3>Formatos de Importación</h3>
-            <button onclick="$('templates-overlay').classList.remove('open')" class="icon-btn"><span class="material-icons">close</span></button>
-        </div>
-        <div style="margin-bottom:24px;">
-            <div class="flex-between" style="margin-bottom:8px;">
-                <strong style="color:var(--primary);">1. Banco de Preguntas</strong>
-                <div style="display:flex; gap:8px;">
-                    <button id="download-template-file-btn" class="btn small outline">Descargar .json</button>
-                    <button onclick="copyToClip('code-quiz')" class="btn small outline">Copiar</button>
-                </div>
-            </div>
-            <pre id="code-quiz" style="background:#f4f4f5; padding:12px; border-radius:8px; font-family:monospace; font-size:0.8rem; overflow-x:auto; color:#333; border:1px solid var(--border);">[
-  {
-    "question": "¿Tratamiento de primera línea?",
-    "answers": ["Opción A", "Opción B", "Opción C"],
-    "correct": 0,
-    "justification": "Explicación detallada...",
-    "tags": ["Tema 1"],
-    "image": "https://ejemplo.com/img.jpg" 
-  }
-]</pre>
-        </div>
-        <div>
-            <div class="flex-between" style="margin-bottom:8px;">
-                <strong style="color:var(--case-accent);">2. Casos Clínicos (SRS)</strong>
-                <button onclick="copyToClip('code-case')" class="btn small outline">Copiar</button>
-            </div>
-            <pre id="code-case" style="background:#ecfdf5; padding:12px; border-radius:8px; font-family:monospace; font-size:0.8rem; overflow-x:auto; color:#064e3b; border:1px solid var(--case-accent);">[
-  {
-    "title": "Título del Caso",
-    "description": "Historia clínica completa...",
-    "diagnosis": "Resolución y diagnóstico...",
-    "tags": ["Especialidad"],
-    "image": ""
-  }
-]</pre>
-        </div>
+<div id="ai-loading-overlay" class="overlay" style="z-index:2000;">
+    <div class="card" style="padding:30px; text-align:center;">
+        <div class="spinner" style="margin-bottom:15px; font-size:40px;">✨</div>
+        <h3 class="font-bold">Analizando con IA...</h3>
+        <p id="ai-loading-text" class="small">Procesando preguntas...</p>
+        <div class="progress-bg" style="width:200px; margin:15px auto;"><div id="ai-loading-bar" class="progress-bar"></div></div>
     </div>
 </div>
 
-<div id="ai-config-overlay" class="overlay">
-    <div class="modal">
-        <div class="flex-between"><h3>Configurar Gemini API</h3><button onclick="$('ai-config-overlay').classList.remove('open')" class="icon-btn"><span class="material-icons">close</span></button></div>
-        <p class="text-muted small">Ingresa tu API Key para habilitar tags automáticos.</p>
-        <input id="ai-api-key" type="password" class="input" placeholder="AIzaSy..." style="margin:12px 0;">
-        <button id="save-ai-key-btn" class="btn primary" style="width:100%;">Guardar Key</button>
-        <div style="text-align:center; margin-top:8px;"><a href="https://aistudio.google.com/app/apikey" target="_blank" class="small" style="color:var(--primary);">Obtener Key Gratis</a></div>
-    </div>
-</div>
-
-<div id="merge-overlay" class="overlay">
-    <div class="modal">
-        <div class="flex-between"><h3>Fusionar Bancos</h3><button onclick="$('merge-overlay').classList.remove('open')" class="icon-btn"><span class="material-icons">close</span></button></div>
-        <div id="merge-list-container" style="max-height:200px; overflow:auto; margin:12px 0;"></div>
-        <button id="confirm-merge-btn" class="btn primary" style="width:100%;">Fusionar</button>
-    </div>
-</div>
-
-<div id="lightbox-modal" class="overlay" style="z-index:3000; background:rgba(0,0,0,0.9);">
-    <span class="material-icons" style="position:absolute; top:20px; right:20px; color:white; font-size:32px; cursor:pointer;" onclick="$('lightbox-modal').classList.remove('open')">close</span>
-    <img id="lightbox-img" style="max-width:95%; max-height:95vh; border-radius:8px;">
-</div>
-
-<div id="loading-overlay" class="overlay" style="z-index:4000;">
-    <div class="card" style="text-align:center;">
-        <div style="font-size:2rem;">✨</div>
-        <p class="font-bold">Procesando...</p>
-        <div class="progress-bg" style="width:200px; margin:10px auto;"><div id="ai-loading-bar" class="progress-fill"></div></div>
-    </div>
+<div id="lightbox-modal" class="lightbox">
+    <div id="lightbox-close-btn" class="lightbox-close">&times;</div>
+    <img id="lightbox-img" src="" alt="Zoom">
 </div>
 
 <script>
-// --- CORE UTILS ---
-const $ = (id) => document.getElementById(id);
-const STORAGE_KEY = 'pauteo_state_v5';
-const BANKS_KEY = 'pauteo_banks_v5';
-const CASES_KEY = 'pauteo_cases_v5';
-const STATS_KEY = 'pauteo_stats_v5';
-const AI_KEY_STORAGE = 'pauteo_gemini_key';
+// --- PWA INIT ---
+let deferredPrompt;
+window.addEventListener('beforeinstallprompt', (e) => { e.preventDefault(); deferredPrompt = e; });
 
-let timerInterval = null; 
-let deferredPrompt; // GLOBAL VARIABLE FOR PWA INSTALL
+const manifest = { "name": "Pauteo Pro v4.0", "short_name": "Pauteo", "start_url": ".", "display": "standalone", "background_color": "#ffffff", "theme_color": "#ff8ec0", "orientation": "any", "icons": [{ "src": document.getElementById('dynamic-apple-icon').href, "sizes": "192x192", "type": "image/svg+xml" }] };
+document.querySelector('#my-manifest').setAttribute('href', URL.createObjectURL(new Blob([JSON.stringify(manifest)], {type: 'application/json'})));
 
-const AUTO_TAGGER = {'Cardio':['iam','infarto','ecg'],'Resp':['neumonia','epoc','asma'],'Neuro':['acv','stroke'],'Gastro':['hda','hdb','cirrosis'],'Ped':['bronquiolitis','sbo']};
-function detectTags(txt) { const t=new Set(); const l=txt.toLowerCase(); for(const[k,v] of Object.entries(AUTO_TAGGER)){if(v.some(w=>l.includes(w)))t.add(k);} return Array.from(t); }
-
-// --- STATS & SMART SHUFFLE ---
-function getQuestionStats() { 
-    return JSON.parse(localStorage.getItem(STATS_KEY) || '{}'); 
+if ('serviceWorker' in navigator && window.location.protocol.includes('http')) {
+  window.addEventListener('load', function() {
+    navigator.serviceWorker.register(URL.createObjectURL(new Blob([`
+      const CACHE_NAME = 'pauteo-v4-offline';
+      self.addEventListener('install', (e) => { e.waitUntil(caches.open(CACHE_NAME).then((cache) => cache.addAll(['./', location.href]))); self.skipWaiting(); });
+      self.addEventListener('fetch', (e) => { e.respondWith(fetch(e.request).catch(() => caches.match(e.request).then(res => res || caches.match('./')))); });
+    `], {type: 'application/javascript'}))).catch(console.error);
+  });
 }
+
+window.addEventListener('DOMContentLoaded', () => {
+
+function safeAddListener(id, event, handler) { const el = document.getElementById(id); if (el) el.addEventListener(event, handler); }
+
+const STORAGE_KEY = 'pauteo_state_v3';
+const BANKS_KEY = 'pauteo_banks_v3';
+const HISTORY_KEY = 'pauteo_history_v1';
+const STATS_KEY = 'pauteo_stats_v1';
+const CASES_KEY = 'pauteo_cases_v1';
+const NOTES_KEY = 'pauteo_case_notes_v1';
+
+const AUTO_TAGGER = {
+    'Ped. Respiratorio': ['sbo', 'bronquiolitis', 'crup', 'vrs', 'sibilancias', 'score de tal'],
+    'Ped. Sano y PNI': ['pni', 'vacuna', 'control sano', 'desarrollo psicomotor', 'tanner', 'lactancia'],
+    'Ped. Exantemáticas': ['varicela', 'rubeola', 'sarampión', 'exantema', 'kawasaki', 'escarlatina'],
+    'Neonatología': ['neonato', 'recién nacido', 'apgar', 'ictericia', 'sepsis neonatal', 'coombs'],
+    'Ped. Gastro/Uro': ['deshidratación', 'shus', 'invaginación', 'estenosis pilórica', 'reflujo', 'itu'],
+    'Traumatología': ['fractura', 'esguince', 'menisco', 'lumbago', 'hnp', 'displasia'],
+    'Ginecología': ['mama', 'birads', 'vph', 'papanicolaou', 'mioma', 'endometriosis', 'epi'],
+    'Obstetricia': ['preeclampsia', 'hellp', 'parto', 'cesárea', 'registro basal', 'sufrimiento fetal'],
+    'Cardiología': ['iam', 'infarto', 'insuficiencia cardíaca', 'fa', 'bloqueo av', 'hta'],
+    'Respiratorio': ['neumonía', 'nac', 'epoc', 'asma', 'tep', 'derrame'],
+    'Gastroenterología': ['colecistitis', 'colangitis', 'hda', 'hdb', 'cirrosis', 'pancreatitis'],
+    'Endocrino': ['diabetes', 'cetoacidosis', 'tiroides', 'hipotiroidismo', 'cushing'],
+    'Neurología': ['acv', 'stroke', 'epilepsia', 'convulsión', 'migraña'],
+    'Psiquiatría': ['depresión', 'bipolar', 'suicidio', 'esquizofrenia', 'ansiedad'],
+    'Nefrología': ['insuficiencia renal', 'creatinina', 'dialisis', 'hiperkalemia'],
+    'Infectología': ['sepsis', 'shock séptico', 'vih', 'tuberculosis', 'meningitis'],
+    'Dermatología': ['melanoma', 'carcinoma', 'psoriasis', 'acné', 'quemadura'],
+    'Urgencias': ['atls', 'glasgow', 'paro', 'intoxicación']
+};
+
+function detectTags(text) {
+    const found = new Set();
+    const lower = text.toLowerCase();
+    for (const [tag, keywords] of Object.entries(AUTO_TAGGER)) {
+        if (keywords.some(k => lower.includes(k))) found.add(tag);
+    }
+    return Array.from(found);
+}
+
+const app = {
+  questions: [], currentIndex: 0, answersGiven: {}, marked: {}, flagged: {},
+  mode: 'study', savedBanks: {}, activeBankName: null, lastPreviewArr: null, quizActive: false, backupQuestions: null,
+  currentEditorFilter: { tags: new Set() }, editorQuestions: [],
+  // NUEVO: ESTADO CASOS
+  cases: [], casesQueue: [], currentCaseIdx: 0, caseNotes: {}
+};
+
+function getQuestionStats() { return JSON.parse(localStorage.getItem(STATS_KEY) || '{}'); }
 function updateQuestionStat(qid, isCorrect) {
     const stats = getQuestionStats();
     if(!stats[qid]) stats[qid] = { wrong: 0, correct: 0 };
     if(isCorrect) stats[qid].correct++; else stats[qid].wrong++;
     localStorage.setItem(STATS_KEY, JSON.stringify(stats));
 }
+function saveHistory(score, total) {
+    const history = JSON.parse(localStorage.getItem(HISTORY_KEY) || '[]');
+    history.unshift({ date: new Date().toISOString(), score, total, bank: app.activeBankName || 'Mix' });
+    if(history.length > 20) history.pop();
+    localStorage.setItem(HISTORY_KEY, JSON.stringify(history));
+    renderHistoryChart();
+}
+function renderHistoryChart() {
+    const container = document.getElementById('history-chart');
+    const history = JSON.parse(localStorage.getItem(HISTORY_KEY) || '[]');
+    container.innerHTML = '';
+    if(history.length === 0) { container.innerHTML = '<div class="small text-muted" style="width:100%; text-align:center;">No hay historial reciente.</div>'; return; }
+    history.slice(0, 5).reverse().forEach(h => {
+        const pct = Math.round((h.score / h.total) * 100) || 0;
+        const wrapper = document.createElement('div'); wrapper.className = 'history-bar-wrapper';
+        const bar = document.createElement('div'); 
+        bar.className = 'history-bar ' + (pct >= 60 ? 'good' : 'bad');
+        bar.style.height = Math.max(pct, 5) + '%';
+        bar.title = `${pct}% (${h.score}/${h.total})`;
+        const date = document.createElement('div'); date.className = 'history-date';
+        const d = new Date(h.date);
+        date.textContent = `${d.getDate()}/${d.getMonth()+1}`;
+        wrapper.appendChild(bar); wrapper.appendChild(date);
+        container.appendChild(wrapper);
+    });
+}
 function smartShuffleArray(array) {
     const stats = getQuestionStats();
     return array.map(q => {
         const s = stats[q.id] || { wrong: 0, correct: 0 };
-        const weight = 1 + (s.wrong * 4) - (s.correct * 0.5); 
+        const weight = 1 + (s.wrong * 4) - (s.correct * 0.5);
         return { q, sort: Math.random() * Math.max(0.1, weight) };
     }).sort((a, b) => b.sort - a.sort).map(item => item.q);
 }
 
-const app = { 
-    questions: [], currentIndex: 0, answersGiven: {}, marked: {}, flagged: {}, 
-    mode: 'study', savedBanks: {}, activeBankName: null, 
-    cases: [], casesQueue: [], currentCaseIdx: 0, caseNotes: {},
-    editorQuestions: [], currentEditorFilter: {tags: new Set()}, 
-    backupQuestions: null, lastPreviewArr: null
-};
+function saveProgress(){
+  const state = { currentIndex: app.currentIndex, answersGiven: app.answersGiven, marked: app.marked, flagged: app.flagged, mode: app.mode, activeBankName: app.activeBankName };
+  if(!app.activeBankName && app.questions.length > 0) state.tempQuestions = app.questions;
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+  updateHeaderButtons();
+}
 
-// --- INIT ---
-window.addEventListener('beforeinstallprompt', (e) => {
-    e.preventDefault();
-    deferredPrompt = e;
-    $('download-app-btn').style.display = 'inline-flex';
-});
-
-window.addEventListener('DOMContentLoaded', () => {
-    try {
-        const s = JSON.parse(localStorage.getItem(STORAGE_KEY)); if(s) Object.assign(app, s);
-        app.savedBanks = JSON.parse(localStorage.getItem(BANKS_KEY) || '{}');
-        app.cases = JSON.parse(localStorage.getItem(CASES_KEY) || '[]');
-        app.caseNotes = JSON.parse(localStorage.getItem('pauteo_case_notes') || '{}');
-        // If we have an active bank name but questions array is empty, load it
-        if(app.activeBankName && app.savedBanks[app.activeBankName] && (!app.questions || app.questions.length === 0)) {
-            app.questions = app.savedBanks[app.activeBankName];
-        }
-    } catch(e){}
-
-    if(!app.questions || !app.questions.length) app.questions = [{id:0, question:"Bienvenido. Carga un banco.", answers:["OK","Ayuda"], correct:0, tags:["Intro"]}];
-    
-    // UI Setup
-    setTheme(localStorage.getItem('pauteo_theme')||'pink');
-    renderBanksList(); renderMarkedDashboard(); renderStartTags(); updateHeader(); updateModeButtons();
-    
-    // Listeners
-    $('file-input').onchange = handleFileUpload;
-    $('cases-file-input').onchange = handleCasesUpload;
-    $('search-bar').oninput = (e) => handleSearch(e.target.value, 'sidebar-search-results');
-    $('drawer-search').oninput = (e) => handleSearch(e.target.value, 'drawer-search-results');
-    
-    $('drop-zone').onclick = () => $('file-input').click();
-    $('drop-zone').ondragover = (e) => {e.preventDefault(); $('drop-zone').style.background='var(--primary-soft)'};
-    $('drop-zone').ondrop = (e) => {e.preventDefault(); handleFileUpload({target:{files:e.dataTransfer.files}})};
-    
-    // Buttons
-    $('btn-ai-config').onclick = () => $('ai-config-overlay').classList.add('open');
-    $('save-ai-key-btn').onclick = saveAiKey;
-    $('btn-ai-tags-bank').onclick = runAutoAI;
-    $('clean-duplicates-btn').onclick = removeDuplicates;
-    $('btn-merge-ui').onclick = openMergeUI;
-    $('confirm-merge-btn').onclick = doMerge;
-    $('export-json-btn').onclick = exportBank;
-    $('tutorial-btn').onclick = () => $('tutorial-overlay').classList.add('open');
-    $('btn-show-templates').onclick = () => $('templates-overlay').classList.add('open');
-    
-    // Bank Management Listeners (FIXED)
-    $('save-bank-btn').onclick = () => {
-        const name = prompt("Nombre del banco:", app.activeBankName || "Nuevo Banco");
-        if(!name) return;
-        app.savedBanks[name] = app.questions;
-        app.activeBankName = name;
-        saveBanks(); renderBanksList(); updateHeader();
-        alert("Guardado exitosamente.");
-    };
-
-    $('update-bank-btn').onclick = () => {
-        if(!app.activeBankName) return alert("No hay un banco activo seleccionado.");
-        if(!confirm(`¿Sobreescribir banco "${app.activeBankName}" con las preguntas actuales?`)) return;
-        app.savedBanks[app.activeBankName] = app.questions;
-        saveBanks();
-        alert(`Banco "${app.activeBankName}" actualizado.`);
-    };
-
-    // Case Reveal Listener (FIXED)
-    $('case-reveal-btn').onclick = () => {
-         $('case-content-back').style.display = 'block';
-         $('case-reveal-btn').style.display = 'none';
-         $('case-srs-controls').style.display = 'grid';
-         // Scroll to see result
-         const scroller = $('cases-study-screen');
-         setTimeout(() => scroller.scrollTo({ top: scroller.scrollHeight, behavior: 'smooth' }), 100);
-    };
-
-    // Navigation
-    $('prev-btn').onclick = () => renderQuestion(app.currentIndex - 1);
-    $('next-btn').onclick = () => renderQuestion(app.currentIndex + 1);
-    $('restart-btn').onclick = () => { app.answersGiven={}; renderQuestion(0); };
-    $('show-results-btn').onclick = showResults;
-    $('retry-incorrect-btn').onclick = retryIncorrect; // Listener for retry
-    
-    // Tools
-    $('star-btn').onclick = toggleStar;
-    $('flag-btn').onclick = toggleFlag;
-    $('edit-q-btn').onclick = toggleEditQuestion;
-    $('save-edit-btn').onclick = saveEditQuestion;
-    
-    // Filter & Smart
-    $('open-editor-hero-btn').onclick = openBankEditor;
-    $('create-filtered-bank-btn').onclick = createBankFromFilter;
-    $('delete-filtered-btn').onclick = deleteFiltered;
-    $('start-filtered-quiz-btn').onclick = startFilteredQuiz;
-
-    // Modes
-    ['study','exam','pauteo'].forEach(m => {
-        $(`mode-${m}`).onclick = () => { 
-            app.mode=m; app.answersGiven={}; updateModeButtons(); 
-            if(document.body.classList.contains('quiz-mode')) renderQuestion(app.currentIndex);
-        };
-    });
-
-    // Mobile Drawer
-    $('mobile-menu-btn').onclick = () => { renderNavGrid(); $('drawer').classList.add('open'); };
-    $('quiz-menu-btn').onclick = () => { renderNavGrid(); $('drawer').classList.add('open'); };
-
-    // Smart Shuffle
-    $('open-smart-btn').onclick = () => {
-        if(app.questions.length === 0) return alert("Carga un banco primero.");
-        app.questions = smartShuffleArray([...app.questions]); 
-        startQuiz('study', false); 
-        alert("🧠 Modo Inteligente: Se han priorizado las preguntas que has fallado anteriormente.");
-    };
-
-    // Download Template
-    $('download-template-file-btn').onclick = () => {
-        const template = [{ "question": "Escribe aquí tu pregunta...", "answers": ["Alternativa A", "Alternativa B", "Alternativa C"], "correct": 0, "tags": ["Tema 1"], "justification": "Explicación opcional." }];
-        const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(template, null, 2));
-        const dlNode = document.createElement('a'); dlNode.setAttribute("href", dataStr); dlNode.setAttribute("download", "plantilla_pauteo.json"); document.body.appendChild(dlNode); dlNode.click(); dlNode.remove();
-    };
-
-    // Timer
-    $('start-exam').onclick = () => {
-        const mins = parseInt($('timer-input').value) || 30;
-        let remaining = mins * 60;
-        startQuiz('exam', true);
-        if(timerInterval) clearInterval(timerInterval);
-        const display = $('timer-display');
-        
-        timerInterval = setInterval(() => {
-            remaining--;
-            const mm = String(Math.floor(remaining / 60)).padStart(2, '0');
-            const ss = String(remaining % 60).padStart(2, '0');
-            display.textContent = `${mm}:${ss}`;
-            if (remaining <= 59) display.style.color = 'var(--error-text)';
-            if (remaining <= 0) { clearInterval(timerInterval); alert('¡Tiempo terminado!'); showResults(); }
-        }, 1000);
-    };
-});
-
-function setTheme(t) { document.documentElement.setAttribute('data-theme', t); localStorage.setItem('pauteo_theme', t); }
-function saveState() { localStorage.setItem(STORAGE_KEY, JSON.stringify({currentIndex:app.currentIndex, answersGiven:app.answersGiven, marked:app.marked, flagged:app.flagged, mode:app.mode, activeBankName:app.activeBankName})); }
-function saveBanks() { localStorage.setItem(BANKS_KEY, JSON.stringify(app.savedBanks)); }
-function updateModeButtons() {
-    ['study','exam','pauteo'].forEach(m => {
-        const b = $(`mode-${m}`);
-        if(app.mode === m) b.classList.add('active-mode'); else b.classList.remove('active-mode');
+function renderStartScreenTags() {
+    const container = document.getElementById('start-tags-container'); const list = document.getElementById('start-tags-list');
+    if(!app.questions || app.questions.length === 0) { container.style.display = 'none'; return; }
+    const tags = new Set(); app.questions.forEach(q => (q.tags || []).forEach(t => tags.add(t)));
+    if(tags.size === 0) { container.style.display = 'none'; return; }
+    container.style.display = 'block'; list.innerHTML = '';
+    Array.from(tags).sort().slice(0, 30).forEach(tag => {
+        const count = app.questions.filter(q => q.tags && q.tags.includes(tag)).length;
+        const btn = document.createElement('button'); btn.className = 'btn small'; btn.style.margin = '0'; btn.style.background = 'var(--bg)'; btn.style.border = '1px solid var(--border)';
+        btn.innerHTML = `<strong>${tag}</strong> <span style="opacity:0.6; font-size:0.75em; margin-left:4px;">(${count})</span>`;
+        btn.onclick = () => filtrarPorEtiqueta(tag);
+        list.appendChild(btn);
     });
 }
-window.copyToClip = (id) => { navigator.clipboard.writeText($(id).textContent).then(()=>alert("Copiado")); };
 
-// --- PARSING & NORMALIZATION ---
-function normalizeQuestions(raw) {
-    if (!Array.isArray(raw)) return [];
-    return raw.map((r, i) => {
-        const qText = r.question || r.text || r.enunciado || r.pregunta || '';
-        const qAns = r.answers || r.options || r.alternativas || r.choices || [];
-        return { 
-            id: Date.now() + Math.floor(Math.random()*100000) + i, 
-            question: typeof qText === 'string' ? qText.trim() : '', 
-            image: r.image || r.img || null, 
-            answers: Array.isArray(qAns) ? qAns : [], 
-            correct: typeof r.correct === 'number' ? r.correct : 0, 
-            justification: r.justification || r.explanation || '', 
-            tags: (r.tags && Array.isArray(r.tags) && r.tags.length > 0) ? r.tags : detectTags(qText) 
-        };
-    }).filter(q => q.question && q.answers.length > 1);
+function loadAll(){
+  try{ const raw = JSON.parse(localStorage.getItem(STORAGE_KEY));
+      if(raw){ 
+        app.currentIndex = raw.currentIndex || 0; app.answersGiven = raw.answersGiven || {};
+        app.marked = raw.marked || {}; app.flagged = raw.flagged || {};
+        app.mode = raw.mode || 'study'; app.activeBankName = raw.activeBankName || null;
+        if(raw.tempQuestions) app.questions = raw.tempQuestions;
+      }
+  }catch(e){ localStorage.removeItem(STORAGE_KEY); }
+  try{ app.savedBanks = JSON.parse(localStorage.getItem(BANKS_KEY)) || {}; }catch(e){ app.savedBanks = {}; }
+  if(app.activeBankName && app.savedBanks[app.activeBankName] && !app.questions.length) app.questions = app.savedBanks[app.activeBankName];
+  
+  // NUEVO: Cargar Casos
+  try { app.cases = JSON.parse(localStorage.getItem(CASES_KEY)) || []; } catch(e) { app.cases = []; }
+  try { app.caseNotes = JSON.parse(localStorage.getItem(NOTES_KEY)) || {}; } catch(e) { app.caseNotes = {}; }
+
+  const savedTheme = localStorage.getItem('pauteo_theme') || 'pink';
+  document.documentElement.setAttribute('data-theme', savedTheme);
+  updateHeaderButtons();
+  renderHistoryChart();
+  renderDashboardMarked();
+}
+loadAll();
+if(!app.questions || !app.questions.length){
+  app.questions = [{ id:0, question:"Bienvenida. \n¿Cuál es el primer paso en el manejo de un paciente inconsciente?", answers:["Tomar ECG","Asegurar vía aérea","Llamar a la familia","Administrar adrenalina"], correct:1, justification:"ABCDE.", tags:["Urgencias"] }];
+  app.currentIndex = 0; saveProgress();
 }
 
-function parseTxtToQuestions(text) { 
-    const qs=[]; 
-    text.split(/\n\s*\n/).forEach((b,i) => { 
-        const l = b.trim().split('\n'); if(l.length < 2) return; 
-        let qT="", ops=[], cor=0; 
-        l.forEach(line => { 
-            if(line.match(/^[a-eA-E][\)\.]/)) ops.push(line.replace(/^[a-eA-E][\)\.]\s*/,'')); 
-            else if(line.match(/^R:/)) cor = line.toLowerCase().charCodeAt(2) - 97; 
-            else qT += line+"\n"; 
-        }); 
-        if(ops.length > 1) qs.push({id: Date.now()+i, question: qT.trim(), answers: ops, correct: cor, tags: detectTags(qT)}); 
-    }); 
-    return qs; 
-}
+function shuffleArray(array) { for (let i = array.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [array[i], array[j]] = [array[j], array[i]]; } return array; }
 
-// --- IMPORT & PREVIEW ---
-async function handleFileUpload(e) {
-    const files = Array.from(e.target.files);
-    if (!files.length) return;
-    $('loading-overlay').classList.add('open');
-    let merged = [];
-    try {
-        for(const f of files) { 
-            const txt = await f.text(); 
-            let qs = []; 
-            try { qs = normalizeQuestions(JSON.parse(txt)); } catch(e){} 
-            if(!qs.length) qs = parseTxtToQuestions(txt); 
-            if(qs.length) merged = merged.concat(qs); 
-        }
+/* RENDERIZADO DE PREGUNTA */
+function renderQuestion(index){ 
+  if(!app.questions || !app.questions.length){ document.getElementById('question-text').textContent = 'No hay preguntas.'; return; } 
+  if(index < 0) index = 0; if(index >= app.questions.length) index = app.questions.length - 1; 
+  app.currentIndex = index; const q = app.questions[index]; 
 
-        if(merged.length) {
-            if(localStorage.getItem(AI_KEY_STORAGE)) {
-                if(confirm(`Detectadas ${merged.length} preguntas. ¿Usar IA para tags? (Lento)`)) merged = await enrichQuestionsWithAI(merged);
-            }
-            app.lastPreviewArr = merged; 
-            const list = $('preview-list'); list.innerHTML=''; 
-            merged.forEach((q,i)=>{ 
-                const d = document.createElement('div'); d.style.padding='10px'; d.style.borderBottom='1px solid var(--border)'; 
-                const tagsHtml = (q.tags||[]).map(t => `<span class="tag-pill" style="font-size:0.65em; padding:2px 6px;">${t}</span>`).join('');
-                d.innerHTML = `<div style="font-weight:bold; font-size:0.85rem; color:var(--primary); margin-bottom:4px;">#${i+1}</div><div style="font-size:0.9rem; margin-bottom:4px;">${q.question.substring(0,120)}${q.question.length>120?'...':''}</div><div>${tagsHtml}</div>`; 
-                list.appendChild(d); 
-            }); 
-            $('preview-overlay').classList.add('open'); 
-        } else { alert("No se detectaron preguntas válidas."); }
-    } catch (err) { console.error(err); alert("Error al leer archivos."); } 
-    finally { $('loading-overlay').classList.remove('open'); $('file-input').value = ''; }
-}
+  // Reset Edit Form
+  document.getElementById('edit-form-container').style.display = 'none';
+  document.getElementById('question-text').style.display = 'block';
+  document.getElementById('answers').style.display = 'grid';
+  
+  document.getElementById('question-text').textContent = q.question; 
+  
+  const imgCont = document.getElementById('question-image-container'); imgCont.innerHTML = '';
+  if(q.image) { const img = document.createElement('img'); img.src = q.image; img.className = 'question-img'; img.onclick = () => window.open(q.image, '_blank'); imgCont.appendChild(img); }
 
-$('preview-save-btn').onclick = () => {
-    if(!app.lastPreviewArr || !app.lastPreviewArr.length) return;
-    const name = prompt("Nombre para el nuevo banco:", "Nuevo Banco");
-    if(name){
-        if(app.savedBanks[name] && !confirm(`"${name}" existe. ¿Sobreescribir?`)) return;
-        app.savedBanks[name] = app.lastPreviewArr; app.activeBankName = name; app.questions = app.lastPreviewArr; 
-        saveBanks(); saveState(); renderBanksList(); updateHeader(); 
-        $('preview-overlay').classList.remove('open'); renderStartTags(); renderQuestion(0);
-        alert(`Banco "${name}" guardado.`);
-    }
-};
+  const tagsEl = document.getElementById('question-tags'); tagsEl.innerHTML = ''; 
+  (q.tags||[]).forEach(t=>{ const s = document.createElement('span'); s.className = 'tag-pill'; s.textContent = t; s.onclick = (e) => { e.stopPropagation(); filtrarPorEtiqueta(t); }; tagsEl.appendChild(s); });
+  
+  const starBtn = document.getElementById('star-btn'); starBtn.innerHTML=app.marked[q.id]?'<span class="material-icons">star</span>':'<span class="material-icons">star_border</span>'; if(app.marked[q.id]) starBtn.classList.add('active'); else starBtn.classList.remove('active');
+  const flagBtn = document.getElementById('flag-btn'); flagBtn.innerHTML=app.flagged[q.id]?'<span class="material-icons">flag</span>':'<span class="material-icons">outlined_flag</span>'; if(app.flagged[q.id]) flagBtn.classList.add('active'); else flagBtn.classList.remove('active');
 
-// --- QUIZ LOGIC ---
-function startQuiz(mode, shuffle=false) {
-    if(mode) app.mode = mode; 
-    app.answersGiven = {}; app.currentIndex = 0;
-    updateModeButtons();
-    if(shuffle) app.questions.sort(() => Math.random() - 0.5);
-    $('dashboard-view').style.display='none'; $('cases-view').style.display='none'; $('quiz-view').style.display='flex';
-    document.body.classList.add('quiz-mode');
-    renderQuestion(0);
-}
+  // Botón editar visible solo si NO es examen
+  document.getElementById('edit-q-btn').style.display = app.mode === 'exam' ? 'none' : 'flex';
 
-function renderQuestion(idx) {
-    if(idx<0 || idx>=app.questions.length) return;
-    app.currentIndex = idx;
-    const q = app.questions[idx];
+  const answersCont = document.getElementById('answers'); answersCont.innerHTML = ''; 
+  q.answers.forEach((ans,i)=>{ 
+    const div = document.createElement('div'); div.className = 'answer-card'; 
+    const hint = `<span class="shortcut-hint">${i+1}</span>`;
+    div.innerHTML = `${hint} <div style="display:flex; gap:10px;"><div style="font-weight:700; opacity:0.5;">${String.fromCharCode(65+i)}</div><div style="line-height:1.4">${ans}</div></div>`; 
+    div.onclick = () => selectAnswer(q.id, i); 
     
-    $('question-text').textContent = q.question;
-    $('answers').innerHTML = ''; $('justification-box').style.display = 'none'; $('edit-form-container').style.display = 'none';
-    $('justification-box').removeAttribute('open');
-
-    const imgC = $('question-image-container'); imgC.innerHTML = '';
-    if(q.image) { const i = document.createElement('img'); i.src = q.image; i.className = 'question-img'; i.onclick=()=>openLightbox(q.image); imgC.appendChild(i); }
-    
-    const tagsC = $('question-tags'); tagsC.innerHTML = '';
-    (q.tags||[]).forEach(t => { const s = document.createElement('span'); s.className = 'tag-pill'; s.textContent = t; tagsC.appendChild(s); });
-
-    q.answers.forEach((ans, i) => {
-        const div = document.createElement('div'); div.className = 'answer-card';
-        div.innerHTML = `<b style="opacity:0.5; margin-right:8px;">${String.fromCharCode(65+i)}</b> ${ans}`;
-        const given = app.answersGiven[q.id];
-        
-        if(app.mode === 'pauteo') {
-            div.classList.add('disabled');
-            if(i === q.correct) div.classList.add('correct');
-        } 
-        else if(given !== undefined) {
-            div.classList.add('disabled');
-            if(app.mode === 'exam') { if(i===given) div.classList.add('selected-blind'); }
-            else { if(i===q.correct) div.classList.add('correct'); else if(i===given) div.classList.add('incorrect'); }
-        }
-
-        div.onclick = () => { 
-            if(app.mode === 'pauteo') return; 
-            if(app.answersGiven[q.id]===undefined) { 
-                app.answersGiven[q.id]=i; 
-                // Update stats for smart shuffle
-                if(app.mode !== 'exam') updateQuestionStat(q.id, i === q.correct);
-                renderQuestion(idx); 
-            } 
-        };
-        $('answers').appendChild(div);
-    });
-
-    const showJust = (app.answersGiven[q.id]!==undefined && app.mode!=='exam') || app.mode === 'pauteo';
-    if(showJust) {
-        $('justification-box').style.display = 'block'; 
-        $('justification-text').innerHTML = q.justification||'Sin explicación';
-        if(app.mode === 'pauteo') $('justification-box').setAttribute('open', '');
+    // Si estamos en modo PAUTEO
+    if(app.mode === 'pauteo') {
+        div.classList.add('disabled'); // Bloquear clicks
+        if(i === q.correct) div.classList.add('correct'); // Marcar correcta
     }
 
-    $('star-btn').style.color = app.marked[q.id] ? 'var(--gold)' : 'inherit';
-    updateProgress(); saveState();
+    if(app.answersGiven[q.id] !== undefined){ 
+        div.classList.add('disabled'); 
+        if(app.mode === 'exam') {
+             if(i === app.answersGiven[q.id]) div.classList.add('selected-blind');
+        } else {
+             if(i === q.correct) div.classList.add('correct'); 
+             else if(i === app.answersGiven[q.id]) div.classList.add('incorrect'); 
+        }
+    }
+    answersCont.appendChild(div); 
+  }); 
+  
+  const justBox = document.getElementById('justification-box');
+  const justText = document.getElementById('justification-text');
+  justBox.removeAttribute('open'); 
+  
+  if( (app.answersGiven[q.id] !== undefined && app.mode !== 'exam') || app.mode === 'pauteo' ){ 
+      justBox.style.display = 'block';
+      if(app.mode === 'pauteo') justBox.setAttribute('open', ''); // Abrir automáticamente en pauteo
+      justText.innerHTML = q.justification ? q.justification : 'Sin justificación disponible.'; 
+  } else { justBox.style.display = 'none'; }
+  
+  updateProgressUI(); updateMarkedUI(); saveProgress(); renderQuestionGrid();
 }
 
-function toggleEditQuestion() {
-    const box = $('edit-form-container');
-    if(box.style.display === 'block') { box.style.display = 'none'; return; }
-    const q = app.questions[app.currentIndex];
-    $('edit-q-text').value = q.question;
-    $('edit-q-image').value = q.image || '';
-    $('edit-correct-idx').value = q.correct;
-    const list = $('edit-answers-list'); list.innerHTML = '';
-    q.answers.forEach((a, i) => { const inp = document.createElement('input'); inp.className = 'input'; inp.value = a; list.appendChild(inp); });
-    box.style.display = 'block';
+function selectAnswer(qid, chosenIdx){ 
+  if(app.mode === 'pauteo') return; // En pauteo no se puede responder
+  if(app.answersGiven[qid] !== undefined) return; 
+  const qIndex = app.questions.findIndex(x=>x.id===qid); const q = app.questions[qIndex];
+  app.answersGiven[qid] = chosenIdx; 
+  if(app.mode !== 'exam') updateQuestionStat(qid, chosenIdx === q.correct);
+  const cards = document.querySelectorAll('#answers .answer-card');
+  cards.forEach((card,i)=>{ 
+      card.classList.add('disabled'); 
+      if(app.mode === 'exam') {
+          if(i===chosenIdx) card.classList.add('selected-blind');
+      } else {
+          if(i===q.correct) card.classList.add('correct'); 
+          if(i===chosenIdx && i!==q.correct) card.classList.add('incorrect'); 
+      }
+  }); 
+
+  if(app.mode !== 'exam'){ 
+      const justBox = document.getElementById('justification-box');
+      const justText = document.getElementById('justification-text');
+      justBox.style.display = 'block';
+      justText.innerHTML = q.justification ? q.justification : 'Sin justificación.';
+  } else {
+      setTimeout(()=>{ if(app.currentIndex < app.questions.length - 1){ app.currentIndex++; renderQuestion(app.currentIndex); } }, 400);
+  }
+  saveProgress(); renderQuestionGrid();
 }
 
-function saveEditQuestion() {
+function showResults(){ 
+  const panel = document.getElementById('results-panel'); const list = document.getElementById('results-list'); list.innerHTML = ''; 
+  let correct = 0; let incorrect = 0; let omitted = 0;
+  
+  app.questions.forEach((q,i)=>{ 
+    const chosen = app.answersGiven[q.id]; 
+    let statusHtml = '';
+    
+    if(chosen === undefined) {
+        omitted++;
+        statusHtml = `<span style="color:var(--orange)">Omitida</span>`;
+        if(app.mode === 'exam') updateQuestionStat(q.id, false);
+    } else if(chosen === q.correct) {
+        correct++;
+        statusHtml = `<span style="color:#166534">Correcta</span>`;
+        if(app.mode === 'exam') updateQuestionStat(q.id, true);
+    } else {
+        incorrect++;
+        statusHtml = `<span style="color:#991b1b">Incorrecta</span>`;
+        if(app.mode === 'exam') updateQuestionStat(q.id, false);
+    }
+
+    const d = document.createElement('div'); d.className = 'card'; d.style.marginBottom='10px'; d.style.boxShadow='none'; d.style.background='var(--bg)';
+    d.innerHTML = `<div style="font-weight:700; margin-bottom:4px;">${i+1}. ${statusHtml}</div><div class="small">${q.question}</div>`; 
+    list.appendChild(d); 
+  }); 
+  
+  saveHistory(correct, app.questions.length); 
+  document.getElementById('score-text').textContent = `Puntaje: ${correct} / ${app.questions.length} (${Math.round((correct/app.questions.length)*100)}%)`; 
+  
+  const hasRetry = incorrect > 0 || omitted > 0;
+  document.getElementById('retry-incorrect-btn').style.display = hasRetry ? 'block' : 'none';
+  
+  panel.style.display = 'block'; 
+  closeQuizView(true);
+}
+
+/* --- LOGICA EDITAR PREGUNTA --- */
+function toggleEditMode() {
     const q = app.questions[app.currentIndex];
-    q.question = $('edit-q-text').value;
-    q.image = $('edit-q-image').value;
-    q.correct = parseInt($('edit-correct-idx').value);
-    const inputs = $('edit-answers-list').querySelectorAll('input');
-    q.answers = Array.from(inputs).map(i => i.value);
+    const form = document.getElementById('edit-form-container');
+    const qText = document.getElementById('question-text');
+    const answersDiv = document.getElementById('answers');
+    const imgCont = document.getElementById('question-image-container');
+    
+    if (form.style.display === 'none') {
+        // Entrar a edición
+        form.style.display = 'block';
+        qText.style.display = 'none';
+        answersDiv.style.display = 'none';
+        if(imgCont) imgCont.style.display = 'none'; // Ocultamos la imagen visual mientras editamos
+        
+        document.getElementById('edit-q-text').value = q.question;
+        document.getElementById('edit-q-image').value = q.image || '';
+        document.getElementById('edit-correct-idx').value = q.correct;
+        const list = document.getElementById('edit-answers-list');
+        list.innerHTML = '';
+        q.answers.forEach((ans, i) => {
+            const inp = document.createElement('input');
+            inp.className = 'input input-edit';
+            inp.value = ans;
+            inp.dataset.idx = i;
+            list.appendChild(inp);
+        });
+    } else {
+        // Cancelar
+        renderQuestion(app.currentIndex);
+    }
+}
+
+function saveEdit() {
+    const q = app.questions[app.currentIndex];
+    q.question = document.getElementById('edit-q-text').value;
+    const imgVal = document.getElementById('edit-q-image').value.trim();
+    q.image = imgVal ? imgVal : null; // Si está vacío, se guarda como null (borra la imagen)
+    q.correct = parseInt(document.getElementById('edit-correct-idx').value) || 0;
+    
+    const inputs = document.querySelectorAll('#edit-answers-list input');
+    const newAns = [];
+    inputs.forEach(inp => newAns.push(inp.value));
+    q.answers = newAns;
+    
+    // Guardar cambio persistente
+    saveProgress();
     if(app.activeBankName) { app.savedBanks[app.activeBankName] = app.questions; saveBanks(); }
+    
+    // Reset UI
+    app.answersGiven[q.id] = undefined; // Resetear respuesta al editar
+    const imgCont = document.getElementById('question-image-container');
+    if(imgCont) imgCont.style.display = 'block';
     renderQuestion(app.currentIndex);
 }
 
-function showResults() {
-    let corr=0; app.questions.forEach(q => { if(app.answersGiven[q.id]===q.correct) corr++; });
-    $('score-text').textContent = `${corr} / ${app.questions.length}`;
-    $('results-panel').style.display = 'block'; $('quiz-shell').style.display='none';
+/* --- LOGICA MULTI-FILTRO --- */
+function openBankEditor() { document.getElementById('dashboard-view').style.display = 'none'; document.getElementById('quiz-view').style.display = 'flex'; document.getElementById('bank-editor-screen').style.display = 'block'; app.currentEditorFilter={tags:new Set()}; app.editorQuestions=[...app.questions]; renderEditorScreen(); }
+function closeBankEditor() { document.getElementById('bank-editor-screen').style.display = 'none'; document.getElementById('quiz-view').style.display = 'none'; document.getElementById('dashboard-view').style.display = 'flex'; }
+function renderEditorScreen() {
+    const filterContainer = document.getElementById('editor-tag-filter'); const listContainer = document.getElementById('editor-question-list');
+    filterContainer.innerHTML = ''; const uniqueTags = new Set(); app.questions.forEach(q=>(q.tags||[]).forEach(t=>uniqueTags.add(t)));
     
-    // Retry Logic Button Visibility
-    if(corr < app.questions.length && Object.keys(app.answersGiven).length > 0) {
-        $('retry-incorrect-btn').style.display='flex';
-    } else {
-        $('retry-incorrect-btn').style.display='none';
+    const clearBtn = document.createElement('button'); clearBtn.className = 'btn tag-pill'; 
+    clearBtn.textContent = app.currentEditorFilter.tags.size > 0 ? 'Limpiar Filtro' : 'Mostrar Todo'; 
+    clearBtn.style.background = app.currentEditorFilter.tags.size > 0 ? '#ef4444' : '#ccc';
+    clearBtn.style.color = app.currentEditorFilter.tags.size > 0 ? 'white' : 'black';
+    clearBtn.onclick = () => { app.currentEditorFilter.tags.clear(); applyEditorFilter(null); }; 
+    filterContainer.appendChild(clearBtn);
+
+    uniqueTags.forEach(tag => { 
+        const btn = document.createElement('button'); btn.className = 'btn tag-pill'; btn.textContent = tag; 
+        if(app.currentEditorFilter.tags.has(tag)) btn.classList.add('active');
+        btn.onclick = () => applyEditorFilter(tag); 
+        filterContainer.appendChild(btn); 
+    });
+    listContainer.innerHTML = ''; document.getElementById('editor-count').textContent = app.editorQuestions.length;
+    app.editorQuestions.forEach((q,i) => { const d = document.createElement('div'); d.className = 'card small'; d.style.marginBottom='8px'; d.innerHTML = `<b>${i+1}.</b> ${q.question.substring(0,100)}... <br><span style="font-size:0.7em; opacity:0.7;">${q.tags.join(', ')}</span>`; listContainer.appendChild(d); });
+}
+function applyEditorFilter(tag) { 
+    if(tag) {
+        if(app.currentEditorFilter.tags.has(tag)) app.currentEditorFilter.tags.delete(tag);
+        else app.currentEditorFilter.tags.add(tag);
     }
-
-    const l = $('results-list'); l.innerHTML = '';
-    app.questions.forEach((q, i) => {
-        const d = document.createElement('div'); d.style.padding='8px'; d.style.borderBottom='1px solid #eee';
-        const st = app.answersGiven[q.id]===q.correct ? '<span style="color:green">✔</span>' : (app.answersGiven[q.id]===undefined ? '⚪' : '<span style="color:red">✘</span>');
-        d.innerHTML = `<b>${i+1}.</b> ${st} ${q.question.substring(0,50)}...`;
-        l.appendChild(d);
-    });
+    if(app.currentEditorFilter.tags.size === 0) app.editorQuestions = app.questions;
+    else app.editorQuestions = app.questions.filter(q => (q.tags||[]).some(t => app.currentEditorFilter.tags.has(t)));
+    renderEditorScreen(); 
 }
-
-function retryIncorrect() {
-    const wrongIds = Object.keys(app.answersGiven).filter(qid => {
-        const q = app.questions.find(item => item.id == qid);
-        return q && app.answersGiven[qid] !== q.correct;
-    });
-
-    if(wrongIds.length === 0) return alert("No hay errores registrados.");
-    
-    // Filter questions
-    const wrongQs = app.questions.filter(q => wrongIds.map(Number).includes(q.id));
-    
-    app.questions = wrongQs;
-    startQuiz('study', false);
-    alert(`Reintentando ${wrongQs.length} preguntas equivocadas.`);
+function createBankFromFilter() { 
+    if(!app.editorQuestions.length) return alert("Selecciona algún filtro primero.");
+    const name = prompt("Nombre para este banco:"); if(name) { app.savedBanks[name] = [...app.editorQuestions]; saveBanks(); renderBanksList(); closeBankEditor(); alert("Banco guardado.");} 
 }
-
-function updateProgress() { $('progress-bar').style.width = `${((app.currentIndex+1)/app.questions.length)*100}%`; $('progress-text').textContent = `${app.currentIndex+1}/${app.questions.length}`; }
-
-// --- BANK EDITOR / FILTER ---
-function openBankEditor() {
-    $('bank-editor-screen').style.display = 'block';
-    app.currentEditorFilter.tags.clear(); app.editorQuestions = [...app.questions];
-    renderEditor();
-}
-
-function renderEditor() {
-    const ts = new Set(); app.questions.forEach(q=>(q.tags||[]).forEach(t=>ts.add(t)));
-    const tc = $('editor-tag-filter'); tc.innerHTML = '';
-    ts.forEach(t => {
-        const b = document.createElement('button'); b.className = 'tag-pill'; b.textContent = t;
-        if(app.currentEditorFilter.tags.has(t)) b.classList.add('active');
-        b.onclick = () => { 
-            if(app.currentEditorFilter.tags.has(t)) app.currentEditorFilter.tags.delete(t); else app.currentEditorFilter.tags.add(t);
-            app.editorQuestions = app.currentEditorFilter.tags.size ? app.questions.filter(q=>(q.tags||[]).some(tag=>app.currentEditorFilter.tags.has(tag))) : app.questions;
-            renderEditor();
-        };
-        tc.appendChild(b);
-    });
-    const lc = $('editor-question-list'); lc.innerHTML = '';
-    app.editorQuestions.forEach((q,i) => { const d=document.createElement('div'); d.textContent = `${i+1}. ${q.question.substring(0,60)}...`; lc.appendChild(d); });
-}
-
-function createBankFromFilter() {
-    const n = prompt("Nombre nuevo banco:"); if(n) { app.savedBanks[n] = app.editorQuestions; saveBanks(); renderBanksList(); alert("Creado"); }
-}
+function deleteFilteredQuestions() { if(confirm("¿Eliminar preguntas visibles?")) { const ids = new Set(app.editorQuestions.map(q=>q.id)); app.questions = app.questions.filter(q=>!ids.has(q.id)); saveProgress(); if(app.activeBankName) { app.savedBanks[app.activeBankName]=app.questions; saveBanks(); } closeBankEditor(); } }
 function startFilteredQuiz() {
-    if(!app.editorQuestions.length) return;
-    app.backupQuestions = [...app.questions];
-    app.questions = app.editorQuestions; startQuiz('study'); $('bank-editor-screen').style.display='none';
+    if(!app.editorQuestions.length) return alert("Selecciona algún filtro primero.");
+    if(!app.backupQuestions) app.backupQuestions = [...app.questions];
+    app.questions = shuffleArray([...app.editorQuestions]); app.currentIndex = 0; app.mode = 'study';
+    app.answersGiven = {}; app.flagged = {};
+    document.getElementById('bank-editor-screen').style.display = 'none';
+    document.getElementById('quiz-shell').style.display = 'block';
+    app.quizActive = true;
+    checkMobileView();
+    renderQuestion(0);
 }
-function deleteFiltered() { if(confirm("Borrar preguntas visibles?")) { const ids = new Set(app.editorQuestions.map(q=>q.id)); app.questions = app.questions.filter(q=>!ids.has(q.id)); saveState(); if(app.activeBankName){ app.savedBanks[app.activeBankName]=app.questions; saveBanks(); } openBankEditor(); } }
 
-// --- IA LOGIC ---
-async function runAutoAI() {
-    const k = localStorage.getItem(AI_KEY_STORAGE); if(!k) return alert("Falta API Key");
-    $('loading-overlay').classList.add('open');
-    const BATCH = 5; let list = app.mode==='cases' ? app.cases : app.questions;
-    for(let i=0; i<list.length; i+=BATCH) {
-        const chunk = list.slice(i, i+BATCH);
-        const prompt = app.mode==='cases' ? 
-            `Casos: ${chunk.map((c,x)=>`${x}: ${c.title} ${c.description.substring(0,200)}`).join('\n')}. Responde JSON {id_idx: ["tag1"]}` :
-            `Preguntas: ${chunk.map((q,x)=>`${x}: ${q.question}`).join('\n')}. Responde JSON {id_idx: ["tag1"]}`;
-        try {
-            const r = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${k}`, {
-                method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({contents:[{parts:[{text:prompt}]}]})
-            });
-            const d = await r.json();
-            const json = JSON.parse(d.candidates[0].content.parts[0].text.replace(/```json|```/g,''));
-            chunk.forEach((item, x) => { if(json[x]) item.tags = [...new Set([...(item.tags||[]), ...json[x]])]; });
-        } catch(e){ console.log(e); }
-        $('ai-loading-bar').style.width = `${((i+BATCH)/list.length)*100}%`;
+function saveBanks(){ localStorage.setItem(BANKS_KEY, JSON.stringify(app.savedBanks)); }
+function updateHeaderButtons() { document.getElementById('update-bank-btn').style.display = (app.activeBankName && !app.backupQuestions) ? 'block' : 'none'; document.getElementById('active-bank').textContent = app.activeBankName || '(ninguno)'; }
+function removeDuplicates() {
+    if(app.questions.length<2) return alert("Pocas preguntas.");
+    const unique=[]; let dups=0; 
+    const clean=(t)=>t.toLowerCase().replace(/[^\w]/g,"");
+    for(let i=0;i<app.questions.length;i++){
+        let isDup=false; const cQ=app.questions[i];
+        for(let j=0;j<unique.length;j++){
+            const eQ=unique[j];
+            const s1=new Set(clean(cQ.question).split("")); const s2=new Set(clean(eQ.question).split(""));
+            const int=[...s1].filter(x=>s2.has(x)).length; const uni=new Set([...s1,...s2]).size;
+            if((int/uni)>0.85) { isDup=true; dups++; break; }
+        }
+        if(!isDup) unique.push(cQ);
     }
-    if(app.mode==='cases') { localStorage.setItem(CASES_KEY, JSON.stringify(app.cases)); renderCase(); }
-    else { saveState(); if(app.activeBankName) { app.savedBanks[app.activeBankName] = app.questions; saveBanks(); } renderQuestion(app.currentIndex); }
-    $('loading-overlay').classList.remove('open'); alert("Listo");
+    if(dups>0 && confirm(`Borrar ${dups} duplicados?`)) { app.questions=unique; app.currentIndex=0; saveProgress(); alert("Listo."); } else alert("No hay duplicados.");
 }
+function normalizeQuestions(raw){ 
+    return (raw||[]).map((r,i)=>({ 
+        id: Date.now()+Math.floor(Math.random()*100000)+i, 
+        question: (r.question||r.text||'').trim(), 
+        image: r.image||null, 
+        answers: r.answers||r.options||[], 
+        correct: r.correct||0, 
+        justification: r.justification||'', 
+        tags: (r.tags && Array.isArray(r.tags) && r.tags.length > 0) ? r.tags : detectTags(r.question||'') 
+    })).filter(q=>q.question && q.answers.length>1); 
+}
+
+function parseTxtToQuestions(text) { const qs=[]; text.split(/\n\s*\n/).forEach((b,i)=>{ const l=b.trim().split('\n'); if(l.length<2)return; let qT="",ops=[],cor=0,jus=""; l.forEach(line=>{ if(line.match(/^[a-eA-E][\)\.]/)) ops.push(line.replace(/^[a-eA-E][\)\.]\s*/,'')); else if(line.match(/^R:/)) cor=line.toLowerCase().charCodeAt(2)-97; else qT+=line+"\n"; }); if(ops.length>1) qs.push({id:Date.now()+i, question:qT.trim(), answers:ops, correct:cor, tags:detectTags(qT)}); }); return qs; }
+
+/* --- MÓDULO INTELIGENCIA ARTIFICIAL (GEMINI) --- */
+
+const AI_KEY_STORAGE = 'pauteo_gemini_key_v1';
+const aiInput = document.getElementById('ai-api-key');
+if(localStorage.getItem(AI_KEY_STORAGE)) { aiInput.value = localStorage.getItem(AI_KEY_STORAGE); }
+
+document.getElementById('save-ai-key-btn').addEventListener('click', () => {
+    const key = aiInput.value.trim();
+    if(key) { localStorage.setItem(AI_KEY_STORAGE, key); alert('API Key guardada.'); document.getElementById('ai-config-overlay').classList.remove('open'); } 
+    else { localStorage.removeItem(AI_KEY_STORAGE); alert('API Key eliminada.'); }
+});
+
+safeAddListener('btn-ai-tags-bank', 'click', async () => {
+    // Si estamos en MODO CASOS, usar la IA para casos
+    if (app.mode === 'cases') {
+        if (!app.cases || app.cases.length === 0) return alert("No hay casos cargados.");
+        if (!confirm("¿Generar etiquetas IA para los Casos Clínicos actuales?")) return;
+        await enrichCasesWithAI(app.cases);
+        return;
+    }
+
+    // Modo Preguntas Normal
+    if (!app.questions || app.questions.length === 0) return alert("No hay preguntas cargadas.");
+    if (confirm(`¿Generar tags IA para ${app.questions.length} preguntas?`)) {
+        try {
+            const updated = await enrichQuestionsWithAI(app.questions);
+            app.questions = updated;
+            saveProgress(); if (app.activeBankName) { app.savedBanks[app.activeBankName] = app.questions; saveBanks(); }
+            alert("Tags generados."); renderQuestion(app.currentIndex); renderStartScreenTags();
+        } catch (e) { alert("Error IA."); }
+    }
+});
 
 async function enrichQuestionsWithAI(questionsList) {
     const apiKey = localStorage.getItem(AI_KEY_STORAGE);
-    if (!apiKey) return questionsList;
-    $('loading-overlay').classList.add('open');
+    if (!apiKey) { alert("Falta API Key."); return questionsList; }
+    const loadingOverlay = createLoadingOverlay(); loadingOverlay.classList.add('open');
     const BATCH_SIZE = 5; let processedList = JSON.parse(JSON.stringify(questionsList));
     for (let i = 0; i < processedList.length; i += BATCH_SIZE) {
         const batch = processedList.slice(i, i + BATCH_SIZE);
@@ -990,102 +1190,553 @@ async function enrichQuestionsWithAI(questionsList) {
             const tagsMap = JSON.parse(data.candidates?.[0]?.content?.parts?.[0]?.text.replace(/```json|```/g, '').trim());
             batch.forEach((q, idx) => { if (tagsMap[idx]) q.tags = Array.from(new Set([...(q.tags || []), ...tagsMap[idx]])); });
         } catch (e) { console.error(e); }
-        $('ai-loading-bar').style.width = `${((i + BATCH_SIZE) / processedList.length) * 100}%`;
     }
-    $('loading-overlay').classList.remove('open'); return processedList;
+    loadingOverlay.classList.remove('open'); return processedList;
 }
 
-function saveAiKey(){ const k=$('ai-api-key').value; localStorage.setItem(AI_KEY_STORAGE, k); alert("Guardada"); $('ai-config-overlay').classList.remove('open'); }
+// NUEVO: IA PARA CASOS CLÍNICOS
+async function enrichCasesWithAI(casesList) {
+    const apiKey = localStorage.getItem(AI_KEY_STORAGE);
+    if (!apiKey) { alert("Falta API Key."); return; }
+    const loadingOverlay = createLoadingOverlay(); loadingOverlay.classList.add('open');
+    
+    // Procesar casos uno a uno o en lotes muy pequeños (tienen mucho texto)
+    const BATCH_SIZE = 3; 
+    let updatedCases = [...casesList];
 
-// --- TOOLS: MERGE & DUPLICATES ---
-function removeDuplicates() {
-    const un = []; const map = new Map(); let count=0;
-    // Updated Regex to include numbers, so "Case 1" and "Case 2" are not seen as duplicates
-    app.questions.forEach(q => { const k = q.question.toLowerCase().replace(/[^a-z0-9]/g,''); if(!map.has(k)) { map.set(k, true); un.push(q); } else count++; });
-    if(confirm(`Eliminar ${count} duplicados?`)) { app.questions = un; saveState(); if(app.activeBankName){ app.savedBanks[app.activeBankName]=un; saveBanks(); } alert("Limpio"); }
+    for (let i = 0; i < updatedCases.length; i += BATCH_SIZE) {
+        const batch = updatedCases.slice(i, i + BATCH_SIZE);
+        const promptText = batch.map((c, idx) => `ID ${idx}: Título: ${c.title}. Desc: ${c.description.substring(0, 400)}`).join('\n---\n');
+        const prompt = `Analiza estos casos clínicos. Asigna 2-4 tags médicos (Ej: #Cardiología, #Urgencias). Responde SOLO JSON { "0": ["Tag1", "Tag2"] }. Casos:\n${promptText}`;
+        
+        try {
+            const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }] }) });
+            const data = await res.json();
+            const text = data.candidates?.[0]?.content?.parts?.[0]?.text;
+            if(text) {
+                const tagsMap = JSON.parse(text.replace(/```json|```/g, '').trim());
+                batch.forEach((c, idx) => { if (tagsMap[idx]) c.tags = Array.from(new Set([...(c.tags || []), ...tagsMap[idx]])); });
+            }
+        } catch (e) { console.error("Error IA Casos", e); }
+    }
+    
+    app.cases = updatedCases;
+    localStorage.setItem(CASES_KEY, JSON.stringify(app.cases));
+    loadingOverlay.classList.remove('open');
+    alert("Casos etiquetados exitosamente.");
+    if(app.casesQueue.length > 0) renderCase(0); // Refrescar vista actual
+}
+
+function createLoadingOverlay() {
+    if(document.getElementById('ai-loading-overlay')) return document.getElementById('ai-loading-overlay');
+    const div = document.createElement('div'); div.id = 'ai-loading-overlay'; div.className = 'overlay'; div.style.zIndex = '3000';
+    div.innerHTML = `<div class="card" style="padding:30px; text-align:center;"><div style="font-size:40px; margin-bottom:10px;">✨</div><h3 class="font-bold">Analizando...</h3><div class="progress-bg" style="width:200px; margin:15px auto;"><div id="ai-loading-bar" class="progress-bar"></div></div></div>`;
+    document.body.appendChild(div); return div;
+}
+
+/* =========================================
+   MÓDULO: CASOS CLÍNICOS (LÓGICA)
+   ========================================= */
+
+// 1. Navegación
+window.openCasesModule = function() {
+    app.mode = 'cases';
+    document.getElementById('dashboard-view').style.display = 'none';
+    document.getElementById('quiz-view').style.display = 'none';
+    document.getElementById('cases-view').style.display = 'flex';
+    
+    if (app.cases && app.cases.length > 0) {
+        startCasesSession();
+    } else {
+        document.getElementById('cases-import-screen').style.display = 'block';
+        document.getElementById('cases-study-screen').style.display = 'none';
+    }
+};
+
+window.exitCasesModule = function() {
+    app.mode = 'study';
+    document.getElementById('cases-view').style.display = 'none';
+    document.getElementById('dashboard-view').style.display = 'flex';
+};
+
+safeAddListener('open-cases-module-btn', 'click', openCasesModule);
+
+// 2. Importación (Drag & Drop)
+const casesDropZone = document.getElementById('cases-drop-zone');
+const casesFileInput = document.getElementById('cases-file-input');
+
+casesDropZone.addEventListener('click', () => casesFileInput.click());
+casesFileInput.addEventListener('change', (e) => loadCasesFile(e.target.files[0]));
+
+// Drag events
+['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+  casesDropZone.addEventListener(eventName, preventDefaults, false);
+});
+function preventDefaults(e) { e.preventDefault(); e.stopPropagation(); }
+casesDropZone.addEventListener('drop', (e) => loadCasesFile(e.dataTransfer.files[0]));
+
+async function loadCasesFile(file) {
+    if (!file) return;
+    try {
+        const text = await file.text();
+        const json = JSON.parse(text);
+        // Validar estructura básica
+        const validCases = json.filter(c => c.title && c.description).map((c, i) => ({
+            id: c.id || Date.now() + i,
+            title: c.title,
+            description: c.description,
+            image: c.image || null,
+            diagnosis: c.diagnosis || c.resolution || "Sin diagnóstico.",
+            tags: c.tags || c.category ? [c.category] : [],
+        }));
+
+        if (validCases.length === 0) return alert("Formato inválido. Se requieren campos: title, description.");
+        
+        app.cases = validCases;
+        localStorage.setItem(CASES_KEY, JSON.stringify(app.cases));
+        
+        // Sugerir IA
+        if(localStorage.getItem(AI_KEY_STORAGE) && confirm("Casos cargados. ¿Usar IA para generar etiquetas automáticas ahora?")) {
+            await enrichCasesWithAI(app.cases);
+        }
+        
+        startCasesSession();
+
+    } catch (e) {
+        alert("Error al leer archivo JSON: " + e.message);
+    }
+}
+
+// 3. Sesión de Estudio SRS Lite
+function startCasesSession() {
+    document.getElementById('cases-import-screen').style.display = 'none';
+    document.getElementById('cases-study-screen').style.display = 'flex';
+    
+    // Crear cola de estudio (Indices)
+    app.casesQueue = app.cases.map((_, i) => i);
+    // Mezclar un poco
+    app.casesQueue.sort(() => Math.random() - 0.5);
+    
+    renderCase(0);
+}
+
+function renderCase(queueIndex) {
+    if (app.casesQueue.length === 0) {
+        alert("¡Sesión de casos terminada!");
+        return exitCasesModule();
+    }
+    
+    const realIdx = app.casesQueue[0]; // Siempre miramos el primero de la cola
+    const c = app.cases[realIdx];
+    app.currentCaseIdx = realIdx;
+
+    // Reset UI
+    document.getElementById('case-content-back').style.display = 'none';
+    document.getElementById('case-reveal-btn').style.display = 'block';
+    document.getElementById('case-srs-controls').style.display = 'none';
+    document.getElementById('case-edit-form').style.display = 'none';
+    document.getElementById('case-content-front').style.display = 'block';
+
+    // Rellenar datos
+    document.getElementById('case-title').textContent = c.title;
+    document.getElementById('case-description').textContent = c.description;
+    document.getElementById('case-diagnosis').innerHTML = c.diagnosis.replace(/\n/g, '<br>');
+    
+    // Imagen
+    const imgCont = document.getElementById('case-image-container');
+    imgCont.innerHTML = '';
+    if (c.image) {
+        const img = document.createElement('img');
+        img.src = c.image;
+        img.className = 'question-img';
+        img.style.maxHeight = '300px';
+        img.onclick = () => openLightbox(c.image);
+        imgCont.appendChild(img);
+    }
+
+    // Tags
+    const tagsCont = document.getElementById('case-tags-container');
+    tagsCont.innerHTML = '';
+    (c.tags || []).forEach(t => {
+        const s = document.createElement('span'); s.className = 'tag-pill'; s.textContent = t;
+        tagsCont.appendChild(s);
+    });
+
+    // Notas
+    const noteArea = document.getElementById('case-notepad');
+    noteArea.value = app.caseNotes[c.id] || "";
+    noteArea.oninput = () => {
+        app.caseNotes[c.id] = noteArea.value;
+        localStorage.setItem(NOTES_KEY, JSON.stringify(app.caseNotes));
+    };
+
+    // Progreso
+    const total = app.cases.length;
+    const left = app.casesQueue.length;
+    const done = total - left;
+    document.getElementById('cases-progress-text').textContent = `Pendientes: ${left}`;
+    document.getElementById('cases-progress-bar').style.width = `${(done/total)*100}%`;
+}
+
+// Revelar
+safeAddListener('case-reveal-btn', 'click', () => {
+    document.getElementById('case-content-back').style.display = 'block';
+    document.getElementById('case-reveal-btn').style.display = 'none';
+    document.getElementById('case-srs-controls').style.display = 'flex';
+});
+
+// Lógica SRS Lite
+window.handleCaseSRS = function(difficulty) {
+    const currentItem = app.casesQueue.shift(); // Sacar el actual
+
+    if (difficulty === 'hard') {
+        // Reinsertar pronto (posición 3 o final)
+        const insertPos = Math.min(app.casesQueue.length, 3);
+        app.casesQueue.splice(insertPos, 0, currentItem);
+    } else if (difficulty === 'good') {
+        // Reinsertar al final
+        app.casesQueue.push(currentItem);
+    } else if (difficulty === 'easy') {
+        // No reinsertar (ya salió de la cola)
+    }
+
+    renderCase(0);
+};
+
+// 4. Edición de Casos
+safeAddListener('case-edit-btn', 'click', () => {
+    const form = document.getElementById('case-edit-form');
+    const c = app.cases[app.currentCaseIdx];
+    
+    if (form.style.display === 'none') {
+        form.style.display = 'block';
+        document.getElementById('edit-case-title').value = c.title;
+        document.getElementById('edit-case-desc').value = c.description;
+        document.getElementById('edit-case-diag').value = c.diagnosis;
+    } else {
+        form.style.display = 'none';
+    }
+});
+
+safeAddListener('save-case-edit', 'click', () => {
+    const c = app.cases[app.currentCaseIdx];
+    c.title = document.getElementById('edit-case-title').value;
+    c.description = document.getElementById('edit-case-desc').value;
+    c.diagnosis = document.getElementById('edit-case-diag').value;
+    
+    localStorage.setItem(CASES_KEY, JSON.stringify(app.cases));
+    renderCase(0); // Refrescar UI
+});
+
+// 5. Lightbox
+const lightbox = document.getElementById('lightbox-modal');
+const lbImg = document.getElementById('lightbox-img');
+
+function openLightbox(src) {
+    lbImg.src = src;
+    lightbox.classList.add('open');
+}
+lightbox.addEventListener('click', () => lightbox.classList.remove('open'));
+
+
+/* --- FUNCIONES GENERALES PREVIAS (SIN CAMBIOS MAYORES) --- */
+safeAddListener('prev-btn', 'click', ()=>{ if(app.questions.length && app.currentIndex > 0){ app.currentIndex--; renderQuestion(app.currentIndex); } });
+safeAddListener('next-btn', 'click', ()=>{ if(app.questions.length && app.currentIndex < app.questions.length - 1){ app.currentIndex++; renderQuestion(app.currentIndex); } });
+safeAddListener('restart-btn', 'click', () => { if(confirm('¿Reiniciar?')) { app.answersGiven = {}; app.flagged = {}; app.currentIndex = 0; renderQuestion(0); saveProgress(); } });
+safeAddListener('show-results-btn', 'click', showResults);
+safeAddListener('star-btn', 'click', ()=>{ const q = app.questions[app.currentIndex]; if(!q) return; app.marked[q.id] = !app.marked[q.id]; renderQuestion(app.currentIndex); });
+safeAddListener('flag-btn', 'click', ()=>{ const q = app.questions[app.currentIndex]; if(!q) return; app.flagged[q.id] = !app.flagged[q.id]; renderQuestion(app.currentIndex); });
+safeAddListener('delete-q-btn', 'click', deleteCurrentQuestion);
+safeAddListener('clean-duplicates-btn', 'click', removeDuplicates);
+safeAddListener('open-editor-btn', 'click', openBankEditor);
+safeAddListener('open-editor-hero-btn', 'click', openBankEditor);
+safeAddListener('close-editor-btn', 'click', closeBankEditor);
+safeAddListener('create-filtered-bank-btn', 'click', createBankFromFilter);
+safeAddListener('delete-filtered-btn', 'click', deleteFilteredQuestions);
+safeAddListener('start-filtered-quiz-btn', 'click', startFilteredQuiz);
+safeAddListener('export-bank-json-btn', 'click', () => {
+    const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(app.questions, null, 2));
+    const dlNode = document.createElement('a'); dlNode.setAttribute("href", dataStr); dlNode.setAttribute("download", (app.activeBankName||"banco")+".json"); document.body.appendChild(dlNode); dlNode.click(); dlNode.remove();
+});
+safeAddListener('update-bank-btn', 'click', () => { if(app.activeBankName && confirm("¿Sobreescribir?")) { app.savedBanks[app.activeBankName]=app.questions; saveBanks(); renderBanksList(); }});
+safeAddListener('save-bank-btn', 'click', () => {
+     if(!app.questions.length) return alert("No hay preguntas para guardar.");
+     const name = prompt("Nombre del nuevo banco:");
+     if(name){
+         if(app.savedBanks[name] && !confirm("Ya existe. ¿Sobreescribir?")) return;
+         app.savedBanks[name] = app.questions;
+         app.activeBankName = name;
+         saveBanks();
+         saveProgress();
+         renderBanksList();
+         updateHeaderButtons();
+     }
+});
+
+safeAddListener('retry-incorrect-btn', 'click', () => {
+    const wrongs = app.questions.filter(q => app.answersGiven[q.id] !== q.correct); 
+    if(wrongs.length && confirm(`¿Repasar ${wrongs.length} preguntas (incorrectas y omitidas)?`)) { 
+        app.questions = shuffleArray(wrongs); 
+        app.currentIndex = 0; 
+        app.answersGiven = {}; 
+        app.flagged = {}; 
+        app.mode = 'study'; 
+        app.activeBankName = null; 
+        updateModeButtons();
+        document.getElementById('results-panel').style.display = 'none'; 
+        document.getElementById('quiz-shell').style.display = 'block';
+        app.quizActive = true;
+        renderQuestion(0); 
+        saveProgress();
+    } else if (wrongs.length === 0) {
+        alert("¡Felicidades! No hay errores para repasar.");
+    }
+});
+safeAddListener('open-pauteo-btn', 'click', () => { shuffleArray(app.questions); app.answersGiven={}; app.flagged={}; app.currentIndex=0; openQuizView(); });
+safeAddListener('open-smart-btn', 'click', () => { 
+    if(app.questions.length === 0) return alert("Carga un banco primero.");
+    app.questions = smartShuffleArray(app.questions); 
+    app.answersGiven={}; app.flagged={}; app.currentIndex=0; 
+    alert("✨ Modo Inteligente activado: Se han priorizado las preguntas que te cuestan más.");
+    openQuizView(); 
+});
+safeAddListener('edit-q-btn', 'click', toggleEditMode);
+safeAddListener('save-edit-btn', 'click', saveEdit);
+safeAddListener('cancel-edit-btn', 'click', toggleEditMode);
+safeAddListener('download-template-btn', 'click', () => {
+    const template = [{ "question": "Ejemplo...", "answers": ["A", "B", "C"], "correct": 0, "tags": ["Tema"] }];
+    const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(template, null, 2));
+    const dlNode = document.createElement('a'); dlNode.setAttribute("href", dataStr); dlNode.setAttribute("download", "plantilla_pauteo.json"); document.body.appendChild(dlNode); dlNode.click(); dlNode.remove();
+});
+
+const modes = ['study','exam','pauteo'];
+modes.forEach(m => safeAddListener('mode-'+m, 'click', ()=> { app.mode=m; app.answersGiven={}; app.flagged={}; app.currentIndex=0; updateModeButtons(); renderQuestion(0); }));
+function updateModeButtons(){ modes.forEach(m => { const el = document.getElementById('mode-'+m); if(app.mode===m) el.classList.add('mode-active'); else el.classList.remove('mode-active'); }); }
+
+let timerInterval = null;
+safeAddListener('start-exam', 'click', ()=>{ 
+  const mins = parseInt(document.getElementById('timer-input').value)||30; let remaining = mins*60; 
+  app.mode = 'exam'; updateModeButtons();
+  shuffleArray(app.questions); app.answersGiven = {}; app.flagged = {}; app.currentIndex = 0; openQuizView(); 
+  if(timerInterval) clearInterval(timerInterval); const display = document.getElementById('timer-display');
+  timerInterval = setInterval(()=>{ remaining--; const mm = String(Math.floor(remaining/60)).padStart(2,'0'); const ss = String(remaining%60).padStart(2,'0'); display.textContent = `${mm}:${ss}`; if(remaining <= 0){ clearInterval(timerInterval); alert('Tiempo terminado'); showResults(); } },1000); 
+});
+
+function openQuizView(){ 
+    app.quizActive=true; 
+    document.body.classList.add('quiz-mode'); // Activa el Modo Zen / Focus
+    document.getElementById('dashboard-view').style.display='none'; 
+    document.getElementById('quiz-view').style.display='flex'; 
+    document.getElementById('quiz-shell').style.display='block'; 
+    document.getElementById('results-panel').style.display='none'; 
+    checkMobileView(); 
+    renderQuestion(app.currentIndex); 
+}
+function closeQuizView(showingResults=false){ 
+    app.quizActive=false; 
+    if(timerInterval) clearInterval(timerInterval); 
+    if(!showingResults) { 
+        document.body.classList.remove('quiz-mode'); // Desactiva el Modo Zen
+        document.getElementById('dashboard-view').style.display='flex'; 
+        document.getElementById('quiz-view').style.display='none'; 
+        renderStartScreenTags(); 
+        renderHistoryChart(); 
+        renderDashboardMarked();
+    } else {
+        document.getElementById('quiz-shell').style.display='none';
+    }
+    document.getElementById('drawer').classList.remove('open'); 
+    checkMobileView(); 
+}
+function checkMobileView() { 
+    const isDrawerOpen = document.getElementById('drawer').classList.contains('open');
+    const isMobile = window.innerWidth <= 980; 
+
+    const dashBtn = document.getElementById('mobile-menu-btn'); 
+    const quizBtn = document.getElementById('quiz-menu-btn'); 
+    
+    // 1. Dashboard Button: Visible solo si es móvil, no estamos en quiz y el drawer está cerrado
+    if(dashBtn) {
+        if(isMobile && !app.quizActive && !isDrawerOpen) dashBtn.style.display = 'flex';
+        else dashBtn.style.display = 'none';
+    }
+
+    // 2. Quiz Button: Visible solo si estamos en quiz y el drawer está cerrado
+    if(quizBtn) { 
+        if(app.quizActive && !isDrawerOpen) quizBtn.style.display = 'inline-flex';
+        else quizBtn.style.display = 'none';
+    } 
+}
+window.addEventListener('resize', checkMobileView); checkMobileView();
+
+function restaurarFiltro() {
+    if(app.backupQuestions) {
+        app.questions = app.backupQuestions; app.backupQuestions = null; app.currentIndex = 0;
+        renderQuestion(0); renderQuestionGrid();
+        document.getElementById('filter-badge-area').innerHTML = ''; 
+        updateHeaderButtons();
+    }
+}
+function mostrarAvisoFiltro(tag) {
+    const badgeArea = document.getElementById('filter-badge-area'); 
+    badgeArea.innerHTML = ''; 
+    const badge = document.createElement('div'); badge.style.display = 'flex';
+    badge.style.alignItems = 'center'; badge.style.gap = '8px';
+    badge.innerHTML = `<span class="tag-pill" style="background:var(--primary); color:white; margin:0;">Filtro: ${tag}</span><button id="btn-clear-filter" class="small" style="border:1px solid var(--border); background:var(--card); border-radius:8px; padding:4px 8px; cursor:pointer;"><span class="material-icons" style="font-size:14px; vertical-align:middle;">close</span></button>`;
+    badgeArea.appendChild(badge); document.getElementById('btn-clear-filter').onclick = restaurarFiltro;
+}
+
+function renderDashboardMarked() {
+   const cont = document.getElementById('dashboard-marked-card');
+   const list = document.getElementById('dashboard-marked-list');
+   if(!cont || !list) return;
+   list.innerHTML = '';
+   let count = 0;
+   
+   app.questions.forEach((q, i) => {
+      if(app.marked[q.id]) {
+         count++;
+         const item = document.createElement('div');
+         item.style.padding = '10px';
+         item.style.borderRadius = '8px';
+         item.style.background = 'var(--primary-soft)';
+         item.style.cursor = 'pointer';
+         item.style.display = 'flex';
+         item.style.justifyContent = 'space-between';
+         item.style.alignItems = 'center';
+         item.innerHTML = `
+            <div style="flex:1;"><span style="font-weight:700; color:var(--primary); margin-right:8px;">#${i+1}</span> ${q.question.substring(0, 60)}...</div>
+            <span class="material-icons" style="font-size:16px; color:var(--primary);">arrow_forward_ios</span>
+         `;
+         item.onclick = () => {
+             app.currentIndex = i;
+             openQuizView();
+         };
+         list.appendChild(item);
+      }
+   });
+   
+   cont.style.display = count > 0 ? 'block' : 'none';
+}
+
+safeAddListener('mobile-menu-btn', 'click', () => { renderBanksList('drawer-banks-list'); document.getElementById('drawer').classList.add('open'); checkMobileView(); });
+safeAddListener('quiz-menu-btn', 'click', () => { 
+    renderBanksList('drawer-banks-list'); 
+    document.getElementById('drawer').classList.add('open'); 
+    checkMobileView(); 
+});
+safeAddListener('close-drawer', 'click', ()=> {
+    document.getElementById('drawer').classList.remove('open');
+    checkMobileView(); 
+});
+safeAddListener('download-app-btn', 'click', handleInstallTrigger);
+safeAddListener('tutorial-btn', 'click', ()=>document.getElementById('tutorial-overlay').classList.add('open'));
+safeAddListener('tutorial-close', 'click', ()=>document.getElementById('tutorial-overlay').classList.remove('open'));
+safeAddListener('download-overlay-close', 'click', ()=> document.getElementById('download-overlay').classList.remove('open'));
+safeAddListener('btn-json-help-details', 'click', ()=>document.getElementById('json-guide-overlay').classList.add('open'));
+safeAddListener('json-guide-close', 'click', ()=> document.getElementById('json-guide-overlay').classList.remove('open'));
+safeAddListener('copy-template-btn', 'click', ()=>{ navigator.clipboard.writeText(document.getElementById('json-template-code').textContent); alert('Copiado'); });
+safeAddListener('preview-close', 'click', ()=> document.getElementById('preview-overlay').classList.remove('open'));
+safeAddListener('preview-merge-save', 'click', ()=>{ const name = prompt("Nombre:"); if(name){ app.savedBanks[name]=app.lastPreviewArr; app.activeBankName=name; app.questions=app.lastPreviewArr; saveBanks(); saveProgress(); renderBanksList(); document.getElementById('preview-overlay').classList.remove('open'); renderStartScreenTags(); } });
+document.querySelectorAll('.theme-btn').forEach(b => b.addEventListener('click', ()=>{ const t = b.dataset.theme; document.documentElement.setAttribute('data-theme', t); localStorage.setItem('pauteo_theme', t); }));
+
+const fileInput = document.getElementById('file-input');
+document.getElementById('drop-zone').addEventListener('click', ()=>fileInput.click()); 
+fileInput.addEventListener('change', async e => {
+  const files = Array.from(e.target.files);
+  let merged = [];
+  for(const f of files) { 
+      const txt = await f.text(); 
+      let qs=[]; 
+      try{ qs=normalizeQuestions(JSON.parse(txt)); }catch(e){} 
+      if(!qs.length) qs=parseTxtToQuestions(txt); 
+      if(qs.length) merged=merged.concat(qs); 
+  }
+  if(merged.length) {
+      if(localStorage.getItem(AI_KEY_STORAGE)) {
+          if(confirm(`Se detectaron ${merged.length} preguntas. ¿Deseas usar IA para generar etiquetas automáticas? (Tomará unos segundos)`)) {
+              merged = await enrichQuestionsWithAI(merged);
+          }
+      }
+      app.lastPreviewArr = merged; 
+      const list = document.getElementById('preview-list'); 
+      list.innerHTML=''; 
+      merged.forEach((q,i)=>{ 
+          const d=document.createElement('div'); 
+          d.style.padding='8px'; 
+          d.style.borderBottom='1px solid #eee'; 
+          const tagsHtml = (q.tags||[]).map(t => `<span class="tag-pill small" style="font-size:0.6em; padding:2px 6px;">${t}</span>`).join('');
+          d.innerHTML=`<b>${i+1}.</b> ${q.question.substring(0,60)}... <br> ${tagsHtml}`; 
+          list.appendChild(d); 
+      }); 
+      document.getElementById('preview-overlay').classList.add('open'); 
+  }
+  fileInput.value = '';
+});
+
+function setupSearch(inputId, resId){
+    const inp = document.getElementById(inputId); const res = document.getElementById(resId);
+    inp.addEventListener('input', e=>{
+        const v = e.target.value.toLowerCase(); if(v.length<2) { res.classList.remove('visible'); return; }
+        const m = app.questions.map((q,i)=>({q,i})).filter(x=>x.q.question.toLowerCase().includes(v) || (x.q.tags||[]).some(t=>t.toLowerCase().includes(v)));
+        res.innerHTML=''; 
+        if(m.length){ res.classList.add('visible'); m.slice(0,30).forEach(x=>{ const d=document.createElement('div'); d.className='search-item'; d.innerHTML=`<b>#${x.i+1}</b> ${x.q.question.substring(0,50)}...`; d.onclick=()=>{app.currentIndex=x.i; renderQuestion(x.i); res.classList.remove('visible'); if(!app.quizActive) openQuizView(); document.getElementById('drawer').classList.remove('open');}; res.appendChild(d); }); }
+        else { res.innerHTML='<div class="search-item">No encontrado</div>'; res.classList.add('visible'); }
+    });
+    document.addEventListener('click', e => { if(!inp.contains(e.target) && !res.contains(e.target)) res.classList.remove('visible'); });
+}
+setupSearch('search-bar','sidebar-search-results'); setupSearch('drawer-search','drawer-search-results');
+
+function deleteBank(name) {
+    if(confirm(`¿Eliminar banco "${name}"?`)) {
+        delete app.savedBanks[name]; saveBanks();
+        if(app.activeBankName === name) { app.activeBankName = null; app.questions = []; saveProgress(); location.reload(); } 
+        else { renderBanksList(); }
+    }
 }
 function openMergeUI() {
-    const c = $('merge-list-container'); c.innerHTML='';
-    Object.keys(app.savedBanks).forEach(k => { const d=document.createElement('div'); d.innerHTML=`<input type="checkbox" value="${k}"> ${k}`; c.appendChild(d); });
-    $('merge-overlay').classList.add('open');
+    const cont = document.getElementById('merge-list-container'); cont.innerHTML = ''; const names = Object.keys(app.savedBanks);
+    if(names.length < 2) return alert("Necesitas al menos 2 bancos guardados para fusionar.");
+    names.forEach(n => { const div = document.createElement('div'); div.innerHTML = `<label style="display:flex;align-items:center;padding:4px;"><input type="checkbox" value="${n}" class="merge-chk" style="margin-right:8px;"> ${n} (${app.savedBanks[n].length})</label>`; cont.appendChild(div); });
+    document.getElementById('merge-overlay').classList.add('open');
 }
-function doMerge() {
-    const ks = Array.from($('merge-list-container').querySelectorAll('input:checked')).map(i=>i.value);
-    if(ks.length<2) return alert("Elige 2+");
-    let nq = []; ks.forEach(k => nq = nq.concat(app.savedBanks[k]));
-    const n = prompt("Nombre fusión:"); if(n) { app.savedBanks[n]=nq; saveBanks(); renderBanksList(); $('merge-overlay').classList.remove('open'); }
+safeAddListener('btn-merge-ui', 'click', openMergeUI);
+safeAddListener('merge-close', 'click', () => document.getElementById('merge-overlay').classList.remove('open'));
+safeAddListener('confirm-merge-btn', 'click', () => {
+    const checked = Array.from(document.querySelectorAll('.merge-chk:checked')).map(c => c.value);
+    if(checked.length < 2) return alert("Selecciona al menos 2.");
+    let mergedQs = []; checked.forEach(n => mergedQs = mergedQs.concat(app.savedBanks[n]));
+    const newName = prompt("Nombre para el nuevo banco fusionado:");
+    if(newName) { app.savedBanks[newName] = mergedQs; saveBanks(); renderBanksList(); document.getElementById('merge-overlay').classList.remove('open'); alert("Fusión exitosa."); }
+});
+function renderBanksList(tid='banks-list'){ 
+    const c=document.getElementById(tid); if(!c)return; c.innerHTML=''; 
+    Object.keys(app.savedBanks).forEach(n=>{ 
+        const d=document.createElement('div'); d.className='bank-item'; d.style.padding='8px'; d.style.borderBottom='1px solid #eee'; d.style.cursor='pointer'; 
+        const nameSpan = document.createElement('span'); nameSpan.className='bank-name'; nameSpan.innerHTML = `<b>${n}</b> <span class="small">(${app.savedBanks[n].length})</span>`;
+        nameSpan.onclick = ()=>{ app.activeBankName=n; app.questions=app.savedBanks[n]; app.currentIndex=0; app.answersGiven={}; app.flagged={}; saveProgress(); renderQuestion(0); if(document.getElementById('drawer').classList.contains('open')) document.getElementById('drawer').classList.remove('open'); renderStartScreenTags(); };
+        const delBtn = document.createElement('button'); delBtn.className = 'action-btn small'; delBtn.innerHTML = '<span class="material-icons" style="font-size:18px; color:#ef4444;">delete</span>'; delBtn.title = 'Eliminar Banco'; delBtn.onclick = (e) => { e.stopPropagation(); deleteBank(n); };
+        d.appendChild(nameSpan); d.appendChild(delBtn); c.appendChild(d); 
+    }); 
 }
-function exportBank() {
-    const b = new Blob([JSON.stringify(app.questions, null, 2)], {type:'application/json'});
-    const a = document.createElement('a'); a.href=URL.createObjectURL(b); a.download='banco.json'; a.click();
+function updateProgressUI(){ document.getElementById('progress-text').textContent=`${app.currentIndex+1}/${app.questions.length}`; document.getElementById('progress-bar').style.width=Math.round(((app.currentIndex+1)/app.questions.length)*100)+'%'; updateModeButtons(); }
+function updateMarkedUI(){ const l=document.getElementById('marked-list'); l.innerHTML=''; let h=false; app.questions.forEach((q,i)=>{ if(app.marked[q.id]){ h=true; const b=document.createElement('button'); b.className='mark-btn'; b.textContent=i+1; b.onclick=()=>{app.currentIndex=i; renderQuestion(i); document.getElementById('drawer').classList.remove('open'); checkMobileView();}; l.appendChild(b); } }); document.getElementById('marked-container').style.display=h?'block':'none'; renderDashboardMarked(); }
+function deleteCurrentQuestion(){ if(app.questions.length && confirm("¿Borrar pregunta?")){ app.questions.splice(app.currentIndex,1); if(!app.questions.length) closeQuizView(); else { if(app.currentIndex>=app.questions.length) app.currentIndex--; renderQuestion(app.currentIndex); } saveProgress(); }}
+function renderQuestionGrid() { const g=document.getElementById('nav-grid-drawer'); if(!g)return; g.innerHTML=''; const l=Math.min(app.questions.length,2000); for(let i=0;i<l;i++){ const q=app.questions[i]; const d=document.createElement('div'); d.className='nav-dot'; d.textContent=i+1; if(i===app.currentIndex) d.classList.add('current'); if(app.answersGiven[q.id]!==undefined) { d.classList.add('answered'); if(app.mode!=='exam' && app.answersGiven[q.id]!==q.correct) d.classList.add('wrong'); } if(app.flagged[q.id]) d.classList.add('flagged'); d.onclick=()=>{app.currentIndex=i; renderQuestion(i); document.getElementById('drawer').classList.remove('open'); checkMobileView();}; g.appendChild(d); }}
+function filtrarPorEtiqueta(t){ const f=app.questions.filter(q=>(q.tags||[]).includes(t)); if(f.length && confirm(`¿Practicar ${t} (${f.length})?`)){ if(!app.backupQuestions) app.backupQuestions=[...app.questions]; app.questions=f; app.currentIndex=0; app.mode='study'; renderQuestion(0); mostrarAvisoFiltro(t); openQuizView(); }}
+async function handleInstallTrigger() { 
+    document.getElementById('download-overlay').classList.add('open');
+    const content = document.getElementById('install-content');
+    if(deferredPrompt){ 
+        content.innerHTML = `<p>Instala la App para usarla sin conexión y pantalla completa.</p><button id="pwa-install-btn" class="btn" style="width:100%; margin-top:12px; background:var(--primary); color:white;">Instalar App Nativa</button>`;
+        document.getElementById('pwa-install-btn').onclick = async () => { deferredPrompt.prompt(); const {outcome} = await deferredPrompt.userChoice; if(outcome==='accepted') deferredPrompt=null; document.getElementById('download-overlay').classList.remove('open'); };
+    } else { 
+        if(/iPhone|iPad/.test(navigator.userAgent)) { content.innerHTML = `<p><b>Para iOS (iPhone/iPad):</b></p><ol style="margin-left:20px; font-size:0.9rem;"><li>Toca el botón <b>Compartir</b> <span class="material-icons" style="font-size:1rem; vertical-align:middle;">ios_share</span></li><li>Busca y selecciona <b>"Agregar a Inicio"</b>.</li></ol><p class="small">Esto creará la App independiente.</p>`; } 
+        else { content.innerHTML = `<p><b>Para Android (APK Web):</b></p><ol style="margin-left:20px; font-size:0.9rem;"><li>Toca el menú del navegador (3 puntos).</li><li>Selecciona <b>"Instalar aplicación"</b> o "Agregar a pantalla principal".</li></ol><p class="small">Esto genera la APK Web (WebAPK) en tu sistema.</p>`; }
+    } 
 }
-
-// --- CASES ---
-function openCasesModule(){ app.mode='cases'; $('dashboard-view').style.display='none'; $('cases-view').style.display='flex'; if(!app.cases.length) $('cases-import-screen').style.display='block'; else startCases(); }
-function startCases(){ $('cases-import-screen').style.display='none'; $('cases-study-screen').style.display='flex'; app.casesQueue=app.cases.map((_,i)=>i).sort(()=>Math.random()-0.5); renderCase(); }
-function renderCase(){
-    if(!app.casesQueue.length) { alert("Fin"); return exitCasesModule(); }
-    const i = app.casesQueue[0]; app.currentCaseIdx=i; const c = app.cases[i];
-    $('case-title').textContent = c.title; $('case-description').textContent = c.description; $('case-diagnosis').innerHTML = c.diagnosis.replace(/\n/g,'<br>');
-    $('case-edit-form').style.display='none'; $('case-content-back').style.display='none'; $('case-reveal-btn').style.display='block'; $('case-srs-controls').style.display='none';
-    const imC = $('case-image-container'); imC.innerHTML=''; if(c.image){ const img=document.createElement('img'); img.src=c.image; img.style.maxHeight='250px'; img.onclick=()=>openLightbox(c.image); imC.appendChild(img); }
-    const tgC = $('case-tags-container'); tgC.innerHTML=''; (c.tags||[]).forEach(t=>{const s=document.createElement('span'); s.className='tag-pill'; s.textContent=t; tgC.appendChild(s);});
-    $('cases-progress-text').textContent = `Pendientes: ${app.casesQueue.length}`;
-}
-window.handleCaseSRS = (d) => { const c = app.casesQueue.shift(); if(d==='hard') app.casesQueue.splice(2,0,c); else if(d==='good') app.casesQueue.push(c); renderCase(); };
-window.exitCasesModule = () => { app.mode='study'; $('cases-view').style.display='none'; $('dashboard-view').style.display='flex'; };
-$('case-edit-btn').onclick = () => { 
-    $('case-edit-form').style.display = $('case-edit-form').style.display==='none' ? 'block' : 'none';
-    const c = app.cases[app.currentCaseIdx]; $('edit-case-title').value=c.title; $('edit-case-desc').value=c.description; $('edit-case-diag').value=c.diagnosis;
-};
-$('save-case-edit').onclick = () => { const c = app.cases[app.currentCaseIdx]; c.title=$('edit-case-title').value; c.description=$('edit-case-desc').value; c.diagnosis=$('edit-case-diag').value; localStorage.setItem(CASES_KEY, JSON.stringify(app.cases)); renderCase(); };
-async function handleCasesUpload(e) { const t = await e.target.files[0].text(); app.cases=JSON.parse(t); localStorage.setItem(CASES_KEY, JSON.stringify(app.cases)); startCases(); }
-
-// --- FILE LOAD & HELPERS ---
-function renderBanksList(){
-    const c=$('banks-list'); c.innerHTML='';
-    Object.keys(app.savedBanks).forEach(k=>{
-        const d=document.createElement('div'); d.className='flex-between'; d.style.padding='8px'; d.style.borderBottom='1px solid var(--border)';
-        d.innerHTML=`<span style="cursor:pointer">${k} (${app.savedBanks[k].length})</span> <span class="material-icons small" style="cursor:pointer" onclick="deleteBank('${k}')">delete</span>`;
-        d.firstChild.onclick=()=>{app.questions=app.savedBanks[k]; app.activeBankName=k; saveState(); updateHeader(); renderQuestion(0);}; c.appendChild(d);
-    });
-}
-window.deleteBank = (k) => { if(confirm("Borrar?")) { delete app.savedBanks[k]; saveBanks(); renderBanksList(); } };
-function updateHeader(){ $('active-bank').textContent = app.activeBankName||'(Ninguno)'; }
-function renderStartTags() { const c=$('start-tags-list'); c.innerHTML=''; const ts=new Set(); app.questions.forEach(q=>(q.tags||[]).forEach(t=>ts.add(t))); Array.from(ts).slice(0,20).forEach(t=>{const b=document.createElement('button'); b.className='tag-pill'; b.textContent=t; c.appendChild(b);}); }
-function renderMarkedDashboard() { const l=$('dashboard-marked-list'); l.innerHTML=''; app.questions.forEach((q,i)=>{ if(app.marked[q.id]) { const d=document.createElement('div'); d.textContent=`#${i+1} ${q.question.substring(0,40)}`; d.className='card'; d.style.padding='8px'; d.onclick=()=>{startQuiz('study'); renderQuestion(i);}; l.appendChild(d); }}); if(l.innerHTML) $('dashboard-marked-card').style.display='block'; }
-function openLightbox(s) { $('lightbox-img').src=s; $('lightbox-modal').classList.add('open'); }
-function toggleStar() { app.marked[app.questions[app.currentIndex].id] = !app.marked[app.questions[app.currentIndex].id]; renderQuestion(app.currentIndex); }
-function toggleFlag() { app.flagged[app.questions[app.currentIndex].id] = !app.flagged[app.questions[app.currentIndex].id]; renderQuestion(app.currentIndex); }
-function handleSearch(v, tid) {
-    const c=$(tid); c.innerHTML=''; c.style.display=v.length>2?'block':'none';
-    if(v.length>2) { app.questions.forEach((q,i)=>{ if(q.question.toLowerCase().includes(v.toLowerCase())) { const d=document.createElement('div'); d.className='search-item'; d.textContent=`#${i+1} ${q.question.substring(0,40)}`; d.onclick=()=>{startQuiz('study'); renderQuestion(i); c.style.display='none';}; c.appendChild(d); } }); }
-}
-function renderNavGrid() {
-    const c=$('nav-grid-drawer'); c.innerHTML='';
-    app.questions.forEach((q,i)=>{ 
-        const d=document.createElement('div'); d.className='nav-dot'; d.textContent=i+1;
-        if(app.answersGiven[q.id]!==undefined) d.classList.add(app.answersGiven[q.id]===q.correct?'answered':'wrong');
-        d.onclick=()=>{startQuiz('study'); renderQuestion(i); $('drawer').classList.remove('open');}; c.appendChild(d);
-    });
-}
-function closeQuizView(){ 
-    if(timerInterval) clearInterval(timerInterval); $('timer-display').textContent=''; 
-    app.quizActive=false; $('quiz-view').style.display='none'; $('dashboard-view').style.display='flex'; document.body.classList.remove('quiz-mode'); renderStartTags(); renderMarkedDashboard(); 
-}
-$('open-pauteo-btn').onclick = () => startQuiz('study', true);
-$('open-cases-module-btn').onclick = openCasesModule;
-
-$('download-app-btn').onclick = async () => { 
-    if (deferredPrompt) {
-        deferredPrompt.prompt();
-        const { outcome } = await deferredPrompt.userChoice;
-        deferredPrompt = null;
-    } else {
-        alert("Instala desde el menú del navegador.");
-    }
-};
-
+renderBanksList(); renderStartScreenTags(); renderHistoryChart(); renderDashboardMarked();
+});
 </script>
 </body>
 </html>
