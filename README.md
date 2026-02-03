@@ -1,4 +1,5 @@
 🧠 Pauteo Pro v5.1
+
 Pauteo Pro es una plataforma de estudio médico modular, diseñada para funcionar completamente en el navegador (offline-first). Combina simulacros de examen, estudio con retroalimentación inmediata y un módulo de casos clínicos con Sistema de Repetición Espaciada (SRS).
 ✨ Características Principales
 📚 Modos de Estudio
