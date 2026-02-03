@@ -703,6 +703,8 @@ window.addEventListener('DOMContentLoaded', () => {
     
     // UI Setup
     setTheme(localStorage.getItem('pauteo_theme')||'pink');
+    renderBanksList();
+    updateHeader();
     // Listeners
     $('file-input').onchange = handleFileUpload;
     $('cases-file-input').onchange = handleCasesUpload;
