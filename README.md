@@ -25,6 +25,13 @@ No requiere instalación de servidores ni bases de datos.
  * ¡Listo! La aplicación funciona localmente.
 > Nota: Para una mejor experiencia en móviles, puedes usar la opción "Agregar a la pantalla de inicio" del navegador para usarla como una Web App.
 > 
+📥 Descargar y uso offline
+Para usar Pauteo Pro sin conexión:
+ * Descarga el archivo HTML y guárdalo en tu equipo (por ejemplo en Escritorio o Descargas).
+ * Ábrelo con doble clic en tu navegador (no necesitas servidores).
+ * Tras la primera carga, la app funciona sin internet para estudiar, guardar bancos y revisar tus estadísticas.
+ * Si quieres una experiencia tipo app en móvil, usa "Agregar a pantalla de inicio" desde el navegador.
+
 📂 Formatos de Importación
 Para cargar preguntas, puedes arrastrar y soltar archivos en la zona de carga.
 1. Formato JSON (Recomendado)
