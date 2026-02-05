@@ -1194,7 +1194,33 @@ function renderEditorList() {
     });
 }
 function createBankFromFilter() {
-    const n = prompt("Nombre nuevo banco:"); if(n) { app.savedBanks[n] = app.editorQuestions; saveBanks(); renderBanksList(); alert("Creado"); }
+    const inputName = prompt("Nombre nuevo banco:", app.activeBankName || "Banco filtrado");
+    if (!inputName) return;
+
+    const n = inputName.trim();
+    if (!n) return alert("Ingresa un nombre válido.");
+    if (app.savedBanks[n] && !confirm(`"${n}" ya existe. ¿Sobreescribir?`)) return;
+
+    const source = (app.editorQuestions && app.editorQuestions.length)
+        ? app.editorQuestions
+        : ((app.masterQuestions && app.masterQuestions.length) ? app.masterQuestions : app.questions);
+
+    const savedCopy = source.map(q => ({ ...q, answers: Array.isArray(q.answers) ? [...q.answers] : [] }));
+
+    app.savedBanks[n] = savedCopy;
+    app.activeBankName = n;
+    app.questions = [...savedCopy];
+    app.masterQuestions = [...savedCopy];
+
+    saveBanks();
+    saveState();
+    renderBanksList();
+    updateHeader();
+    renderStartTags();
+    if (document.body.classList.contains('quiz-mode')) renderQuestion(0);
+
+    $('bank-editor-screen').classList.remove('open');
+    alert(`Banco "${n}" guardado.`);
 }
 function startFilteredQuiz() {
     const source = (app.masterQuestions && app.masterQuestions.length) ? app.masterQuestions : app.questions;
