@@ -46,7 +46,8 @@ body { padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-are
 body.quiz-mode .app { grid-template-columns: 1fr; padding-top: 10px; }
 body.quiz-mode aside#left-panel { display: none !important; }
 body.quiz-mode #quiz-menu-btn { display: inline-flex !important; }
-@media(max-width: 980px){ .app { grid-template-columns: 1fr; padding: 12px; } aside#left-panel { display: none; } #mobile-menu-btn { display: flex; } }
+@media(max-width: 1180px){ .app { grid-template-columns: 1fr; padding: 14px; } .drawer { width: min(88vw, 420px); } }
+@media(max-width: 980px){ aside#left-panel { display: none; } #mobile-menu-btn { display: flex; } }
 @media(max-width: 640px){
   .app { padding: calc(12px + env(safe-area-inset-top)) 12px calc(72px + env(safe-area-inset-bottom)); gap: 16px; }
   .card { padding: 18px; border-radius: 14px; }
@@ -729,19 +730,39 @@ window.addEventListener('DOMContentLoaded', () => {
     
     // Bank Management Listeners (FIXED)
     $('save-bank-btn').onclick = () => {
-        const name = prompt("Nombre del banco:", app.activeBankName || "Nuevo Banco");
-        if(!name) return;
-        app.savedBanks[name] = app.questions;
+        const inputName = prompt("Nombre del banco:", app.activeBankName || "Nuevo Banco");
+        if(!inputName) return;
+        const name = inputName.trim();
+        if(!name) return alert("Ingresa un nombre válido.");
+        if(app.savedBanks[name] && !confirm(`"${name}" ya existe. ¿Sobreescribir?`)) return;
+
+        const savedCopy = (app.questions || []).map(q => ({ ...q, answers: Array.isArray(q.answers) ? [...q.answers] : [] }));
+        app.savedBanks[name] = savedCopy;
         app.activeBankName = name;
-        saveBanks(); renderBanksList(); updateHeader();
+        app.masterQuestions = [...savedCopy];
+
+        saveBanks();
+        saveState();
+        renderBanksList();
+        updateHeader();
+        renderStartTags();
+        if ($('bank-editor-screen').classList.contains('open')) $('bank-editor-screen').classList.remove('open');
         alert("Guardado exitosamente.");
     };
 
     $('update-bank-btn').onclick = () => {
         if(!app.activeBankName) return alert("No hay un banco activo seleccionado.");
         if(!confirm(`¿Sobreescribir banco "${app.activeBankName}" con las preguntas actuales?`)) return;
-        app.savedBanks[app.activeBankName] = app.questions;
+
+        const savedCopy = (app.questions || []).map(q => ({ ...q, answers: Array.isArray(q.answers) ? [...q.answers] : [] }));
+        app.savedBanks[app.activeBankName] = savedCopy;
+        app.masterQuestions = [...savedCopy];
+
         saveBanks();
+        saveState();
+        renderBanksList();
+        updateHeader();
+        if ($('bank-editor-screen').classList.contains('open')) $('bank-editor-screen').classList.remove('open');
         alert(`Banco "${app.activeBankName}" actualizado.`);
     };
 
@@ -927,30 +948,36 @@ async function handleFileUpload(e) {
 
 $('preview-save-btn').onclick = () => {
     if(!app.lastPreviewArr || !app.lastPreviewArr.length) return;
-    
-    const name = prompt("Nombre para el nuevo banco:", "Nuevo Banco");
-    if(!name) return;
 
+    const inputName = prompt("Nombre para el nuevo banco:", app.activeBankName || "Nuevo Banco");
+    if(!inputName) return;
+
+    const name = inputName.trim();
+    if(!name) return alert("Ingresa un nombre válido.");
     if(app.savedBanks[name] && !confirm(`"${name}" ya existe. ¿Sobreescribir?`)) return;
 
+    const savedCopy = app.lastPreviewArr.map(q => ({ ...q, answers: Array.isArray(q.answers) ? [...q.answers] : [] }));
+
     // Guardar en memoria y persistencia
-    app.savedBanks[name] = app.lastPreviewArr;
+    app.savedBanks[name] = savedCopy;
     app.activeBankName = name;
-    
+
     // Cargar como activo inmediatamente
-    app.questions = [...app.lastPreviewArr];
-    app.masterQuestions = [...app.lastPreviewArr]; // Copia maestra
-    
+    app.questions = [...savedCopy];
+    app.masterQuestions = [...savedCopy];
+
     saveBanks();
     saveState();
-    
+
     // ACTUALIZAR LA INTERFAZ
-    renderBanksList(); 
+    renderBanksList();
     updateHeader();
     renderStartTags();
-    renderQuestion(0);
-    
-    $('preview-overlay').classList.remove('open');
+
+    // Cerrar vistas superpuestas de guardado
+    if ($('preview-overlay').classList.contains('open')) $('preview-overlay').classList.remove('open');
+    if ($('bank-editor-screen').classList.contains('open')) $('bank-editor-screen').classList.remove('open');
+
     alert(`Banco "${name}" guardado y cargado.`);
 };
 
@@ -1194,7 +1221,33 @@ function renderEditorList() {
     });
 }
 function createBankFromFilter() {
-    const n = prompt("Nombre nuevo banco:"); if(n) { app.savedBanks[n] = app.editorQuestions; saveBanks(); renderBanksList(); alert("Creado"); }
+    const inputName = prompt("Nombre nuevo banco:", app.activeBankName || "Banco filtrado");
+    if (!inputName) return;
+
+    const n = inputName.trim();
+    if (!n) return alert("Ingresa un nombre válido.");
+    if (app.savedBanks[n] && !confirm(`"${n}" ya existe. ¿Sobreescribir?`)) return;
+
+    const source = (app.editorQuestions && app.editorQuestions.length)
+        ? app.editorQuestions
+        : ((app.masterQuestions && app.masterQuestions.length) ? app.masterQuestions : app.questions);
+
+    const savedCopy = source.map(q => ({ ...q, answers: Array.isArray(q.answers) ? [...q.answers] : [] }));
+
+    app.savedBanks[n] = savedCopy;
+    app.activeBankName = n;
+    app.questions = [...savedCopy];
+    app.masterQuestions = [...savedCopy];
+
+    saveBanks();
+    saveState();
+    renderBanksList();
+    updateHeader();
+    renderStartTags();
+    if (document.body.classList.contains('quiz-mode')) renderQuestion(0);
+
+    $('bank-editor-screen').classList.remove('open');
+    alert(`Banco "${n}" guardado.`);
 }
 function startFilteredQuiz() {
     const source = (app.masterQuestions && app.masterQuestions.length) ? app.masterQuestions : app.questions;
