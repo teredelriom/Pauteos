@@ -136,6 +136,13 @@ body.quiz-mode #quiz-menu-btn { display: inline-flex !important; }
 .tutorial-title { font-weight: 700; color: var(--primary); margin-bottom: 8px; display: flex; align-items: center; gap: 8px; }
 .key-badge { display: inline-block; padding: 2px 6px; border: 1px solid var(--border); border-radius: 4px; font-family: monospace; font-size: 0.8rem; background: var(--bg); }
 
+.pauteo-scroll-list { display: grid; gap: 14px; max-height: 65vh; overflow-y: auto; padding-right: 4px; }
+.pauteo-question-card { border: 1px solid var(--border); border-radius: 12px; padding: 14px; background: var(--card); }
+.pauteo-question-title { font-weight: 600; margin-bottom: 10px; line-height: 1.5; }
+.pauteo-answer { border: 1px solid var(--border); border-radius: 10px; padding: 8px 10px; margin-bottom: 6px; font-size: 0.92rem; }
+.pauteo-answer.correct { border-color: var(--success-border); background: var(--success-bg); color: var(--success-text); font-weight: 600; }
+.pauteo-justification { margin-top: 8px; border-top: 1px dashed var(--border); padding-top: 8px; font-size: 0.9rem; line-height: 1.55; }
+
 </style>
 </head>
 <body>
@@ -321,20 +328,21 @@ body.quiz-mode #quiz-menu-btn { display: inline-flex !important; }
                     <div id="question-image-container"></div>
                     <div id="question-text"></div>
                     <div id="answers"></div>
+                    <div id="pauteo-scroll-list" class="pauteo-scroll-list" style="display:none;"></div>
                     <details id="justification-box" style="margin-top:20px; display:none; border:1px solid var(--border); border-radius:8px; padding:8px;">
                         <summary style="cursor:pointer; font-weight:bold; color:var(--primary);">Explicación</summary>
                         <div id="justification-text" style="padding-top:8px; line-height:1.6;"></div>
                     </details>
                 </div>
 
-                <div class="flex-between" style="margin-top:24px; padding-top:16px; border-top:1px solid var(--border);">
+                <div id="quiz-nav-controls" class="flex-between" style="margin-top:24px; padding-top:16px; border-top:1px solid var(--border);">
                     <button id="prev-btn" class="btn outline">Anterior</button>
                     <div style="display:flex; gap:12px;">
                         <button id="restart-btn" class="btn outline">Reiniciar</button>
                         <button id="next-btn" class="btn primary">Siguiente</button>
                     </div>
                 </div>
-                <div style="text-align:center; margin-top:8px;">
+                <div id="quiz-finish-controls" style="text-align:center; margin-top:8px;">
                     <button id="show-results-btn" style="background:none; border:none; text-decoration:underline; cursor:pointer; font-size:0.8rem; color:var(--muted);">Finalizar</button>
                 </div>
              </div>
@@ -956,7 +964,10 @@ $('preview-save-btn').onclick = () => {
 
 // --- QUIZ LOGIC ---
 function startQuiz(mode, shuffle=false) {
-    if(mode) app.mode = mode; 
+    if(mode) app.mode = mode;
+    const source = (app.masterQuestions && app.masterQuestions.length) ? app.masterQuestions : app.questions;
+    if(!source || source.length === 0) return alert("No hay preguntas cargadas.");
+
     app.answersGiven = {}; app.currentIndex = 0;
     updateModeButtons();
     if(shuffle) app.questions.sort(() => Math.random() - 0.5);
@@ -967,11 +978,60 @@ function startQuiz(mode, shuffle=false) {
     renderQuestion(0);
 }
 
+function renderPauteoScrollView() {
+    const list = $('pauteo-scroll-list');
+    list.innerHTML = '';
+
+    app.questions.forEach((q, qi) => {
+        const card = document.createElement('div');
+        card.className = 'pauteo-question-card';
+
+        const title = document.createElement('div');
+        title.className = 'pauteo-question-title';
+        title.textContent = `${qi + 1}. ${q.question}`;
+        card.appendChild(title);
+
+        (q.answers || []).forEach((ans, ai) => {
+            const row = document.createElement('div');
+            row.className = 'pauteo-answer';
+            if(ai === q.correct) row.classList.add('correct');
+            row.innerHTML = `<b style="opacity:0.7; margin-right:8px;">${String.fromCharCode(65+ai)}</b> ${ans}`;
+            card.appendChild(row);
+        });
+
+        const just = document.createElement('div');
+        just.className = 'pauteo-justification';
+        just.innerHTML = `<b style="color:var(--primary);">Explicación:</b> ${q.justification || 'Sin explicación'}`;
+        card.appendChild(just);
+
+        list.appendChild(card);
+    });
+
+    $('question-image-container').innerHTML = '';
+    $('question-tags').innerHTML = `<span class="tag-pill">Modo Pauteo</span><span class="tag-pill">${app.questions.length} preguntas</span>`;
+    $('question-text').textContent = 'Vista completa de pauteo (scroll).';
+    $('answers').innerHTML = '';
+    $('answers').style.display = 'none';
+    $('justification-box').style.display = 'none';
+    $('pauteo-scroll-list').style.display = 'grid';
+    $('quiz-nav-controls').style.display = 'none';
+    $('quiz-finish-controls').style.display = 'none';
+    $('edit-form-container').style.display = 'none';
+    $('progress-text').textContent = `Pauteo · ${app.questions.length} preguntas`;
+    $('progress-bar').style.width = '100%';
+    saveState();
+}
+
 function renderQuestion(idx) {
+    if(app.mode === 'pauteo') { renderPauteoScrollView(); return; }
     if(idx<0 || idx>=app.questions.length) return;
     app.currentIndex = idx;
     const q = app.questions[idx];
     
+    $('pauteo-scroll-list').style.display = 'none';
+    $('answers').style.display = 'grid';
+    $('quiz-nav-controls').style.display = 'flex';
+    $('quiz-finish-controls').style.display = 'block';
     $('question-text').textContent = q.question;
     $('answers').innerHTML = ''; $('justification-box').style.display = 'none'; $('edit-form-container').style.display = 'none';
     $('justification-box').removeAttribute('open');
@@ -1421,27 +1481,27 @@ function renderStartTags() {
         c.appendChild(b);
     });
 }
-function renderMarkedDashboard() { const l=$('dashboard-marked-list'); l.innerHTML=''; app.questions.forEach((q,i)=>{ if(app.marked[q.id]) { const d=document.createElement('div'); d.textContent=`#${i+1} ${q.question.substring(0,40)}`; d.className='card'; d.style.padding='8px'; d.onclick=()=>{startQuiz('study'); renderQuestion(i);}; l.appendChild(d); }}); if(l.innerHTML) $('dashboard-marked-card').style.display='block'; }
+function renderMarkedDashboard() { const l=$('dashboard-marked-list'); l.innerHTML=''; app.questions.forEach((q,i)=>{ if(app.marked[q.id]) { const d=document.createElement('div'); d.textContent=`#${i+1} ${q.question.substring(0,40)}`; d.className='card'; d.style.padding='8px'; d.onclick=()=>{startQuiz(app.mode || 'study'); renderQuestion(i);}; l.appendChild(d); }}); if(l.innerHTML) $('dashboard-marked-card').style.display='block'; }
 function openLightbox(s) { $('lightbox-img').src=s; $('lightbox-modal').classList.add('open'); }
 function toggleStar() { app.marked[app.questions[app.currentIndex].id] = !app.marked[app.questions[app.currentIndex].id]; renderQuestion(app.currentIndex); }
 function toggleFlag() { app.flagged[app.questions[app.currentIndex].id] = !app.flagged[app.questions[app.currentIndex].id]; renderQuestion(app.currentIndex); }
 function handleSearch(v, tid) {
     const c=$(tid); c.innerHTML=''; c.style.display=v.length>2?'block':'none';
-    if(v.length>2) { app.questions.forEach((q,i)=>{ if(q.question.toLowerCase().includes(v.toLowerCase())) { const d=document.createElement('div'); d.className='search-item'; d.textContent=`#${i+1} ${q.question.substring(0,40)}`; d.onclick=()=>{startQuiz('study'); renderQuestion(i); c.style.display='none';}; c.appendChild(d); } }); }
+    if(v.length>2) { app.questions.forEach((q,i)=>{ if(q.question.toLowerCase().includes(v.toLowerCase())) { const d=document.createElement('div'); d.className='search-item'; d.textContent=`#${i+1} ${q.question.substring(0,40)}`; d.onclick=()=>{startQuiz(app.mode || 'study'); renderQuestion(i); c.style.display='none';}; c.appendChild(d); } }); }
 }
 function renderNavGrid() {
     const c=$('nav-grid-drawer'); c.innerHTML='';
     app.questions.forEach((q,i)=>{ 
         const d=document.createElement('div'); d.className='nav-dot'; d.textContent=i+1;
         if(app.answersGiven[q.id]!==undefined) d.classList.add(app.answersGiven[q.id]===q.correct?'answered':'wrong');
-        d.onclick=()=>{startQuiz('study'); renderQuestion(i); $('drawer').classList.remove('open');}; c.appendChild(d);
+        d.onclick=()=>{startQuiz(app.mode || 'study'); renderQuestion(i); $('drawer').classList.remove('open');}; c.appendChild(d);
     });
 }
 function closeQuizView(){ 
     if(timerInterval) clearInterval(timerInterval); $('timer-display').textContent=''; 
     app.quizActive=false; $('quiz-view').style.display='none'; $('dashboard-view').style.display='flex'; document.body.classList.remove('quiz-mode'); $('results-panel').style.display='none'; $('quiz-shell').style.display='flex'; renderStartTags(); renderMarkedDashboard(); 
 }
-$('open-pauteo-btn').onclick = () => startQuiz('study', true);
+$('open-pauteo-btn').onclick = () => startQuiz(app.mode || 'study', true);
 $('open-cases-module-btn').onclick = openCasesModule;
 
 $('download-app-btn').onclick = async () => { 
