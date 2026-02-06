@@ -1421,27 +1421,27 @@ function renderStartTags() {
         c.appendChild(b);
     });
 }
-function renderMarkedDashboard() { const l=$('dashboard-marked-list'); l.innerHTML=''; app.questions.forEach((q,i)=>{ if(app.marked[q.id]) { const d=document.createElement('div'); d.textContent=`#${i+1} ${q.question.substring(0,40)}`; d.className='card'; d.style.padding='8px'; d.onclick=()=>{startQuiz('study'); renderQuestion(i);}; l.appendChild(d); }}); if(l.innerHTML) $('dashboard-marked-card').style.display='block'; }
+function renderMarkedDashboard() { const l=$('dashboard-marked-list'); l.innerHTML=''; app.questions.forEach((q,i)=>{ if(app.marked[q.id]) { const d=document.createElement('div'); d.textContent=`#${i+1} ${q.question.substring(0,40)}`; d.className='card'; d.style.padding='8px'; d.onclick=()=>{startQuiz(app.mode || 'study'); renderQuestion(i);}; l.appendChild(d); }}); if(l.innerHTML) $('dashboard-marked-card').style.display='block'; }
 function openLightbox(s) { $('lightbox-img').src=s; $('lightbox-modal').classList.add('open'); }
 function toggleStar() { app.marked[app.questions[app.currentIndex].id] = !app.marked[app.questions[app.currentIndex].id]; renderQuestion(app.currentIndex); }
 function toggleFlag() { app.flagged[app.questions[app.currentIndex].id] = !app.flagged[app.questions[app.currentIndex].id]; renderQuestion(app.currentIndex); }
 function handleSearch(v, tid) {
     const c=$(tid); c.innerHTML=''; c.style.display=v.length>2?'block':'none';
-    if(v.length>2) { app.questions.forEach((q,i)=>{ if(q.question.toLowerCase().includes(v.toLowerCase())) { const d=document.createElement('div'); d.className='search-item'; d.textContent=`#${i+1} ${q.question.substring(0,40)}`; d.onclick=()=>{startQuiz('study'); renderQuestion(i); c.style.display='none';}; c.appendChild(d); } }); }
+    if(v.length>2) { app.questions.forEach((q,i)=>{ if(q.question.toLowerCase().includes(v.toLowerCase())) { const d=document.createElement('div'); d.className='search-item'; d.textContent=`#${i+1} ${q.question.substring(0,40)}`; d.onclick=()=>{startQuiz(app.mode || 'study'); renderQuestion(i); c.style.display='none';}; c.appendChild(d); } }); }
 }
 function renderNavGrid() {
     const c=$('nav-grid-drawer'); c.innerHTML='';
     app.questions.forEach((q,i)=>{ 
         const d=document.createElement('div'); d.className='nav-dot'; d.textContent=i+1;
         if(app.answersGiven[q.id]!==undefined) d.classList.add(app.answersGiven[q.id]===q.correct?'answered':'wrong');
-        d.onclick=()=>{startQuiz('study'); renderQuestion(i); $('drawer').classList.remove('open');}; c.appendChild(d);
+        d.onclick=()=>{startQuiz(app.mode || 'study'); renderQuestion(i); $('drawer').classList.remove('open');}; c.appendChild(d);
     });
 }
 function closeQuizView(){ 
     if(timerInterval) clearInterval(timerInterval); $('timer-display').textContent=''; 
     app.quizActive=false; $('quiz-view').style.display='none'; $('dashboard-view').style.display='flex'; document.body.classList.remove('quiz-mode'); $('results-panel').style.display='none'; $('quiz-shell').style.display='flex'; renderStartTags(); renderMarkedDashboard(); 
 }
-$('open-pauteo-btn').onclick = () => startQuiz('study', true);
+$('open-pauteo-btn').onclick = () => startQuiz(app.mode || 'study', true);
 $('open-cases-module-btn').onclick = openCasesModule;
 
 $('download-app-btn').onclick = async () => { 
