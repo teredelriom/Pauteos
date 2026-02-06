@@ -327,14 +327,14 @@ body.quiz-mode #quiz-menu-btn { display: inline-flex !important; }
                     </details>
                 </div>
 
-                <div class="flex-between" style="margin-top:24px; padding-top:16px; border-top:1px solid var(--border);">
+                <div id="quiz-nav-controls" class="flex-between" style="margin-top:24px; padding-top:16px; border-top:1px solid var(--border);">
                     <button id="prev-btn" class="btn outline">Anterior</button>
                     <div style="display:flex; gap:12px;">
                         <button id="restart-btn" class="btn outline">Reiniciar</button>
                         <button id="next-btn" class="btn primary">Siguiente</button>
                     </div>
                 </div>
-                <div style="text-align:center; margin-top:8px;">
+                <div id="quiz-finish-wrap" style="text-align:center; margin-top:8px;">
                     <button id="show-results-btn" style="background:none; border:none; text-decoration:underline; cursor:pointer; font-size:0.8rem; color:var(--muted);">Finalizar</button>
                 </div>
              </div>
@@ -706,6 +706,8 @@ window.addEventListener('DOMContentLoaded', () => {
     setTheme(localStorage.getItem('pauteo_theme')||'pink');
     renderBanksList();
     updateHeader();
+    renderStartTags();
+    renderMarkedDashboard();
     // Listeners
     $('file-input').onchange = handleFileUpload;
     $('cases-file-input').onchange = handleCasesUpload;
@@ -971,6 +973,34 @@ function renderQuestion(idx) {
     if(idx<0 || idx>=app.questions.length) return;
     app.currentIndex = idx;
     const q = app.questions[idx];
+
+    if(app.mode === 'pauteo') {
+        $('quiz-nav-controls').style.display = 'none';
+        $('quiz-finish-wrap').style.display = 'none';
+        $('progress-text').textContent = `Pauteo · ${app.questions.length} preguntas`;
+        $('progress-bar').style.width = '100%';
+        $('question-tags').innerHTML = '';
+        $('edit-form-container').style.display = 'none';
+        $('question-image-container').innerHTML = '';
+        $('question-text').innerHTML = app.questions.map((item, qIdx) => {
+            const answersHtml = (item.answers || []).map((ans, aIdx) => {
+                const isCorrect = aIdx === item.correct;
+                return `<div class="answer-card disabled ${isCorrect ? 'correct' : ''}"><b style="opacity:0.5; margin-right:8px;">${String.fromCharCode(65+aIdx)}</b> ${ans}</div>`;
+            }).join('');
+            const tagsHtml = (item.tags || []).map(tag => `<span class="tag-pill">${tag}</span>`).join('');
+            const justification = item.justification ? `<details style="margin-top:10px; border:1px solid var(--border); border-radius:8px; padding:8px;"><summary style="cursor:pointer; font-weight:bold; color:var(--primary);">Explicación</summary><div style="padding-top:8px; line-height:1.6;">${item.justification}</div></details>` : '';
+            const imageHtml = item.image ? `<img src="${item.image}" class="question-img" style="margin-top:10px;" />` : '';
+            return `<div class="card" style="padding:16px; margin-bottom:12px;"><div style="font-size:0.8rem; color:var(--muted); margin-bottom:8px;">#${qIdx+1}</div><div style="font-weight:600; margin-bottom:10px;">${item.question}</div><div style="display:flex; flex-wrap:wrap; gap:6px; margin-bottom:10px;">${tagsHtml}</div>${imageHtml}<div>${answersHtml}</div>${justification}</div>`;
+        }).join('');
+        $('answers').innerHTML = '';
+        $('justification-box').style.display = 'none';
+        $('star-btn').style.color = 'inherit';
+        saveState();
+        return;
+    }
+
+    $('quiz-nav-controls').style.display = 'flex';
+    $('quiz-finish-wrap').style.display = 'block';
     
     $('question-text').textContent = q.question;
     $('answers').innerHTML = ''; $('justification-box').style.display = 'none'; $('edit-form-container').style.display = 'none';
@@ -1421,7 +1451,7 @@ function renderStartTags() {
         c.appendChild(b);
     });
 }
-function renderMarkedDashboard() { const l=$('dashboard-marked-list'); l.innerHTML=''; app.questions.forEach((q,i)=>{ if(app.marked[q.id]) { const d=document.createElement('div'); d.textContent=`#${i+1} ${q.question.substring(0,40)}`; d.className='card'; d.style.padding='8px'; d.onclick=()=>{startQuiz(app.mode || 'study'); renderQuestion(i);}; l.appendChild(d); }}); if(l.innerHTML) $('dashboard-marked-card').style.display='block'; }
+function renderMarkedDashboard() { const l=$('dashboard-marked-list'); l.innerHTML=''; app.questions.forEach((q,i)=>{ if(app.marked[q.id]) { const d=document.createElement('div'); d.textContent=`#${i+1} ${q.question.substring(0,40)}`; d.className='card'; d.style.padding='8px'; d.onclick=()=>{startQuiz(app.mode || 'study'); renderQuestion(i);}; l.appendChild(d); }}); $('dashboard-marked-card').style.display = l.innerHTML ? 'block' : 'none'; }
 function openLightbox(s) { $('lightbox-img').src=s; $('lightbox-modal').classList.add('open'); }
 function toggleStar() { app.marked[app.questions[app.currentIndex].id] = !app.marked[app.questions[app.currentIndex].id]; renderQuestion(app.currentIndex); }
 function toggleFlag() { app.flagged[app.questions[app.currentIndex].id] = !app.flagged[app.questions[app.currentIndex].id]; renderQuestion(app.currentIndex); }
@@ -1441,7 +1471,7 @@ function closeQuizView(){
     if(timerInterval) clearInterval(timerInterval); $('timer-display').textContent=''; 
     app.quizActive=false; $('quiz-view').style.display='none'; $('dashboard-view').style.display='flex'; document.body.classList.remove('quiz-mode'); $('results-panel').style.display='none'; $('quiz-shell').style.display='flex'; renderStartTags(); renderMarkedDashboard(); 
 }
-$('open-pauteo-btn').onclick = () => startQuiz(app.mode || 'study', true);
+$('open-pauteo-btn').onclick = () => startQuiz('pauteo', false);
 $('open-cases-module-btn').onclick = openCasesModule;
 
 $('download-app-btn').onclick = async () => { 
