@@ -786,7 +786,7 @@ window.addEventListener('DOMContentLoaded', () => {
     // Modes
     ['study','exam','pauteo'].forEach(m => {
         $(`mode-${m}`).onclick = () => { 
-            app.mode=m; app.answersGiven={}; updateModeButtons(); 
+            app.mode=m; app.answersGiven={}; updateModeButtons(); saveState(); 
             if(document.body.classList.contains('quiz-mode')) renderQuestion(app.currentIndex);
         };
     });
@@ -1468,11 +1468,21 @@ function renderNavGrid() {
         d.onclick=()=>{startQuiz(app.mode || 'study'); renderQuestion(i); $('drawer').classList.remove('open');}; c.appendChild(d);
     });
 }
+function getSelectedStartMode() {
+    const validModes = ['study', 'exam', 'pauteo'];
+    const activeBtn = document.querySelector('#mode-study.active-mode, #mode-exam.active-mode, #mode-pauteo.active-mode');
+    if (activeBtn) {
+        const modeFromButton = activeBtn.id.replace('mode-', '');
+        if (validModes.includes(modeFromButton)) return modeFromButton;
+    }
+    return validModes.includes(app.mode) ? app.mode : 'study';
+}
+
 function closeQuizView(){ 
     if(timerInterval) clearInterval(timerInterval); $('timer-display').textContent=''; 
     app.quizActive=false; $('quiz-view').style.display='none'; $('dashboard-view').style.display='flex'; document.body.classList.remove('quiz-mode'); $('results-panel').style.display='none'; $('quiz-shell').style.display='flex'; renderStartTags(); renderMarkedDashboard(); 
 }
-$('open-pauteo-btn').onclick = () => startQuiz('study', false);
+$('open-pauteo-btn').onclick = () => startQuiz(getSelectedStartMode(), false);
 $('open-cases-module-btn').onclick = openCasesModule;
 
 $('download-app-btn').onclick = async () => { 
