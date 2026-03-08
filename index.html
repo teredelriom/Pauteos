@@ -960,16 +960,34 @@ $('preview-save-btn').onclick = () => {
 };
 
 // --- QUIZ LOGIC ---
-function startQuiz(mode, shuffle=false) {
+function getResumeIndex() {
+    let lastAnsweredIdx = -1;
+    app.questions.forEach((q, i) => {
+        if(app.answersGiven[q.id] !== undefined) lastAnsweredIdx = i;
+    });
+
+    if(lastAnsweredIdx === -1) {
+        return Math.min(Math.max(app.currentIndex || 0, 0), Math.max(app.questions.length - 1, 0));
+    }
+
+    return Math.min(lastAnsweredIdx + 1, app.questions.length - 1);
+}
+
+function startQuiz(mode, shuffle=false, options={}) {
+    const { resetProgress = true, resumeFromLastAnswered = false } = options;
     if(mode) app.mode = mode; 
-    app.answersGiven = {}; app.currentIndex = 0;
+    if(resetProgress) {
+        app.answersGiven = {};
+        app.currentIndex = 0;
+    }
     updateModeButtons();
     if(shuffle) app.questions.sort(() => Math.random() - 0.5);
     $('results-panel').style.display = 'none';
     $('quiz-shell').style.display='flex';
     $('dashboard-view').style.display='none'; $('cases-view').style.display='none'; $('quiz-view').style.display='flex';
     document.body.classList.add('quiz-mode');
-    renderQuestion(0);
+    const initialIdx = resumeFromLastAnswered ? getResumeIndex() : app.currentIndex;
+    renderQuestion(initialIdx);
 }
 
 function renderQuestion(idx) {
@@ -1525,7 +1543,7 @@ function closeQuizView(){
     if(timerInterval) clearInterval(timerInterval); $('timer-display').textContent=''; 
     app.quizActive=false; $('quiz-view').style.display='none'; $('dashboard-view').style.display='flex'; document.body.classList.remove('quiz-mode'); $('results-panel').style.display='none'; $('quiz-shell').style.display='flex'; renderStartTags(); renderMarkedDashboard(); 
 }
-$('open-pauteo-btn').onclick = () => startQuiz(getSelectedStartMode(), false);
+$('open-pauteo-btn').onclick = () => startQuiz(getSelectedStartMode(), false, { resetProgress: false, resumeFromLastAnswered: true });
 $('open-cases-module-btn').onclick = openCasesModule;
 
 $('download-app-btn').onclick = async () => { 
