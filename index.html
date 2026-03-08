@@ -298,6 +298,7 @@ body.quiz-mode #quiz-menu-btn { display: inline-flex !important; }
                     <div id="question-tags"></div>
                     <div style="display:flex; gap:6px;">
                         <button id="edit-q-btn" class="icon-btn" title="Editar"><span class="material-icons" style="font-size:18px;">edit</span></button>
+                        <button id="delete-q-btn" class="icon-btn" title="Eliminar pregunta"><span class="material-icons" style="font-size:18px;">delete</span></button>
                         <button id="flag-btn" class="icon-btn" title="Duda"><span class="material-icons" style="font-size:18px;">outlined_flag</span></button>
                         <button id="star-btn" class="icon-btn" title="Favorito"><span class="material-icons" style="font-size:18px;">star_border</span></button>
                     </div>
@@ -769,6 +770,7 @@ window.addEventListener('DOMContentLoaded', () => {
     $('star-btn').onclick = toggleStar;
     $('flag-btn').onclick = toggleFlag;
     $('edit-q-btn').onclick = toggleEditQuestion;
+    $('delete-q-btn').onclick = deleteCurrentQuestion;
     $('save-edit-btn').onclick = saveEditQuestion;
     
     // Filter & Smart
@@ -1072,6 +1074,47 @@ function saveEditQuestion() {
     q.answers = Array.from(inputs).map(i => i.value);
     if(app.activeBankName) { app.savedBanks[app.activeBankName] = app.questions; saveBanks(); }
     renderQuestion(app.currentIndex);
+}
+
+function deleteCurrentQuestion() {
+    if(!app.questions.length) return;
+
+    const idx = app.currentIndex;
+    const q = app.questions[idx];
+    if(!q) return;
+
+    const qLabel = q.question ? q.question.substring(0, 80) : `#${idx + 1}`;
+    if(!confirm(`¿Eliminar esta pregunta del banco activo?\n\n${qLabel}${q.question && q.question.length > 80 ? '...' : ''}`)) return;
+
+    app.questions.splice(idx, 1);
+
+    if(app.masterQuestions && app.masterQuestions.length) {
+        app.masterQuestions = app.masterQuestions.filter(item => item.id !== q.id);
+    }
+
+    if(app.activeBankName && app.savedBanks[app.activeBankName]) {
+        app.savedBanks[app.activeBankName] = app.savedBanks[app.activeBankName].filter(item => item.id !== q.id);
+        saveBanks();
+    }
+
+    renderBanksList();
+    updateHeader();
+
+    delete app.answersGiven[q.id];
+    delete app.marked[q.id];
+    delete app.flagged[q.id];
+
+    if(app.questions.length === 0) {
+        saveState();
+        alert('Pregunta eliminada. El banco quedó sin preguntas.');
+        closeQuizView();
+        return;
+    }
+
+    const nextIdx = Math.min(idx, app.questions.length - 1);
+    saveState();
+    renderStartTags();
+    renderQuestion(nextIdx);
 }
 
 function showResults() {
