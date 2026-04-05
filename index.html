@@ -202,9 +202,10 @@ body.quiz-mode #quiz-menu-btn { display: inline-flex !important; }
            </div>
        </div>
        <div id="banks-list" style="flex:1; overflow-y:auto; margin-bottom:12px; padding-right:4px;"></div>
-       <div style="display:grid; grid-template-columns: 1fr 1fr; gap:8px; margin-bottom:8px;">
+       <div style="display:grid; grid-template-columns: 1fr 1fr 1fr; gap:8px; margin-bottom:8px;">
             <button id="save-bank-btn" class="btn small outline">Guardar Nuevo</button>
             <button id="update-bank-btn" class="btn small outline">Actualizar</button>
+            <button id="save-bank-changes-btn" class="btn small primary">Guardar Cambios</button>
        </div>
        <button id="export-json-btn" class="btn small outline" style="width:100%; margin-top:4px;">Exportar JSON</button></div>
        <div style="font-size:0.75rem; color:var(--muted); text-align:center;">Activo: <span id="active-bank" style="color:var(--primary); font-weight:600;">(ninguno)</span>
@@ -435,7 +436,7 @@ body.quiz-mode #quiz-menu-btn { display: inline-flex !important; }
                     <div id="active-filter-chips" class="filter-chips"></div>
                 </div>
                 <div class="theme-picker">
-                    <div class="block-header" style="margin:0;"><span class="material-icons" style="font-size:16px;">biotech</span> 1) Selecciona tema</div>
+                    <div class="block-header" style="margin:0;"><span class="material-icons" style="font-size:16px;">biotech</span> 1) Selecciona uno o más temas</div>
                     <div id="editor-theme-filter" class="theme-grid"></div>
                 </div>
                 <div class="small text-muted" style="margin-bottom:8px;">2) Elige filtros específicos (tags) dentro del tema.</div>
@@ -687,7 +688,7 @@ const app = {
     questions: [], masterQuestions: [], currentIndex: 0, answersGiven: {}, marked: {}, flagged: {}, 
     mode: 'study', savedBanks: {}, activeBankName: null, 
     cases: [], casesQueue: [], currentCaseIdx: 0, caseNotes: {},
-    editorQuestions: [], currentEditorFilter: {theme: null, tags: new Set()},
+    editorQuestions: [], currentEditorFilter: {themes: new Set(), tags: new Set()},
     backupQuestions: null, lastPreviewArr: null
 };
 const MEDICAL_THEMES = [
@@ -764,6 +765,16 @@ window.addEventListener('DOMContentLoaded', () => {
         alert(`Banco "${app.activeBankName}" actualizado.`);
     };
 
+    $('save-bank-changes-btn').onclick = () => {
+        if(!app.activeBankName) return alert("No hay un banco activo seleccionado.");
+        if(!confirm(`¿Guardar cambios en el banco "${app.activeBankName}"?`)) return;
+        app.savedBanks[app.activeBankName] = app.questions;
+        saveBanks();
+        renderBanksList();
+        updateHeader();
+        alert(`Cambios guardados en "${app.activeBankName}".`);
+    };
+
     // Case Reveal Listener (FIXED)
     $('case-reveal-btn').onclick = () => {
          $('case-content-back').style.display = 'block';
@@ -796,7 +807,7 @@ window.addEventListener('DOMContentLoaded', () => {
     $('start-filtered-quiz-btn').onclick = startFilteredQuiz;
     $('close-bank-editor-btn').onclick = () => $('bank-editor-screen').classList.remove('open');
     $('clear-editor-filters-btn').onclick = () => {
-        app.currentEditorFilter.theme = null;
+        app.currentEditorFilter.themes.clear();
         app.currentEditorFilter.tags.clear();
         renderEditorThemes();
         renderEditorTags();
@@ -1209,13 +1220,13 @@ function inferThemeFromTag(tag='') {
         return t.includes(normalizedTheme) || normalizedTheme.includes(t);
     }) || null;
 }
-function questionMatchesTheme(q, selectedTheme) {
-    if(!selectedTheme) return true;
-    return (q.tags || []).some(tag => inferThemeFromTag(tag) === selectedTheme);
+function questionMatchesTheme(q, selectedThemes) {
+    if(!selectedThemes || selectedThemes.size === 0) return true;
+    return (q.tags || []).some(tag => selectedThemes.has(inferThemeFromTag(tag)));
 }
 function getEditorSourceByTheme() {
     const source = (app.masterQuestions && app.masterQuestions.length) ? app.masterQuestions : app.questions;
-    return source.filter(q => questionMatchesTheme(q, app.currentEditorFilter.theme));
+    return source.filter(q => questionMatchesTheme(q, app.currentEditorFilter.themes));
 }
 
 function openBankEditor() {
@@ -1226,7 +1237,7 @@ function openBankEditor() {
         app.masterQuestions = [...app.questions];
     }
 
-    app.currentEditorFilter.theme = null;
+    app.currentEditorFilter.themes.clear();
     app.currentEditorFilter.tags.clear();
     app.editorQuestions = [...app.masterQuestions]; // Empezamos con todo
     renderEditorThemes();
@@ -1239,13 +1250,14 @@ function renderEditorThemes() {
     container.innerHTML = '';
     const source = (app.masterQuestions && app.masterQuestions.length) ? app.masterQuestions : app.questions;
     MEDICAL_THEMES.forEach(theme => {
-        const count = source.filter(q => questionMatchesTheme(q, theme)).length;
+        const count = source.filter(q => questionMatchesTheme(q, new Set([theme]))).length;
         const btn = document.createElement('button');
         btn.className = 'theme-pill';
         btn.textContent = `${theme} (${count})`;
-        if(app.currentEditorFilter.theme === theme) btn.classList.add('active');
+        if(app.currentEditorFilter.themes.has(theme)) btn.classList.add('active');
         btn.onclick = () => {
-            app.currentEditorFilter.theme = (app.currentEditorFilter.theme === theme) ? null : theme;
+            if(app.currentEditorFilter.themes.has(theme)) app.currentEditorFilter.themes.delete(theme);
+            else app.currentEditorFilter.themes.add(theme);
             app.currentEditorFilter.tags.clear();
             renderEditorThemes();
             renderEditorTags();
@@ -1259,8 +1271,8 @@ function renderEditorTags() {
     const ts = new Set();
     const tc = $('editor-tag-filter'); 
     tc.innerHTML = '';
-    if(!app.currentEditorFilter.theme) {
-        tc.innerHTML = '<div class="text-muted">Primero selecciona un tema para ver filtros específicos.</div>';
+    if(app.currentEditorFilter.themes.size === 0) {
+        tc.innerHTML = '<div class="text-muted">Primero selecciona al menos un tema para ver filtros específicos.</div>';
         return;
     }
     getEditorSourceByTheme().forEach(q => (q.tags || []).forEach(t => ts.add(t)));
@@ -1297,7 +1309,7 @@ function updateTagStyles() {
 function renderActiveFilterChips() {
     const chipsContainer = $('active-filter-chips');
     chipsContainer.innerHTML = '';
-    if (!app.currentEditorFilter.theme && app.currentEditorFilter.tags.size === 0) {
+    if (app.currentEditorFilter.themes.size === 0 && app.currentEditorFilter.tags.size === 0) {
         const empty = document.createElement('span');
         empty.className = 'text-muted';
         empty.style.fontSize = '0.85rem';
@@ -1305,14 +1317,14 @@ function renderActiveFilterChips() {
         chipsContainer.appendChild(empty);
         return;
     }
-    if(app.currentEditorFilter.theme) {
+    Array.from(app.currentEditorFilter.themes).sort().forEach(theme => {
         const themeChip = document.createElement('div');
         themeChip.className = 'filter-chip';
-        themeChip.innerHTML = `<span>Tema: ${app.currentEditorFilter.theme}</span>`;
+        themeChip.innerHTML = `<span>Tema: ${theme}</span>`;
         const removeThemeBtn = document.createElement('button');
         removeThemeBtn.innerHTML = '<span class="material-icons">close</span>';
         removeThemeBtn.onclick = () => {
-            app.currentEditorFilter.theme = null;
+            app.currentEditorFilter.themes.delete(theme);
             app.currentEditorFilter.tags.clear();
             renderEditorThemes();
             renderEditorTags();
@@ -1320,7 +1332,7 @@ function renderActiveFilterChips() {
         };
         themeChip.appendChild(removeThemeBtn);
         chipsContainer.appendChild(themeChip);
-    }
+    });
 
     Array.from(app.currentEditorFilter.tags).sort().forEach(tag => {
         const chip = document.createElement('div');
@@ -1601,7 +1613,9 @@ function renderStartTags() {
             
             // Si ya implementaste mi código anterior de "Filtro Mejorado":
             if (typeof updateTagStyles === 'function') {
-                app.currentEditorFilter.theme = inferThemeFromTag(t);
+                const inferredTheme = inferThemeFromTag(t);
+                app.currentEditorFilter.themes.clear();
+                if(inferredTheme) app.currentEditorFilter.themes.add(inferredTheme);
                 app.currentEditorFilter.tags.clear();
                 app.currentEditorFilter.tags.add(t);
                 renderEditorThemes();
