@@ -117,6 +117,10 @@ body.quiz-mode #quiz-menu-btn { display: inline-flex !important; }
 .filter-chip .material-icons { font-size: 16px; }
 .filter-chip button { background: transparent; border: none; padding: 0; cursor: pointer; color: inherit; display: inline-flex; align-items: center; }
 .filter-tag-area { border: 1px solid var(--border); border-radius: 12px; padding: 12px; background: var(--bg); max-height: 260px; overflow-y: auto; }
+.theme-picker { border: 1px solid var(--border); border-radius: 12px; padding: 12px; background: var(--bg); margin-bottom: 12px; }
+.theme-grid { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 8px; }
+.theme-pill { border: 1px solid var(--border); background: var(--card); color: var(--text); border-radius: 999px; padding: 6px 10px; font-size: 0.78rem; font-weight: 600; cursor: pointer; }
+.theme-pill.active { border-color: var(--primary); background: var(--primary-soft); color: var(--primary); }
 #drop-zone, #cases-drop-zone { border: 2px dashed var(--border); border-radius: var(--radius); padding: 32px; text-align: center; color: var(--muted); cursor: pointer; transition: 0.2s; }
 #drop-zone:hover { border-color: var(--primary); background: var(--primary-soft); color: var(--primary); }
 
@@ -430,11 +434,17 @@ body.quiz-mode #quiz-menu-btn { display: inline-flex !important; }
                     </div>
                     <div id="active-filter-chips" class="filter-chips"></div>
                 </div>
+                <div class="theme-picker">
+                    <div class="block-header" style="margin:0;"><span class="material-icons" style="font-size:16px;">biotech</span> 1) Selecciona tema</div>
+                    <div id="editor-theme-filter" class="theme-grid"></div>
+                </div>
+                <div class="small text-muted" style="margin-bottom:8px;">2) Elige filtros específicos (tags) dentro del tema.</div>
                 <div id="editor-tag-filter" class="filter-tag-area" style="display:flex; flex-wrap:wrap; gap:8px; margin-bottom:16px;"></div>
                 <div style="display:flex; gap:12px; margin-bottom:16px; flex-wrap:wrap;">
                     <button id="start-filtered-quiz-btn" class="btn primary" style="flex:1;">Practicar selección</button>
                     <button id="create-filtered-bank-btn" class="btn outline" style="flex:1;">Guardar como banco</button>
                     <button id="delete-filtered-btn" class="btn" style="background:var(--error-bg); color:var(--error-text);">Borrar</button>
+                    <button id="delete-selected-tag-btn" class="btn" style="background:var(--error-bg); color:var(--error-text);">Borrar tag seleccionado</button>
                 </div>
                 <div id="editor-question-list" style="font-size:0.85rem;"></div>
              </div>
@@ -677,9 +687,14 @@ const app = {
     questions: [], masterQuestions: [], currentIndex: 0, answersGiven: {}, marked: {}, flagged: {}, 
     mode: 'study', savedBanks: {}, activeBankName: null, 
     cases: [], casesQueue: [], currentCaseIdx: 0, caseNotes: {},
-    editorQuestions: [], currentEditorFilter: {tags: new Set()}, 
+    editorQuestions: [], currentEditorFilter: {theme: null, tags: new Set()},
     backupQuestions: null, lastPreviewArr: null
 };
+const MEDICAL_THEMES = [
+    'Reumatologia','Endocrinologia','Cardiologia','Nefrologia','Infectologia','Inmunologia',
+    'Neumologia','Respiratorio','Gastroenterologia','Hematologia','Oncologia','Cuidados paliativos',
+    'Nutrición y diabetes'
+];
 
 // --- INIT ---
 window.addEventListener('beforeinstallprompt', (e) => {
@@ -777,10 +792,14 @@ window.addEventListener('DOMContentLoaded', () => {
     $('open-editor-hero-btn').onclick = openBankEditor;
     $('create-filtered-bank-btn').onclick = createBankFromFilter;
     $('delete-filtered-btn').onclick = deleteFiltered;
+    $('delete-selected-tag-btn').onclick = deleteQuestionsBySelectedTag;
     $('start-filtered-quiz-btn').onclick = startFilteredQuiz;
     $('close-bank-editor-btn').onclick = () => $('bank-editor-screen').classList.remove('open');
     $('clear-editor-filters-btn').onclick = () => {
+        app.currentEditorFilter.theme = null;
         app.currentEditorFilter.tags.clear();
+        renderEditorThemes();
+        renderEditorTags();
         updateTagStyles();
         filterQuestions();
     };
@@ -1177,6 +1196,27 @@ function updateProgress() { $('progress-bar').style.width = `${((app.currentInde
 
 // --- BANK EDITOR / FILTER ---
 // --- BANK EDITOR / FILTRO AVANZADO MEJORADO ---
+function normalizeTagText(value='') {
+    return value
+        .normalize('NFD')
+        .replace(/[\u0300-\u036f]/g, '')
+        .toLowerCase();
+}
+function inferThemeFromTag(tag='') {
+    const t = normalizeTagText(tag);
+    return MEDICAL_THEMES.find(theme => {
+        const normalizedTheme = normalizeTagText(theme);
+        return t.includes(normalizedTheme) || normalizedTheme.includes(t);
+    }) || null;
+}
+function questionMatchesTheme(q, selectedTheme) {
+    if(!selectedTheme) return true;
+    return (q.tags || []).some(tag => inferThemeFromTag(tag) === selectedTheme);
+}
+function getEditorSourceByTheme() {
+    const source = (app.masterQuestions && app.masterQuestions.length) ? app.masterQuestions : app.questions;
+    return source.filter(q => questionMatchesTheme(q, app.currentEditorFilter.theme));
+}
 
 function openBankEditor() {
     $('bank-editor-screen').classList.add('open');
@@ -1186,20 +1226,44 @@ function openBankEditor() {
         app.masterQuestions = [...app.questions];
     }
 
+    app.currentEditorFilter.theme = null;
     app.currentEditorFilter.tags.clear();
     app.editorQuestions = [...app.masterQuestions]; // Empezamos con todo
+    renderEditorThemes();
     renderEditorTags(); // Renderizar tags una sola vez
     renderActiveFilterChips();
     renderEditorList(); // Renderizar lista
 }
+function renderEditorThemes() {
+    const container = $('editor-theme-filter');
+    container.innerHTML = '';
+    const source = (app.masterQuestions && app.masterQuestions.length) ? app.masterQuestions : app.questions;
+    MEDICAL_THEMES.forEach(theme => {
+        const count = source.filter(q => questionMatchesTheme(q, theme)).length;
+        const btn = document.createElement('button');
+        btn.className = 'theme-pill';
+        btn.textContent = `${theme} (${count})`;
+        if(app.currentEditorFilter.theme === theme) btn.classList.add('active');
+        btn.onclick = () => {
+            app.currentEditorFilter.theme = (app.currentEditorFilter.theme === theme) ? null : theme;
+            app.currentEditorFilter.tags.clear();
+            renderEditorThemes();
+            renderEditorTags();
+            filterQuestions();
+        };
+        container.appendChild(btn);
+    });
+}
 
 function renderEditorTags() {
     const ts = new Set();
-    // Extraemos tags SIEMPRE de la copia maestra para ver todas las opciones posibles
-    app.masterQuestions.forEach(q => (q.tags || []).forEach(t => ts.add(t)));
-    
     const tc = $('editor-tag-filter'); 
     tc.innerHTML = '';
+    if(!app.currentEditorFilter.theme) {
+        tc.innerHTML = '<div class="text-muted">Primero selecciona un tema para ver filtros específicos.</div>';
+        return;
+    }
+    getEditorSourceByTheme().forEach(q => (q.tags || []).forEach(t => ts.add(t)));
 
     // Renderizar botones de tags
     Array.from(ts).sort().forEach(t => {
@@ -1233,13 +1297,29 @@ function updateTagStyles() {
 function renderActiveFilterChips() {
     const chipsContainer = $('active-filter-chips');
     chipsContainer.innerHTML = '';
-    if (app.currentEditorFilter.tags.size === 0) {
+    if (!app.currentEditorFilter.theme && app.currentEditorFilter.tags.size === 0) {
         const empty = document.createElement('span');
         empty.className = 'text-muted';
         empty.style.fontSize = '0.85rem';
         empty.textContent = 'Sin filtros seleccionados.';
         chipsContainer.appendChild(empty);
         return;
+    }
+    if(app.currentEditorFilter.theme) {
+        const themeChip = document.createElement('div');
+        themeChip.className = 'filter-chip';
+        themeChip.innerHTML = `<span>Tema: ${app.currentEditorFilter.theme}</span>`;
+        const removeThemeBtn = document.createElement('button');
+        removeThemeBtn.innerHTML = '<span class="material-icons">close</span>';
+        removeThemeBtn.onclick = () => {
+            app.currentEditorFilter.theme = null;
+            app.currentEditorFilter.tags.clear();
+            renderEditorThemes();
+            renderEditorTags();
+            filterQuestions();
+        };
+        themeChip.appendChild(removeThemeBtn);
+        chipsContainer.appendChild(themeChip);
     }
 
     Array.from(app.currentEditorFilter.tags).sort().forEach(tag => {
@@ -1259,7 +1339,7 @@ function renderActiveFilterChips() {
 }
 
 function filterQuestions() {
-    const source = (app.masterQuestions && app.masterQuestions.length) ? app.masterQuestions : app.questions;
+    const source = getEditorSourceByTheme();
     // Filtramos sobre la COPIA MAESTRA
     if (app.currentEditorFilter.tags.size === 0) {
         app.editorQuestions = [...source];
@@ -1315,7 +1395,7 @@ function createBankFromFilter() {
     alert(`Banco "${n}" guardado.`);
 }
 function startFilteredQuiz() {
-    const source = (app.masterQuestions && app.masterQuestions.length) ? app.masterQuestions : app.questions;
+    const source = getEditorSourceByTheme();
     if (app.currentEditorFilter.tags.size === 0) {
         app.editorQuestions = [...source];
     }
@@ -1330,6 +1410,25 @@ function startFilteredQuiz() {
 }
 
 function deleteFiltered() { if(confirm("Borrar preguntas visibles?")) { const ids = new Set(app.editorQuestions.map(q=>q.id)); app.questions = app.questions.filter(q=>!ids.has(q.id)); saveState(); if(app.activeBankName){ app.savedBanks[app.activeBankName]=app.questions; saveBanks(); } openBankEditor(); } }
+function deleteQuestionsBySelectedTag() {
+    if(!app.currentEditorFilter.tags.size) return alert('Selecciona al menos un tag para borrar sus preguntas.');
+    const source = (app.masterQuestions && app.masterQuestions.length) ? app.masterQuestions : app.questions;
+    const idsToDelete = new Set(source.filter(q => (q.tags || []).some(tag => app.currentEditorFilter.tags.has(tag))).map(q => q.id));
+    if(!idsToDelete.size) return alert('No se encontraron preguntas para ese tag.');
+    const tagsText = Array.from(app.currentEditorFilter.tags).join(', ');
+    if(!confirm(`Se eliminarán ${idsToDelete.size} preguntas del tag seleccionado (${tagsText}). ¿Continuar?`)) return;
+    app.questions = app.questions.filter(q => !idsToDelete.has(q.id));
+    app.masterQuestions = app.masterQuestions.filter(q => !idsToDelete.has(q.id));
+    if(app.activeBankName && app.savedBanks[app.activeBankName]) {
+        app.savedBanks[app.activeBankName] = app.savedBanks[app.activeBankName].filter(q => !idsToDelete.has(q.id));
+        saveBanks();
+    }
+    saveState();
+    app.currentEditorFilter.tags.clear();
+    renderEditorThemes();
+    renderEditorTags();
+    filterQuestions();
+}
 
 // --- IA LOGIC ---
 async function runAutoAI() {
@@ -1502,8 +1601,11 @@ function renderStartTags() {
             
             // Si ya implementaste mi código anterior de "Filtro Mejorado":
             if (typeof updateTagStyles === 'function') {
+                app.currentEditorFilter.theme = inferThemeFromTag(t);
                 app.currentEditorFilter.tags.clear();
                 app.currentEditorFilter.tags.add(t);
+                renderEditorThemes();
+                renderEditorTags();
                 updateTagStyles();
                 filterQuestions();
             }
